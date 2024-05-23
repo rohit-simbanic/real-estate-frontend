@@ -1,12 +1,18 @@
 // @ts-nocheck
 
-import EditPreConstructedPropertyForm from "@/theme/components/form/edit-preconstructed";
 import React from "react";
+import dynamic from "next/dynamic";
+const DynamicComponents = dynamic(
+  () => import("@/theme/components/form/edit-preconstructed"),
+  {
+    ssr: false,
+  }
+);
 
 const page = () => {
   return (
     <div>
-      <EditPreConstructedPropertyForm />
+      <DynamicComponents />
     </div>
   );
 };
