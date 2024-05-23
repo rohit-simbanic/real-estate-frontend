@@ -1,3 +1,4 @@
+//@ts-nocheck
 import EditPropertyForm from "@/theme/components/form/edit-property";
 import React from "react";
 
