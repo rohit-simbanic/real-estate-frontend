@@ -1,12 +1,16 @@
 // @ts-nocheck
-
-import EditPropertyForm from "@/theme/components/form/edit-property";
 import React from "react";
-
+import dynamic from "next/dynamic";
+const DynamicComponent = dynamic(
+  () => import("@/theme/components/form/edit-property"),
+  {
+    ssr: false,
+  }
+);
 const page = () => {
   return (
     <div>
-      <EditPropertyForm />
+      <DynamicComponent />
     </div>
   );
 };
