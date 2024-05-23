@@ -16,6 +16,25 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  webpack: (config, { isServer }) => {
+    // Ignore test files
+    config.module.rules.push({
+      test: /\.test\.js$/,
+      use: "ignore-loader",
+    });
+
+    if (isServer) {
+      // Optionally, ignore the __tests__ directory
+      config.externals.push(function ({ request }, callback) {
+        if (/__tests__/.test(request)) {
+          return callback(null, "commonjs " + request);
+        }
+        callback();
+      });
+    }
+
+    return config;
+  },
 };
 
 export default nextConfig;
