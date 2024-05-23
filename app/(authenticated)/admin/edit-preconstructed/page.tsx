@@ -1,4 +1,5 @@
-//@ts-nocheck
+// @ts-nocheck
+
 import EditPreConstructedPropertyForm from "@/theme/components/form/edit-preconstructed";
 import React from "react";
 
