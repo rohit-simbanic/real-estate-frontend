@@ -1,5 +1,5 @@
 "use client";
-import { fieldLabel } from "@/assets/field-label";
+
 import ButtonBanner from "@/components/button/button-banner";
 import { fetchBannerData } from "@/helpers/product-fetch";
 import React, { useEffect, useState } from "react";
