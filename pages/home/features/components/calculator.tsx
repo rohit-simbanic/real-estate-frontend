@@ -10,7 +10,7 @@ interface CardProps {
 
 const CalculatorCard: React.FC<CardProps> = ({ title, imageUrl, link }) => {
   return (
-    <Link href={link}>
+    <Link href={link ?? ""}>
       <div className="flex-shrink-0 m-6 relative overflow-hidden bg-teal-500 rounded-lg w-[300px] shadow-lg group">
         <svg
           className="absolute bottom-0 left-0 mb-8 scale-150 group-hover:scale-[1.65] transition-transform"
