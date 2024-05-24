@@ -26,9 +26,7 @@ export const fetchProperties = async (endpoint: string) => {
 
 export const fetchSingleProperty = async (id: string) => {
   try {
-    const response = await fetch(
-      `https://backend-real-estate-m1zm.onrender.com/properties/${id}`
-    );
+    const response = await fetch(`http://localhost:5000/properties/${id}`);
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
@@ -41,9 +39,7 @@ export const fetchSingleProperty = async (id: string) => {
 };
 
 export const fetchBannerData = async () => {
-  const response = await fetch(
-    "https://backend-real-estate-m1zm.onrender.com/banner"
-  );
+  const response = await fetch("http://localhost:5000/banner");
   const data = await response.json();
   return data;
 };
@@ -76,7 +72,7 @@ export const fetchPreconstructedProperties = async (endpoint: string) => {
 export const fetchSinglePreconstructedProperty = async (id: string) => {
   try {
     const response = await fetch(
-      `https://backend-real-estate-m1zm.onrender.com/pre-constructed-property/${id}`
+      `http://localhost:5000/pre-constructed-property/${id}`
     );
     if (!response.ok) {
       throw new Error("Network response was not ok");

@@ -188,7 +188,7 @@ const PreConstructedPropertyForm: React.FC = () => {
       };
 
       const response = await axios.post(
-        "https://backend-real-estate-m1zm.onrender.com/pre-constructed-property",
+        "http://localhost:5000/pre-constructed-property",
         updatedFormData,
         {
           headers: {

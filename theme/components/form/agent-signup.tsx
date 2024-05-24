@@ -52,7 +52,7 @@ const AgentSignup: React.FC = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "https://backend-real-estate-m1zm.onrender.com/register-agent",
+        "http://localhost:5000/register-agent",
         {
           ...formData,
           specializations: formData.specializations.split(","),

@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import axios from "axios";
 
 interface GeneralDetails {
   Price: string;
@@ -60,7 +61,7 @@ interface FormData {
   available_for: string;
   listing_id: string;
   property_description: string;
-  property_images: FileList | null;
+  property_images: File[];
   general_details: GeneralDetails;
   room_interior: RoomInterior;
   exterior: Exterior;
@@ -77,7 +78,7 @@ const initialFormData: FormData = {
   available_for: "",
   listing_id: "",
   property_description: "",
-  property_images: null,
+  property_images: [],
   general_details: {
     Price: "",
     Taxes: "",
@@ -130,16 +131,19 @@ const initialFormData: FormData = {
 
 const PropertyForm: React.FC = () => {
   const [formData, setFormData] = useState<FormData>(initialFormData);
+  console.log("formData", formData);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
   const router = useRouter();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      property_images: files,
-    }));
+    if (files) {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        property_images: Array.from(files),
+      }));
+    }
   };
 
   const handleChange = (
@@ -184,6 +188,7 @@ const PropertyForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log("upload starting");
     try {
       const token = localStorage.getItem("token");
 
@@ -193,19 +198,14 @@ const PropertyForm: React.FC = () => {
           ? Array.from(formData.property_images).map((file) => file.name)
           : [],
       };
-      const endpoint =
-        "https://backend-real-estate-m1zm.onrender.com/add-property";
-      const response = await fetch(endpoint, {
-        method: "POST",
+      console.log(updatedFormData);
+      const endpoint = "http://localhost:5000/add-property";
+      const response = await axios.post(endpoint, updatedFormData, {
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(updatedFormData),
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to save property");
-      }
 
       setSuccess(true);
       setError(null);
@@ -221,6 +221,7 @@ const PropertyForm: React.FC = () => {
   return (
     <div className="max-w-2xl mx-auto p-8">
       <h2 className="text-2xl font-bold mb-6">Create Property</h2>
+
       {error && <p className="text-red-500 mb-4">{error}</p>}
       {success && (
         <p className="text-green-500 mb-4">Property created successfully!</p>

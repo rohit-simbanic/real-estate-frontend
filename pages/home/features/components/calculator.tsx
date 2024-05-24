@@ -1,12 +1,14 @@
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
 interface CardProps {
   title: string;
   imageUrl: string;
+  link: string;
 }
 
-const CalculatorCard: React.FC<CardProps> = ({ title, imageUrl }) => {
+const CalculatorCard: React.FC<CardProps> = ({ title, imageUrl, link }) => {
   return (
     <div className="flex-shrink-0 m-6 relative overflow-hidden bg-teal-500 rounded-lg w-[300px] shadow-lg group">
       <svg
@@ -42,13 +44,15 @@ const CalculatorCard: React.FC<CardProps> = ({ title, imageUrl }) => {
             opacity: 0.2,
           }}
         ></div>
-        <Image
-          className="relative w-40"
-          width={140}
-          height={140}
-          src={imageUrl}
-          alt="calculator"
-        />
+        <Link href={link}>
+          <Image
+            className="relative w-40"
+            width={140}
+            height={140}
+            src={imageUrl}
+            alt="calculator"
+          />
+        </Link>
       </div>
       <div className="relative text-white px-6 pb-6 mt-6">
         <div className="flex justify-center items-center">

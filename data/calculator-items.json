@@ -1,14 +1,17 @@
 [
   {
     "title": "Mortgage Payment",
-    "imageUrl": "https://www.abt.bank/wp-content/uploads/2022/03/Mortgage-Icons_Refinance-Icon.png"
+    "imageUrl": "https://www.abt.bank/wp-content/uploads/2022/03/Mortgage-Icons_Refinance-Icon.png",
+    "link": "/mortgage-payment"
   },
   {
     "title": "Mortgage Amortization",
-    "imageUrl": "https://icons.iconarchive.com/icons/dtafalonso/android-lollipop/256/Calculator-icon.png"
+    "imageUrl": "https://icons.iconarchive.com/icons/dtafalonso/android-lollipop/256/Calculator-icon.png",
+    "link": "/mortgage-amortization"
   },
   {
     "title": "Land Transfer Tax",
-    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/1/1e/Calculator_icon.svg"
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/1/1e/Calculator_icon.svg",
+    "link": "/land-transfer"
   }
 ]

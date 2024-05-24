@@ -18,6 +18,7 @@ const CalculatorGrid: React.FC<{ items: CalculatorDataProps[] }> = ({
             key={index}
             title={item.title}
             imageUrl={item.imageUrl}
+            link={item.link}
           />
         ))}
       </div>
