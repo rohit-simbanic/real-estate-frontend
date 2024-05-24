@@ -1,3 +1,4 @@
+//@ts-nocheck
 import React from "react";
 import SectionTitle from "@/theme/components/section-title/section-title";
 import CalculatorCard from "../calculator";

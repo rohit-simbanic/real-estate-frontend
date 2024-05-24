@@ -1,3 +1,4 @@
+//@ts-nocheck
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -141,7 +142,9 @@ const EditPreConstructedPropertyForm: React.FC = () => {
     if (searchParams) {
       const propertyId = searchParams.get("propertyId");
       if (propertyId) {
-        fetch(`http://localhost:5000/pre-constructed-property/${propertyId}`)
+        fetch(
+          `https://backend-real-estate-m1zm.onrender.com/pre-constructed-property/${propertyId}`
+        )
           .then((response) => response.json())
           .then((data) => {
             const propertyData = {
@@ -258,7 +261,7 @@ const EditPreConstructedPropertyForm: React.FC = () => {
         property_images: formData.property_images.map((img) => img.trim()),
       };
 
-      const endpoint = `http://localhost:5000/pre-constructed-property/${formData.listing_id}`;
+      const endpoint = `https://backend-real-estate-m1zm.onrender.com/pre-constructed-property/${formData.listing_id}`;
       const response = await fetch(endpoint, {
         method: "PUT",
         headers: {

@@ -199,7 +199,8 @@ const PropertyForm: React.FC = () => {
           : [],
       };
       console.log(updatedFormData);
-      const endpoint = "http://localhost:5000/add-property";
+      const endpoint =
+        "https://backend-real-estate-m1zm.onrender.com/add-property";
       const response = await axios.post(endpoint, updatedFormData, {
         headers: {
           Authorization: `Bearer ${token}`,
