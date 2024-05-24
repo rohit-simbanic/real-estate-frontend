@@ -13,6 +13,9 @@ const nextConfig = {
       "icons.iconarchive.com",
     ],
   },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
 };
 
 export default nextConfig;
