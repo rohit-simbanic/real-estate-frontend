@@ -1,8 +1,10 @@
-//@ts-nocheck
 import React from "react";
 import SectionTitle from "@/theme/components/section-title/section-title";
-import CalculatorCard from "../calculator";
 import { CalculatorDataProps } from "@/types/calculator-data-types";
+import dynamic from "next/dynamic";
+const DynamicComponent = dynamic(() => import("../calculator"), {
+  ssr: false,
+});
 
 const CalculatorGrid: React.FC<{ items: CalculatorDataProps[] }> = ({
   items = [],
@@ -15,7 +17,7 @@ const CalculatorGrid: React.FC<{ items: CalculatorDataProps[] }> = ({
       />
       <div className="p-1 flex flex-wrap items-center justify-center">
         {items.map((item, index) => (
-          <CalculatorCard
+          <DynamicComponent
             key={index}
             title={item.title}
             imageUrl={item.imageUrl}
