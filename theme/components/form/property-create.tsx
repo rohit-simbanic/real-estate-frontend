@@ -55,7 +55,6 @@ interface AtAGlance {
 }
 
 interface FormData {
-  agent_id: number;
   category: string;
   price: string;
   available_for: string;
@@ -72,7 +71,6 @@ interface FormData {
 }
 
 const initialFormData: FormData = {
-  agent_id: 1,
   category: "",
   price: "",
   available_for: "",
@@ -131,9 +129,9 @@ const initialFormData: FormData = {
 
 const PropertyForm: React.FC = () => {
   const [formData, setFormData] = useState<FormData>(initialFormData);
-  console.log("formData", formData);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
+  const [activeTab, setActiveTab] = useState<string>("category");
   const router = useRouter();
 
   const handleChange = (
@@ -175,9 +173,9 @@ const PropertyForm: React.FC = () => {
       listing_id: `NXYZ${value.replace(/^NXYZ/, "")}`,
     }));
   };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target;
-    console.log("files:", files);
     if (files) {
       setFormData((prevFormData) => ({
         ...prevFormData,
@@ -185,6 +183,7 @@ const PropertyForm: React.FC = () => {
       }));
     }
   };
+
   const handleFileUpload = (files: File[]): File[] => {
     return files;
   };
@@ -206,6 +205,7 @@ const PropertyForm: React.FC = () => {
       }
     });
   };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
@@ -222,7 +222,7 @@ const PropertyForm: React.FC = () => {
       appendNestedObject(formData, data);
 
       const response = await axios.post(
-        "https://backend-real-estate-m1zm.onrender.com/add-property",
+        "http://localhost:5000/add-property",
         data,
         {
           headers: {
@@ -243,18 +243,11 @@ const PropertyForm: React.FC = () => {
     }
   };
 
-  return (
-    <div className="max-w-2xl p-8 w-full mx-auto lg:w-[40%] bg-white rounded-lg shadow-lg">
-      <h2 className="text-2xl font-bold mb-6">Create Property</h2>
-
-      {error && <p className="text-red-500 mb-4">{error}</p>}
-      {success && (
-        <p className="text-green-500 mb-4">Property created successfully!</p>
-      )}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Property Information */}
-        <div className="flex flex-col sm:flex-row gap-6 justify-between">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full sm:w-[50%]">
+  const tabContent = () => {
+    switch (activeTab) {
+      case "category":
+        return (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
             <div>
               <label className="block font-semibold">Category:</label>
               <select
@@ -328,73 +321,73 @@ const PropertyForm: React.FC = () => {
               />
             </div>
           </div>
-          {/* General Details */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full sm:w-[50%]">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 ">
-              <h3 className="text-xl font-bold mb-4">General Details</h3>
-              <div>
-                <label className="block font-semibold">Price:</label>
-                <input
-                  type="text"
-                  name="Price"
-                  value={formData.general_details.Price}
-                  onChange={(e) => handleNestedChange(e, "general_details")}
-                  className="p-3 border border-gray-300 rounded w-full"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block font-semibold">Taxes:</label>
-                <input
-                  type="text"
-                  name="Taxes"
-                  value={formData.general_details.Taxes}
-                  onChange={(e) => handleNestedChange(e, "general_details")}
-                  className="p-3 border border-gray-300 rounded w-full"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block font-semibold">Address:</label>
-                <input
-                  type="text"
-                  name="Address"
-                  value={formData.general_details.Address}
-                  onChange={(e) => handleNestedChange(e, "general_details")}
-                  className="p-3 border border-gray-300 rounded w-full"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block font-semibold">Lot Size:</label>
-                <input
-                  type="text"
-                  name="Lot_Size"
-                  value={formData.general_details.Lot_Size}
-                  onChange={(e) => handleNestedChange(e, "general_details")}
-                  className="p-3 border border-gray-300 rounded w-full"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block font-semibold">
-                  Directions/Cross Streets:
-                </label>
-                <input
-                  type="text"
-                  name="Directions"
-                  value={formData.general_details.Directions}
-                  onChange={(e) => handleNestedChange(e, "general_details")}
-                  className="p-3 border border-gray-300 rounded w-full"
-                  required
-                />
-              </div>
+        );
+      case "general_details":
+        return (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
+            <h3 className="text-xl font-bold mb-4">General Details</h3>
+            <div>
+              <label className="block font-semibold">Price:</label>
+              <input
+                type="text"
+                name="Price"
+                value={formData.general_details.Price}
+                onChange={(e) => handleNestedChange(e, "general_details")}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-semibold">Taxes:</label>
+              <input
+                type="text"
+                name="Taxes"
+                value={formData.general_details.Taxes}
+                onChange={(e) => handleNestedChange(e, "general_details")}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-semibold">Address:</label>
+              <input
+                type="text"
+                name="Address"
+                value={formData.general_details.Address}
+                onChange={(e) => handleNestedChange(e, "general_details")}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-semibold">Lot Size:</label>
+              <input
+                type="text"
+                name="Lot_Size"
+                value={formData.general_details.Lot_Size}
+                onChange={(e) => handleNestedChange(e, "general_details")}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-semibold">
+                Directions/Cross Streets:
+              </label>
+              <input
+                type="text"
+                name="Directions"
+                value={formData.general_details.Directions}
+                onChange={(e) => handleNestedChange(e, "general_details")}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
             </div>
           </div>
-        </div>
-        {/* Room Interior */}
-        <div className="flex flex-col sm:flex-row gap-6 justify-between">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full sm:w-[50%]">
+        );
+      case "room_interior":
+        return (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
             <h3 className="text-xl font-bold">Room Interior</h3>
             <div>
               <label className="block font-semibold">Rooms:</label>
@@ -477,9 +470,10 @@ const PropertyForm: React.FC = () => {
               />
             </div>
           </div>
-
-          {/* Exterior */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full sm:w-[50%]">
+        );
+      case "exterior":
+        return (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
             <h3 className="text-xl font-bold">Exterior</h3>
             <div>
               <label className="block font-semibold">Property Type:</label>
@@ -550,10 +544,10 @@ const PropertyForm: React.FC = () => {
               />
             </div>
           </div>
-        </div>
-        <div className="flex flex-col sm:flex-row gap-6 justify-between">
-          {/* Utilities */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full sm:w-[50%]">
+        );
+      case "utilities":
+        return (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
             <h3 className="text-xl font-bold">Utilities</h3>
             <div>
               <label className="block font-semibold">Fireplace/Stove:</label>
@@ -610,7 +604,7 @@ const PropertyForm: React.FC = () => {
                 type="text"
                 name="Laundry_Level"
                 value={formData.utilities.Laundry_Level}
-                onChange={(e: any) => handleNestedChange(e, "utilities")}
+                onChange={(e) => handleNestedChange(e, "utilities")}
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
@@ -638,8 +632,10 @@ const PropertyForm: React.FC = () => {
               />
             </div>
           </div>
-          {/* At a Glance */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full sm:w-[50%]">
+        );
+      case "at_a_glance":
+        return (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
             <h3 className="text-xl font-bold">At a Glance</h3>
             <div>
               <label className="block font-semibold">Type:</label>
@@ -766,32 +762,125 @@ const PropertyForm: React.FC = () => {
               />
             </div>
           </div>
-        </div>
+        );
+      case "map":
+        return (
+          <>
+            <div className="mt-8">
+              <h3 className="text-xl font-bold mb-4">Street View</h3>
+              <input
+                type="text"
+                name="street_view"
+                value={formData.street_view}
+                onChange={handleChange}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
+            <div className="mt-8">
+              <h3 className="text-xl font-bold mb-4">Map Location</h3>
+              <input
+                type="text"
+                name="map_location"
+                value={formData.map_location}
+                onChange={handleChange}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
+          </>
+        );
+      default:
+        return null;
+    }
+  };
 
-        <div className="mt-8">
-          <h3 className="text-xl font-bold mb-4">Street View</h3>
-          <input
-            type="text"
-            name="street_view"
-            value={formData.street_view}
-            onChange={handleChange}
-            className="p-3 border border-gray-300 rounded w-full"
-            required
-          />
-        </div>
+  return (
+    <div className="max-w-2xl p-8 w-full mx-auto lg:w-[40%] bg-white rounded-lg shadow-lg">
+      <h2 className="text-2xl font-bold mb-6">Create Property</h2>
 
-        <div className="mt-8">
-          <h3 className="text-xl font-bold mb-4">Map Location</h3>
-          <input
-            type="text"
-            name="map_location"
-            value={formData.map_location}
-            onChange={handleChange}
-            className="p-3 border border-gray-300 rounded w-full"
-            required
-          />
-        </div>
+      {error && <p className="text-red-500 mb-4">{error}</p>}
+      {success && (
+        <p className="text-green-500 mb-4">Property created successfully!</p>
+      )}
 
+      <div className="mb-6">
+        <div className="flex space-x-4">
+          <button
+            className={`${
+              activeTab === "category"
+                ? "border-b-2 border-indigo-600 text-indigo-600"
+                : ""
+            } pb-2`}
+            onClick={() => setActiveTab("category")}
+          >
+            Category
+          </button>
+          <button
+            className={`${
+              activeTab === "general_details"
+                ? "border-b-2 border-indigo-600 text-indigo-600"
+                : ""
+            } pb-2`}
+            onClick={() => setActiveTab("general_details")}
+          >
+            General Details
+          </button>
+          <button
+            className={`${
+              activeTab === "room_interior"
+                ? "border-b-2 border-indigo-600 text-indigo-600"
+                : ""
+            } pb-2`}
+            onClick={() => setActiveTab("room_interior")}
+          >
+            Room Interior
+          </button>
+          <button
+            className={`${
+              activeTab === "exterior"
+                ? "border-b-2 border-indigo-600 text-indigo-600"
+                : ""
+            } pb-2`}
+            onClick={() => setActiveTab("exterior")}
+          >
+            Exterior
+          </button>
+          <button
+            className={`${
+              activeTab === "utilities"
+                ? "border-b-2 border-indigo-600 text-indigo-600"
+                : ""
+            } pb-2`}
+            onClick={() => setActiveTab("utilities")}
+          >
+            Utilities
+          </button>
+          <button
+            className={`${
+              activeTab === "at_a_glance"
+                ? "border-b-2 border-indigo-600 text-indigo-600"
+                : ""
+            } pb-2`}
+            onClick={() => setActiveTab("at_a_glance")}
+          >
+            At a Glance
+          </button>
+          <button
+            className={`${
+              activeTab === "map"
+                ? "border-b-2 border-indigo-600 text-indigo-600"
+                : ""
+            } pb-2`}
+            onClick={() => setActiveTab("map")}
+          >
+            Map
+          </button>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {tabContent()}
         <button
           type="submit"
           className="mt-4 bg-indigo-600 text-white px-5 py-3 rounded hover:bg-blue-600"

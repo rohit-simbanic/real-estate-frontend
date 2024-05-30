@@ -26,7 +26,7 @@ const LoginAgent: React.FC = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "https://backend-real-estate-m1zm.onrender.com/login",
+        "http://localhost:5000/login",
         formData
       );
       if (response.status === 200) {
@@ -37,14 +37,14 @@ const LoginAgent: React.FC = () => {
         router.push("/admin");
       }
     } catch (err) {
-      setError("Login failed. Please try again.");
+      setError("Enter Valid Username or Password");
       setSuccess(false);
     }
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100 py-12">
-      <div className="max-w-3xl bg-white p-6 rounded-lg shadow-md">
+    <div className="max-w-3xl mx-auto py-12">
+      <div className=" bg-white p-6 rounded-lg shadow-md">
         <h2 className="text-3xl font-bold text-center mb-6">Agent Login</h2>
         {error && <p className="text-red-500 mb-4">{error}</p>}
         {success && <p className="text-green-500 mb-4">Login successful!</p>}

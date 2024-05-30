@@ -6,6 +6,7 @@ import { useTheme } from "@/contexts/theme-context";
 import Image from "next/image";
 import { fieldLabel } from "@/assets/field-label";
 import ToggleButton from "@/theme/components/toggle-button/button-toggle";
+import axios from "axios";
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -14,6 +15,8 @@ const Header: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const [isFixed, setIsFixed] = useState(false);
+  const [agent, setAgent] = useState<any>(null);
+  const [agentId, setAgentId] = useState<string | null>(null);
   console.log("isAuthenticated", isAuthenticated);
 
   const handleLogin = () => {
@@ -66,12 +69,36 @@ const Header: React.FC = () => {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, [isAuthenticated, isFixed, isHeaderVisible]);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
   const menuItems = fieldLabel["menu-item"];
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedAgentId = localStorage.getItem("agentId");
+      setAgentId(storedAgentId);
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchAgent = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/agent/${agentId}`
+        );
+        setAgent(response.data);
+      } catch (err) {
+        console.error("Error fetching agent data:", err);
+      }
+    };
+
+    fetchAgent();
+  }, [agentId]);
+  const getInitial = (name: string) => {
+    return name ? name.charAt(0).toUpperCase() : "";
+  };
   return (
     <nav
       className={`flex flex-wrap items-center justify-between p-5 bg-gray-100 dark:bg-[#1b0a0a] transition-transform duration-300 ${
@@ -179,31 +206,32 @@ const Header: React.FC = () => {
                 onClick={handleLogout}
               />
             ) : (
-              <ButtonAuth
-                text="Login"
-                textColor="white"
-                href="/admin/login"
-                borderColor="blue-500"
-                borderWidth={0}
-                borderRadius="md"
-                bgColor="teal-600"
-                hoverBgColor="blue-700"
-                shadow={true}
-                onClick={handleLogin}
-              />
+              <>
+                <ButtonAuth
+                  text="Login"
+                  textColor="white"
+                  href="/admin/login"
+                  borderColor="blue-500"
+                  borderWidth={0}
+                  borderRadius="md"
+                  bgColor="teal-600"
+                  hoverBgColor="blue-700"
+                  shadow={true}
+                  onClick={handleLogin}
+                />
+                <ButtonAuth
+                  text="Register"
+                  textColor="teal-600"
+                  href="/admin/signup"
+                  borderColor="blue-500"
+                  borderWidth={0}
+                  borderRadius="md"
+                  bgColor="gray-300"
+                  hoverBgColor="blue-700"
+                  shadow={false}
+                />
+              </>
             )}
-
-            <ButtonAuth
-              text="Register"
-              textColor="teal-600"
-              href="/admin/signup"
-              borderColor="blue-500"
-              borderWidth={0}
-              borderRadius="md"
-              bgColor="gray-100"
-              hoverBgColor="blue-700"
-              shadow={false}
-            />
           </div>
         </div>
       </div>
@@ -224,44 +252,64 @@ const Header: React.FC = () => {
               <span className="absolute inset-y-0 left-0 m-1 size-6 rounded-full bg-white transition-all duration-300 ease-in-out peer-checked:left-6"></span>
             </label>
             {isAuthenticated ? (
-              <ButtonAuth
-                text="Logout"
-                textColor="white"
-                href="/"
-                borderColor="blue-500"
-                borderWidth={0}
-                borderRadius="md"
-                bgColor="teal-600"
-                hoverBgColor="blue-700"
-                shadow={true}
-                onClick={handleLogout}
-              />
+              <>
+                <ButtonAuth
+                  text="Logout"
+                  textColor="white"
+                  href="/"
+                  borderColor="blue-500"
+                  borderWidth={0}
+                  borderRadius="md"
+                  bgColor="teal-600"
+                  hoverBgColor="blue-700"
+                  shadow={true}
+                  onClick={handleLogout}
+                />
+                {agent?.profilePicture ? (
+                  <Link href={"/admin/agent-profile"}>
+                    <Image
+                      src={`http://localhost:5000${agent.profilePicture}`}
+                      alt="Profile"
+                      height={52}
+                      width={52}
+                      className="rounded-[50%] flex items-center justify-center"
+                    />
+                  </Link>
+                ) : (
+                  <Link href={"/admin/agent-profile"}>
+                    <div className="flex items-center justify-center w-[52px] h-[52px] bg-purple-700 text-white rounded-full text-2xl font-bold">
+                      {getInitial(agent?.fullName)}
+                    </div>
+                  </Link>
+                )}
+              </>
             ) : (
-              <ButtonAuth
-                text="Login"
-                textColor="white"
-                href="/admin/login"
-                borderColor="blue-500"
-                borderWidth={0}
-                borderRadius="md"
-                bgColor="teal-600"
-                hoverBgColor="blue-700"
-                shadow={true}
-                onClick={handleLogin}
-              />
+              <>
+                <ButtonAuth
+                  text="Login"
+                  textColor="white"
+                  href="/admin/login"
+                  borderColor="blue-500"
+                  borderWidth={0}
+                  borderRadius="md"
+                  bgColor="teal-600"
+                  hoverBgColor="blue-700"
+                  shadow={true}
+                  onClick={handleLogin}
+                />
+                <ButtonAuth
+                  text="Register"
+                  textColor="teal-600"
+                  href="/admin/signup"
+                  borderColor="blue-500"
+                  borderWidth={0}
+                  borderRadius="md"
+                  bgColor="gray-300"
+                  hoverBgColor="blue-700"
+                  shadow={false}
+                />
+              </>
             )}
-
-            <ButtonAuth
-              text="Register"
-              textColor="teal-600"
-              href="/admin/signup"
-              borderColor="blue-500"
-              borderWidth={0}
-              borderRadius="md"
-              bgColor="gray-100"
-              hoverBgColor="blue-700"
-              shadow={false}
-            />
           </div>
         </div>
       </div>

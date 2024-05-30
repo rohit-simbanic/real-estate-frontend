@@ -56,7 +56,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
       <Link href={details.listing_id}>
         <Image
           alt="Property image"
-          src={`https://backend-real-estate-m1zm.onrender.com/uploads/${details.property_images[0].filename}`}
+          src={`http://localhost:5000/uploads/${details.property_images[0].filename}`}
           className=" w-full rounded-md object-cover !h-[300px]"
           width={1770}
           height={700}
@@ -99,9 +99,12 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
       </Link>
       {isAdmin && (
         <div className="flex justify-end mt-4 space-x-2">
-          <button onClick={handleEdit} className="text-blue-500">
-            Edit
-          </button>
+          {details.category != "sold" && (
+            <button onClick={handleEdit} className="text-blue-500">
+              Edit
+            </button>
+          )}
+
           <button onClick={handleDelete} className="text-red-500">
             Delete
           </button>

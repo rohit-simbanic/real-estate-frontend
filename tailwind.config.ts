@@ -51,6 +51,7 @@ const config: Config = {
     "w-[50%]",
     "sm:flex-col",
     "max-w-4xl",
+    "bg-gray-300",
   ],
   plugins: [],
 };

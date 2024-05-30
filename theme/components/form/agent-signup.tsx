@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 type FormData = {
   fullName: string;
@@ -52,6 +53,46 @@ const AgentSignup: React.FC = () => {
 
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
+  const [errors, setErrors] = useState<Partial<FormData>>({});
+  const router = useRouter();
+
+  const validateForm = async () => {
+    const newErrors: Partial<FormData> = {};
+
+    if (!formData.fullName) newErrors.fullName = "Full Name is required";
+    if (!formData.email) newErrors.email = "Email is required";
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+    } else if (
+      !/^(?=.*[!@#$%^&*])(?=.*[A-Za-z\d]).{7,}$/.test(formData.password)
+    ) {
+      newErrors.password =
+        "Password must be at least 7 characters long and include at least one special character";
+    }
+    if (!formData.phoneNumber)
+      newErrors.phoneNumber = "Phone Number is required";
+    if (!formData.licenseNumber)
+      newErrors.licenseNumber = "License Number is required";
+    if (!formData.governmentID)
+      newErrors.governmentID = "Government ID is required";
+
+    // Check if email is already registered
+    try {
+      const response = await axios.get("http://localhost:5000/agents");
+      const agents = response.data;
+      const emailExists = agents.some(
+        (agent: any) => agent.email === formData.email
+      );
+      if (emailExists) {
+        newErrors.email = "Email is already taken";
+      }
+    } catch (err) {
+      newErrors.email = "Error checking email";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -75,16 +116,22 @@ const AgentSignup: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!(await validateForm())) {
+      setError("Please fill in all required fields.");
+      return;
+    }
+
+    // Ensure hidden fields with default values are included
     const data = new FormData();
     (Object.keys(formData) as (keyof FormData)[]).forEach((key) => {
-      if (formData[key]) {
+      if (formData[key] !== null && formData[key] !== undefined) {
         data.append(key, formData[key] as any);
       }
     });
 
     try {
       const response = await axios.post(
-        "https://backend-real-estate-m1zm.onrender.com/register-agent",
+        "http://localhost:5000/register-agent",
         data,
         {
           headers: {
@@ -96,6 +143,7 @@ const AgentSignup: React.FC = () => {
       if (response.status === 201) {
         setSuccess(true);
         setError(null);
+        router.push("/admin/agent-profile");
       }
     } catch (err) {
       setError("Registration failed. Please try again.");
@@ -119,9 +167,14 @@ const AgentSignup: React.FC = () => {
               name="fullName"
               value={formData.fullName}
               onChange={handleChange}
-              className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
+              className={`mt-1 p-2 border ${
+                errors.fullName ? "border-red-500 font-bold" : "border-gray-300"
+              } rounded focus:ring-blue-500 focus:border-blue-500`}
               required
             />
+            {errors.fullName && (
+              <span className="text-red-500">{errors.fullName}</span>
+            )}
           </div>
           <div className="flex flex-col">
             <label className="font-semibold">Email:</label>
@@ -130,20 +183,14 @@ const AgentSignup: React.FC = () => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
+              className={`mt-1 p-2 border ${
+                errors.email ? "border-red-500 font-bold" : "border-gray-300"
+              } rounded focus:ring-blue-500 focus:border-blue-500`}
               required
             />
-          </div>
-          <div className="flex flex-col">
-            <label className="font-semibold">Phone Number:</label>
-            <input
-              type="tel"
-              name="phoneNumber"
-              value={formData.phoneNumber}
-              onChange={handleChange}
-              className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
-              required
-            />
+            {errors.email && (
+              <span className="text-red-500">{errors.email}</span>
+            )}
           </div>
           <div className="flex flex-col">
             <label className="font-semibold">Password:</label>
@@ -152,9 +199,32 @@ const AgentSignup: React.FC = () => {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
+              className={`mt-1 p-2 border ${
+                errors.password ? "border-red-500 font-bold" : "border-gray-300"
+              } rounded focus:ring-blue-500 focus:border-blue-500`}
               required
             />
+            {errors.password && (
+              <span className="text-red-500">{errors.password}</span>
+            )}
+          </div>
+          <div className="flex flex-col">
+            <label className="font-semibold">Phone Number:</label>
+            <input
+              type="tel"
+              name="phoneNumber"
+              value={formData.phoneNumber}
+              onChange={handleChange}
+              className={`mt-1 p-2 border ${
+                errors.phoneNumber
+                  ? "border-red-500 font-bold"
+                  : "border-gray-300"
+              } rounded focus:ring-blue-500 focus:border-blue-500`}
+              required
+            />
+            {errors.phoneNumber && (
+              <span className="text-red-500">{errors.phoneNumber}</span>
+            )}
           </div>
           <div className="flex flex-col">
             <label className="font-semibold">License Number:</label>
@@ -163,11 +233,61 @@ const AgentSignup: React.FC = () => {
               name="licenseNumber"
               value={formData.licenseNumber}
               onChange={handleChange}
-              className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
+              className={`mt-1 p-2 border ${
+                errors.licenseNumber
+                  ? "border-red-500 font-bold"
+                  : "border-gray-300"
+              } rounded focus:ring-blue-500 focus:border-blue-500`}
               required
             />
+            {errors.licenseNumber && (
+              <span className="text-red-500">{errors.licenseNumber}</span>
+            )}
           </div>
           <div className="flex flex-col">
+            <label className="font-semibold">Government ID:</label>
+            <input
+              type="text"
+              name="governmentID"
+              value={formData.governmentID}
+              onChange={handleChange}
+              className={`mt-1 p-2 border ${
+                errors.governmentID
+                  ? "border-red-500 font-bold"
+                  : "border-gray-300"
+              } rounded focus:ring-blue-500 focus:border-blue-500`}
+              required
+            />
+            {errors.governmentID && (
+              <span className="text-red-500">{errors.governmentID}</span>
+            )}
+          </div>
+          <div className="flex flex-col">
+            <label className="font-semibold">Website URL:</label>
+            <input
+              type="text"
+              name="website"
+              value={formData.website}
+              onChange={handleChange}
+              className={`mt-1 p-2 border ${
+                errors.website ? "border-red-500 font-bold" : "border-gray-300"
+              } rounded focus:ring-blue-500 focus:border-blue-500`}
+              required
+            />
+            {errors.website && (
+              <span className="text-red-500">{errors.website}</span>
+            )}
+          </div>
+          <div className="flex flex-col">
+            <label className="font-semibold">Profile Picture URL:</label>
+            <input
+              type="file"
+              name="profilePicture"
+              onChange={handleChange}
+              className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+          <div className="hidden">
             <label className="font-semibold">Agency Name:</label>
             <input
               type="text"
@@ -178,7 +298,7 @@ const AgentSignup: React.FC = () => {
               required
             />
           </div>
-          <div className="flex flex-col">
+          <div className="hidden">
             <label className="font-semibold">Agency Address:</label>
             <input
               type="text"
@@ -189,7 +309,7 @@ const AgentSignup: React.FC = () => {
               required
             />
           </div>
-          <div className="flex flex-col">
+          <div className="hidden">
             <label className="font-semibold">Years of Experience:</label>
             <input
               type="number"
@@ -200,7 +320,7 @@ const AgentSignup: React.FC = () => {
               required
             />
           </div>
-          <div className="flex flex-col">
+          <div className="hidden">
             <label className="font-semibold">
               Specializations (comma-separated):
             </label>
@@ -213,28 +333,8 @@ const AgentSignup: React.FC = () => {
               required
             />
           </div>
-          <div className="flex flex-col">
-            <label className="font-semibold">Profile Picture URL:</label>
-            <input
-              type="file"
-              name="profilePicture"
-              onChange={handleChange}
-              className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
-              required
-            />
-          </div>
-          <div className="flex flex-col">
-            <label className="font-semibold">Government ID URL:</label>
-            <input
-              type="text"
-              name="governmentID"
-              value={formData.governmentID}
-              onChange={handleChange}
-              className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
-              required
-            />
-          </div>
-          <div className="flex flex-col">
+
+          <div className="hidden">
             <label className="font-semibold">LinkedIn Profile URL:</label>
             <input
               type="text"
@@ -244,17 +344,8 @@ const AgentSignup: React.FC = () => {
               className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
-          <div className="flex flex-col">
-            <label className="font-semibold">Website URL:</label>
-            <input
-              type="text"
-              name="website"
-              value={formData.website}
-              onChange={handleChange}
-              className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-          <div className="flex flex-col">
+
+          <div className="hidden">
             <label className="font-semibold">Marketing Preferences:</label>
             <div className="mt-1">
               <input
@@ -267,7 +358,7 @@ const AgentSignup: React.FC = () => {
               <span className="text-sm text-gray-700">Yes</span>
             </div>
           </div>
-          <div className="flex flex-col">
+          <div className="hidden">
             <label className="font-semibold">
               Preferred Communication Channels (comma-separated):
             </label>
@@ -280,7 +371,7 @@ const AgentSignup: React.FC = () => {
               required
             />
           </div>
-          <div className="flex flex-col">
+          <div className="hidden">
             <label className="font-semibold">
               Languages Spoken (comma-separated):
             </label>
@@ -293,7 +384,7 @@ const AgentSignup: React.FC = () => {
               required
             />
           </div>
-          <div className="flex flex-col">
+          <div className="hidden">
             <label className="font-semibold">
               Service Areas (comma-separated):
             </label>
@@ -306,7 +397,7 @@ const AgentSignup: React.FC = () => {
               required
             />
           </div>
-          <div className="flex flex-col">
+          <div className="hidden">
             <label className="font-semibold">Professional Bio:</label>
             <textarea
               name="professionalBio"
@@ -316,7 +407,7 @@ const AgentSignup: React.FC = () => {
               required
             ></textarea>
           </div>
-          <div className="flex flex-col">
+          <div className="hidden">
             <label className="font-semibold">
               Certifications and Awards (comma-separated):
             </label>
@@ -329,7 +420,7 @@ const AgentSignup: React.FC = () => {
               required
             />
           </div>
-          <div className="flex flex-col">
+          <div className="hidden">
             <label className="font-semibold">
               References (comma-separated):
             </label>
@@ -343,6 +434,7 @@ const AgentSignup: React.FC = () => {
             />
           </div>
           <button
+            formNoValidate
             type="submit"
             className="mt-4 w-full bg-blue-600 text-white py-2 px-4 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >

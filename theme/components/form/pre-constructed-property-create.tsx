@@ -55,7 +55,6 @@ interface AtAGlance {
 }
 
 interface FormData {
-  agent_id: number;
   name: string;
   category: string;
   price: string;
@@ -73,7 +72,6 @@ interface FormData {
 }
 
 const initialFormData: FormData = {
-  agent_id: 1,
   name: "",
   category: "",
   price: "",
@@ -225,7 +223,7 @@ const PreConstructedPropertyForm: React.FC = () => {
       appendNestedObject(formData, data);
 
       const response = await axios.post(
-        "https://backend-real-estate-m1zm.onrender.com/pre-constructed-property",
+        "http://localhost:5000/pre-constructed-property",
         data,
         {
           headers: {
@@ -266,7 +264,7 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               >
-                <option value="pre-constructed">Select Category</option>
+                <option value="">Select Category</option>
                 <option value="pre-constructed">Pre Constructed</option>
               </select>
             </div>
