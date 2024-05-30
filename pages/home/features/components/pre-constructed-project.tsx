@@ -28,8 +28,8 @@ const PreConstructedProject = () => {
       try {
         const endpoint =
           pathname === "/admin"
-            ? "http://localhost:5000/my-properties"
-            : "http://localhost:5000/pre-constructed-property";
+            ? "https://backend-real-estate-m1zm.onrender.com/my-properties"
+            : "https://backend-real-estate-m1zm.onrender.com/pre-constructed-property";
         const data = await fetchPreconstructedProperties(endpoint);
         const featuredProperties = data.filter(
           (item: PreconstructedPropertyDetails) =>
@@ -53,7 +53,7 @@ const PreConstructedProject = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `http://localhost:5000/pre-constructed-property/${propertyId}`,
+        `https://backend-real-estate-m1zm.onrender.com/pre-constructed-property/${propertyId}`,
         {
           method: "DELETE",
           headers: {
@@ -96,7 +96,7 @@ const PreConstructedProject = () => {
             >
               <div className="rounded overflow-hidden shadow-lg hover:shadow-xl dark:bg-gray-900">
                 <Image
-                  src={`http://localhost:5000/uploads/${card.property_images[0].filename}`}
+                  src={`https://backend-real-estate-m1zm.onrender.com/uploads/${card.property_images[0].filename}`}
                   alt="Property Image"
                   width={600}
                   height={300}

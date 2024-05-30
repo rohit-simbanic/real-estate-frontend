@@ -86,7 +86,7 @@ const Header: React.FC = () => {
     const fetchAgent = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/agent/${agentId}`
+          `https://backend-real-estate-m1zm.onrender.com/agent/${agentId}`
         );
         setAgent(response.data);
       } catch (err) {
@@ -268,7 +268,7 @@ const Header: React.FC = () => {
                 {agent?.profilePicture ? (
                   <Link href={"/admin/agent-profile"}>
                     <Image
-                      src={`http://localhost:5000${agent.profilePicture}`}
+                      src={`https://backend-real-estate-m1zm.onrender.com${agent.profilePicture}`}
                       alt="Profile"
                       height={52}
                       width={52}
