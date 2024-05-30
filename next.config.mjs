@@ -12,6 +12,7 @@ const nextConfig = {
       "www.abt.bank",
       "icons.iconarchive.com",
       "localhost",
+      "backend-real-estate-m1zm.onrender.com",
     ],
   },
   typescript: {
