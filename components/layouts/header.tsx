@@ -22,6 +22,7 @@ const Header: React.FC = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("agentId");
     setIsAuthenticated(false);
   };
 
