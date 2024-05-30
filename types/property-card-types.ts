@@ -1,3 +1,6 @@
+export interface PropertyImage {
+  filename: string;
+}
 export interface PropertyDetails {
   agent_id: number;
   category: string;
@@ -5,7 +8,7 @@ export interface PropertyDetails {
   available_for: "sale" | "lease";
   listing_id: string;
   property_description: string;
-  property_images: string[];
+  property_images: PropertyImage[];
   general_details: GeneralDetails;
   room_interior: RoomInterior;
   exterior: Exterior;

@@ -16,43 +16,38 @@ const MortgageCalculator = () => {
 
   const [results, setResults] = useState(null);
 
+  const updateDownpaymentPercentage = () => {
+    const askingPrice = parseFloat(formValues.askingPrice);
+    const downpayment = parseFloat(formValues.downpayment);
+    const downpaymentPercentage = (downpayment / askingPrice) * 100;
+
+    setFormValues((previousState) => {
+      return { ...previousState, downpaymentPercentage };
+    });
+  };
+
+  const updateDownpaymentAmount = () => {
+    const askingPrice = parseFloat(formValues.askingPrice);
+    const downpaymentPercentage = parseFloat(formValues.downpaymentPercentage);
+    const downpayment = (downpaymentPercentage / 100) * askingPrice;
+    setFormValues((previousState) => {
+      return { ...previousState, downpayment };
+    });
+  };
+
   useEffect(() => {
-    const updateDownpaymentPercentage = () => {
-      const askingPrice = parseFloat(formValues.askingPrice);
-      const downpayment = parseFloat(formValues.downpayment);
-      const downpaymentPercentage = (downpayment / askingPrice) * 100 || 0;
-      setFormValues({
-        ...formValues,
-        downpaymentPercentage: downpaymentPercentage.toFixed(2),
-      });
-    };
-
-    const updateDownpaymentAmount = () => {
-      const askingPrice = parseFloat(formValues.askingPrice);
-      const downpaymentPercentage = parseFloat(
-        formValues.downpaymentPercentage
-      );
-      const downpayment = (downpaymentPercentage / 100) * askingPrice || 0;
-      setFormValues({
-        ...formValues,
-        downpayment: downpayment.toFixed(2),
-      });
-    };
-
     if (formValues.downpayment) {
       updateDownpaymentPercentage();
-    }
-    if (formValues.downpaymentPercentage) {
+    } else if (formValues.downpaymentPercentage) {
       updateDownpaymentAmount();
     }
-  }, [formValues, formValues.downpayment, formValues.downpaymentPercentage]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formValues.downpayment, formValues.downpaymentPercentage]);
 
   const handleChange = (e) => {
-    const { id, value } = e.target;
-    setFormValues({
-      ...formValues,
-      [id]: value,
-    });
+    setFormValues(
+      Object.assign({}, formValues, { [e.target.id]: e.target.value })
+    );
   };
 
   const calculateCMHCInsurancePremium = (
@@ -185,13 +180,13 @@ const MortgageCalculator = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="!max-w-[44rem] bg-white shadow-lg mx-auto p-4 my-10">
       <h1 className="text-2xl font-bold mb-4">
         Mortgage Amortization Calculator
       </h1>
       <form className="space-y-4">
         <div>
-          <label htmlFor="askingPrice" className="block">
+          <label htmlFor="askingPrice" className="block mb-2 font-semibold">
             Asking Price:
           </label>
           <input
@@ -199,12 +194,12 @@ const MortgageCalculator = () => {
             id="askingPrice"
             value={formValues.askingPrice}
             onChange={handleChange}
-            className="border p-2 w-full"
+            className="border border-gray-300 p-2 w-full rounded"
             required
           />
         </div>
         <div>
-          <label htmlFor="downpayment" className="block">
+          <label htmlFor="downpayment" className="block mb-2 font-semibold">
             Downpayment:
           </label>
           <input
@@ -212,11 +207,14 @@ const MortgageCalculator = () => {
             id="downpayment"
             value={formValues.downpayment}
             onChange={handleChange}
-            className="border p-2 w-full"
+            className="border border-gray-300 p-2 w-full rounded"
           />
         </div>
         <div>
-          <label htmlFor="downpaymentPercentage" className="block">
+          <label
+            htmlFor="downpaymentPercentage"
+            className="block mb-2 font-semibold"
+          >
             Downpayment Percentage:
           </label>
           <input
@@ -224,12 +222,12 @@ const MortgageCalculator = () => {
             id="downpaymentPercentage"
             value={formValues.downpaymentPercentage}
             onChange={handleChange}
-            className="border p-2 w-full"
+            className="border border-gray-300 p-2 w-full rounded"
             required
           />
         </div>
         <div>
-          <label htmlFor="interestRate" className="block">
+          <label htmlFor="interestRate" className="block mb-2 font-semibold">
             Interest Rate (Annual %):
           </label>
           <input
@@ -237,12 +235,12 @@ const MortgageCalculator = () => {
             id="interestRate"
             value={formValues.interestRate}
             onChange={handleChange}
-            className="border p-2 w-full"
+            className="border border-gray-300 p-2 w-full rounded"
             required
           />
         </div>
         <div>
-          <label htmlFor="mortgageTerm" className="block">
+          <label htmlFor="mortgageTerm" className="block mb-2 font-semibold">
             Mortgage Term (years):
           </label>
           <input
@@ -250,12 +248,15 @@ const MortgageCalculator = () => {
             id="mortgageTerm"
             value={formValues.mortgageTerm}
             onChange={handleChange}
-            className="border p-2 w-full"
+            className="border border-gray-300 p-2 w-full rounded"
             required
           />
         </div>
         <div>
-          <label htmlFor="amortizationTerm" className="block">
+          <label
+            htmlFor="amortizationTerm"
+            className="block mb-2 font-semibold"
+          >
             Amortization Term (years):
           </label>
           <input
@@ -263,33 +264,36 @@ const MortgageCalculator = () => {
             id="amortizationTerm"
             value={formValues.amortizationTerm}
             onChange={handleChange}
-            className="border p-2 w-full"
+            className="border border-gray-300 p-2 w-full rounded"
             required
           />
         </div>
         <div>
-          <label htmlFor="firstTimeHomeBuyer" className="block">
+          <label
+            htmlFor="firstTimeHomeBuyer"
+            className="block mb-2 font-semibold"
+          >
             First Time Home Buyer:
           </label>
           <select
             id="firstTimeHomeBuyer"
             value={formValues.firstTimeHomeBuyer}
             onChange={handleChange}
-            className="border p-2 w-full"
+            className="border border-gray-300 p-2 w-full rounded"
           >
             <option value="yes">Yes</option>
             <option value="no">No</option>
           </select>
         </div>
         <div>
-          <label htmlFor="frequency" className="block">
+          <label htmlFor="frequency" className="block mb-2 font-semibold">
             Payment Frequency:
           </label>
           <select
             id="frequency"
             value={formValues.frequency}
             onChange={handleChange}
-            className="border p-2 w-full"
+            className="border border-gray-300 p-2 w-full rounded"
           >
             <option value="Weekly">Weekly (52 payments/year)</option>
             <option value="Bi-weekly">Bi-weekly (26 payments/year)</option>
@@ -305,7 +309,7 @@ const MortgageCalculator = () => {
         <button
           type="button"
           onClick={calculateMortgage}
-          className="bg-blue-500 text-white py-2 px-4 rounded"
+          className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
         >
           Calculate
         </button>
@@ -316,11 +320,6 @@ const MortgageCalculator = () => {
         {results && (
           <div>
             <p>Downpayment: ${results.downpayment.toFixed(2)}</p>
-            <p>
-              Downpayment Percentage: {results.downpaymentPercentage.toFixed(2)}
-              %
-            </p>
-            <p>CMHC Insurance Premium: ${results.cmhcPremium.toFixed(2)}</p>
             <p>
               Financed Amount (including CMHC): $
               {results.amountFinanced.toFixed(2)}
@@ -334,33 +333,45 @@ const MortgageCalculator = () => {
               Interest Paid at Amortization Period: $
               {results.totalInterestPaid.toFixed(2)}
             </p>
-            <h3>Amortization Payment Schedule:</h3>
-            <table className="border-collapse border border-gray-500 w-full">
+            <h3 className="text-lg font-semibold mt-4">
+              Amortization Payment Schedule:
+            </h3>
+            <table className="border-collapse border border-gray-500 w-full mt-2">
               <thead>
                 <tr>
-                  <th className="border border-gray-500">Payment Number</th>
-                  <th className="border border-gray-500">Total Payment</th>
-                  <th className="border border-gray-500">Principal Paid</th>
-                  <th className="border border-gray-500">Interest Paid</th>
-                  <th className="border border-gray-500">Remaining Balance</th>
+                  <th className="border border-gray-500 px-2 py-1">
+                    Payment Number
+                  </th>
+                  <th className="border border-gray-500 px-2 py-1">
+                    Total Payment
+                  </th>
+                  <th className="border border-gray-500 px-2 py-1">
+                    Principal Paid
+                  </th>
+                  <th className="border border-gray-500 px-2 py-1">
+                    Interest Paid
+                  </th>
+                  <th className="border border-gray-500 px-2 py-1">
+                    Remaining Balance
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {results.schedule.map((payment) => (
                   <tr key={payment.paymentNumber}>
-                    <td className="border border-gray-500">
+                    <td className="border border-gray-500 px-2 py-1 text-center">
                       {payment.paymentNumber}
                     </td>
-                    <td className="border border-gray-500">
+                    <td className="border border-gray-500 px-2 py-1 text-right">
                       {payment.totalPayment.toFixed(2)}
                     </td>
-                    <td className="border border-gray-500">
+                    <td className="border border-gray-500 px-2 py-1 text-right">
                       {payment.principalPaid.toFixed(2)}
                     </td>
-                    <td className="border border-gray-500">
+                    <td className="border border-gray-500 px-2 py-1 text-right">
                       {payment.interestPaid.toFixed(2)}
                     </td>
-                    <td className="border border-gray-500">
+                    <td className="border border-gray-500 px-2 py-1 text-right">
                       {payment.remainingBalance.toFixed(2)}
                     </td>
                   </tr>

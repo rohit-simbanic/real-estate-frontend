@@ -31,3 +31,11 @@ body {
     text-wrap: balance;
   }
 }
+
+.fixed-header {
+  @apply fixed top-0 w-full z-50 transition-transform duration-300;
+}
+
+.hidden-header {
+  @apply -translate-y-full;
+}

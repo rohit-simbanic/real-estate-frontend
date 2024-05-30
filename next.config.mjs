@@ -11,6 +11,7 @@ const nextConfig = {
       "filecenter2.bestforagents.com",
       "www.abt.bank",
       "icons.iconarchive.com",
+      "localhost",
     ],
   },
   typescript: {

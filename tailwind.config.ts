@@ -47,6 +47,10 @@ const config: Config = {
     "py-8",
     "bg-blue-500",
     "w-70%",
+    "pt-10",
+    "w-[50%]",
+    "sm:flex-col",
+    "max-w-4xl",
   ],
   plugins: [],
 };

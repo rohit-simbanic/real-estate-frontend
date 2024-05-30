@@ -136,16 +136,6 @@ const PropertyForm: React.FC = () => {
   const [success, setSuccess] = useState<boolean>(false);
   const router = useRouter();
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { files } = e.target;
-    if (files) {
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        property_images: Array.from(files),
-      }));
-    }
-  };
-
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -185,28 +175,62 @@ const PropertyForm: React.FC = () => {
       listing_id: `NXYZ${value.replace(/^NXYZ/, "")}`,
     }));
   };
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { files } = e.target;
+    console.log("files:", files);
+    if (files) {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        property_images: Array.from(files),
+      }));
+    }
+  };
+  const handleFileUpload = (files: File[]): File[] => {
+    return files;
+  };
 
+  const appendNestedObject = (
+    formData: FormData,
+    formDataToSend: globalThis.FormData
+  ) => {
+    Object.keys(formData).forEach((key) => {
+      const value = formData[key as keyof FormData];
+      if (
+        typeof value === "object" &&
+        !(value instanceof File) &&
+        !Array.isArray(value)
+      ) {
+        formDataToSend.append(key, JSON.stringify(value)); // Serialize the nested object
+      } else if (key !== "property_images") {
+        formDataToSend.append(key, value as string | Blob);
+      }
+    });
+  };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("upload starting");
     try {
       const token = localStorage.getItem("token");
+      const files = handleFileUpload(formData.property_images);
 
-      const updatedFormData = {
-        ...formData,
-        property_images: formData.property_images
-          ? Array.from(formData.property_images).map((file) => file.name)
-          : [],
-      };
-      console.log(updatedFormData);
-      const endpoint =
-        "https://backend-real-estate-m1zm.onrender.com/add-property";
-      const response = await axios.post(endpoint, updatedFormData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+      // Prepare FormData
+      const data = new FormData();
+      files.forEach((file) => {
+        data.append("property_images", file);
       });
+
+      // Append other fields
+      appendNestedObject(formData, data);
+
+      const response = await axios.post(
+        "https://backend-real-estate-m1zm.onrender.com/add-property",
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       setSuccess(true);
       setError(null);
@@ -220,7 +244,7 @@ const PropertyForm: React.FC = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-8">
+    <div className="max-w-2xl p-8 w-full mx-auto lg:w-[40%] bg-white rounded-lg shadow-lg">
       <h2 className="text-2xl font-bold mb-6">Create Property</h2>
 
       {error && <p className="text-red-500 mb-4">{error}</p>}
@@ -229,508 +253,518 @@ const PropertyForm: React.FC = () => {
       )}
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Property Information */}
-        <div>
-          <label className="block font-semibold">Category:</label>
-          <select
-            name="category"
-            value={formData.category}
-            onChange={handleSelectChange}
-            className="p-2 border border-gray-300 rounded w-full"
-            required
-          >
-            <option value="">Select Category</option>
-            <option value="featured">Featured</option>
-            <option value="sold">Sold</option>
-          </select>
-        </div>
-        <div>
-          <label className="block font-semibold">Price:</label>
-          <input
-            type="text"
-            name="price"
-            value={formData.price}
-            onChange={handleChange}
-            className="p-2 border border-gray-300 rounded w-full"
-            required
-          />
-        </div>
-        <div>
-          <label className="block font-semibold">Available For:</label>
-          <input
-            type="text"
-            name="available_for"
-            value={formData.available_for}
-            onChange={handleChange}
-            className="p-2 border border-gray-300 rounded w-full"
-            required
-          />
-        </div>
-        <div>
-          <label className="block font-semibold">Listing ID:</label>
-          <input
-            type="text"
-            name="listing_id"
-            value={formData.listing_id}
-            onChange={handleListingIdChange}
-            className="p-2 border border-gray-300 rounded w-full"
-            required
-          />
-        </div>
-        <div>
-          <label className="block font-semibold">Property Description:</label>
-          <textarea
-            name="property_description"
-            value={formData.property_description}
-            onChange={handleChange}
-            className="p-2 border border-gray-300 rounded w-full"
-            required
-          ></textarea>
-        </div>
-        <div>
-          <label className="block font-semibold">
-            Property Images (comma-separated URLs):
-          </label>
-          <input
-            type="file"
-            name="property_images"
-            multiple
-            onChange={handleFileChange}
-            className="p-2 border border-gray-300 rounded w-full"
-            required
-          />
-        </div>
-
-        {/* General Details */}
-        <div className="mt-8">
-          <h3 className="text-xl font-bold mb-4">General Details</h3>
-          <div>
-            <label className="block font-semibold">Price:</label>
-            <input
-              type="text"
-              name="Price"
-              value={formData.general_details.Price}
-              onChange={(e) => handleNestedChange(e, "general_details")}
-              className="p-2 border border-gray-300 rounded w-full"
-              required
-            />
+        <div className="flex flex-col sm:flex-row gap-6 justify-between">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full sm:w-[50%]">
+            <div>
+              <label className="block font-semibold">Category:</label>
+              <select
+                name="category"
+                value={formData.category}
+                onChange={handleSelectChange}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              >
+                <option value="">Select Category</option>
+                <option value="featured">Featured</option>
+                <option value="sold">Sold</option>
+              </select>
+            </div>
+            <div>
+              <label className="block font-semibold">Price:</label>
+              <input
+                type="text"
+                name="price"
+                value={formData.price}
+                onChange={handleChange}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-semibold">Available For:</label>
+              <input
+                type="text"
+                name="available_for"
+                value={formData.available_for}
+                onChange={handleChange}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-semibold">Listing ID:</label>
+              <input
+                type="text"
+                name="listing_id"
+                value={formData.listing_id}
+                onChange={handleListingIdChange}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-semibold">
+                Property Description:
+              </label>
+              <textarea
+                name="property_description"
+                value={formData.property_description}
+                onChange={handleChange}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              ></textarea>
+            </div>
+            <div>
+              <label className="block font-semibold">
+                Property Images (comma-separated URLs):
+              </label>
+              <input
+                type="file"
+                name="property_images"
+                multiple
+                onChange={handleFileChange}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
           </div>
-          <div>
-            <label className="block font-semibold">Taxes:</label>
-            <input
-              type="text"
-              name="Taxes"
-              value={formData.general_details.Taxes}
-              onChange={(e) => handleNestedChange(e, "general_details")}
-              className="p-2 border border-gray-300 rounded w-full"
-              required
-            />
-          </div>
-          <div>
-            <label className="block font-semibold">Address:</label>
-            <input
-              type="text"
-              name="Address"
-              value={formData.general_details.Address}
-              onChange={(e) => handleNestedChange(e, "general_details")}
-              className="p-2 border border-gray-300 rounded w-full"
-              required
-            />
-          </div>
-          <div>
-            <label className="block font-semibold">Lot Size:</label>
-            <input
-              type="text"
-              name="Lot_Size"
-              value={formData.general_details.Lot_Size}
-              onChange={(e) => handleNestedChange(e, "general_details")}
-              className="p-2 border border-gray-300 rounded w-full"
-              required
-            />
-          </div>
-          <div>
-            <label className="block font-semibold">
-              Directions/Cross Streets:
-            </label>
-            <input
-              type="text"
-              name="Directions"
-              value={formData.general_details.Directions}
-              onChange={(e) => handleNestedChange(e, "general_details")}
-              className="p-2 border border-gray-300 rounded w-full"
-              required
-            />
+          {/* General Details */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full sm:w-[50%]">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 ">
+              <h3 className="text-xl font-bold mb-4">General Details</h3>
+              <div>
+                <label className="block font-semibold">Price:</label>
+                <input
+                  type="text"
+                  name="Price"
+                  value={formData.general_details.Price}
+                  onChange={(e) => handleNestedChange(e, "general_details")}
+                  className="p-3 border border-gray-300 rounded w-full"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block font-semibold">Taxes:</label>
+                <input
+                  type="text"
+                  name="Taxes"
+                  value={formData.general_details.Taxes}
+                  onChange={(e) => handleNestedChange(e, "general_details")}
+                  className="p-3 border border-gray-300 rounded w-full"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block font-semibold">Address:</label>
+                <input
+                  type="text"
+                  name="Address"
+                  value={formData.general_details.Address}
+                  onChange={(e) => handleNestedChange(e, "general_details")}
+                  className="p-3 border border-gray-300 rounded w-full"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block font-semibold">Lot Size:</label>
+                <input
+                  type="text"
+                  name="Lot_Size"
+                  value={formData.general_details.Lot_Size}
+                  onChange={(e) => handleNestedChange(e, "general_details")}
+                  className="p-3 border border-gray-300 rounded w-full"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block font-semibold">
+                  Directions/Cross Streets:
+                </label>
+                <input
+                  type="text"
+                  name="Directions"
+                  value={formData.general_details.Directions}
+                  onChange={(e) => handleNestedChange(e, "general_details")}
+                  className="p-3 border border-gray-300 rounded w-full"
+                  required
+                />
+              </div>
+            </div>
           </div>
         </div>
-
         {/* Room Interior */}
-        <div className="mt-8">
-          <h3 className="text-xl font-bold mb-4">Room Interior</h3>
-          <div>
-            <label className="block font-semibold">Rooms:</label>
-            <input
-              type="number"
-              name="Rooms"
-              value={formData.room_interior.Rooms}
-              onChange={(e) => handleNestedChange(e, "room_interior")}
-              className="p-2 border border-gray-300 rounded w-full"
-              required
-            />
+        <div className="flex flex-col sm:flex-row gap-6 justify-between">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full sm:w-[50%]">
+            <h3 className="text-xl font-bold">Room Interior</h3>
+            <div>
+              <label className="block font-semibold">Rooms:</label>
+              <input
+                type="number"
+                name="Rooms"
+                value={formData.room_interior.Rooms}
+                onChange={(e) => handleNestedChange(e, "room_interior")}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-semibold">Rooms plus:</label>
+              <input
+                type="number"
+                name="Rooms_plus"
+                value={formData.room_interior.Rooms_plus}
+                onChange={(e) => handleNestedChange(e, "room_interior")}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-semibold">Bedrooms:</label>
+              <input
+                type="number"
+                name="Bedrooms"
+                value={formData.room_interior.Bedrooms}
+                onChange={(e) => handleNestedChange(e, "room_interior")}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-semibold">Bedrooms plus:</label>
+              <input
+                type="number"
+                name="Bedrooms_plus"
+                value={formData.room_interior.Bedrooms_plus}
+                onChange={(e) => handleNestedChange(e, "room_interior")}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-semibold">Kitchens:</label>
+              <input
+                type="number"
+                name="Kitchens"
+                value={formData.room_interior.Kitchens}
+                onChange={(e) => handleNestedChange(e, "room_interior")}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-semibold">Family Room:</label>
+              <select
+                name="Family_Room"
+                value={formData.room_interior.Family_Room}
+                onChange={(e: any) => handleNestedChange(e, "room_interior")}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              >
+                <option value="">Select</option>
+                <option value="Y">Yes</option>
+                <option value="N">No</option>
+              </select>
+            </div>
+            <div>
+              <label className="block font-semibold">Basement:</label>
+              <input
+                type="text"
+                name="Basement"
+                value={formData.room_interior.Basement}
+                onChange={(e) => handleNestedChange(e, "room_interior")}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
           </div>
-          <div>
-            <label className="block font-semibold">Rooms plus:</label>
-            <input
-              type="number"
-              name="Rooms_plus"
-              value={formData.room_interior.Rooms_plus}
-              onChange={(e) => handleNestedChange(e, "room_interior")}
-              className="p-2 border border-gray-300 rounded w-full"
-              required
-            />
-          </div>
-          <div>
-            <label className="block font-semibold">Bedrooms:</label>
-            <input
-              type="number"
-              name="Bedrooms"
-              value={formData.room_interior.Bedrooms}
-              onChange={(e) => handleNestedChange(e, "room_interior")}
-              className="p-2 border border-gray-300 rounded w-full"
-              required
-            />
-          </div>
-          <div>
-            <label className="block font-semibold">Bedrooms plus:</label>
-            <input
-              type="number"
-              name="Bedrooms_plus"
-              value={formData.room_interior.Bedrooms_plus}
-              onChange={(e) => handleNestedChange(e, "room_interior")}
-              className="p-2 border border-gray-300 rounded w-full"
-              required
-            />
-          </div>
-          <div>
-            <label className="block font-semibold">Kitchens:</label>
-            <input
-              type="number"
-              name="Kitchens"
-              value={formData.room_interior.Kitchens}
-              onChange={(e) => handleNestedChange(e, "room_interior")}
-              className="p-2 border border-gray-300 rounded w-full"
-              required
-            />
-          </div>
-          <div>
-            <label className="block font-semibold">Family Room:</label>
-            <select
-              name="Family_Room"
-              value={formData.room_interior.Family_Room}
-              onChange={(e: any) => handleNestedChange(e, "room_interior")}
-              className="p-2 border border-gray-300 rounded w-full"
-              required
-            >
-              <option value="">Select</option>
-              <option value="Y">Yes</option>
-              <option value="N">No</option>
-            </select>
-          </div>
-          <div>
-            <label className="block font-semibold">Basement:</label>
-            <input
-              type="text"
-              name="Basement"
-              value={formData.room_interior.Basement}
-              onChange={(e) => handleNestedChange(e, "room_interior")}
-              className="p-2 border border-gray-300 rounded w-full"
-              required
-            />
+
+          {/* Exterior */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full sm:w-[50%]">
+            <h3 className="text-xl font-bold">Exterior</h3>
+            <div>
+              <label className="block font-semibold">Property Type:</label>
+              <input
+                type="text"
+                name="Property_Type"
+                value={formData.exterior.Property_Type}
+                onChange={(e) => handleNestedChange(e, "exterior")}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-semibold">Style:</label>
+              <input
+                type="text"
+                name="Style"
+                value={formData.exterior.Style}
+                onChange={(e) => handleNestedChange(e, "exterior")}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-semibold">Exterior:</label>
+              <input
+                type="text"
+                name="Exterior"
+                value={formData.exterior.Exterior}
+                onChange={(e) => handleNestedChange(e, "exterior")}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-semibold">Garage Type:</label>
+              <input
+                type="text"
+                name="Garage_Type"
+                value={formData.exterior.Garage_Type}
+                onChange={(e) => handleNestedChange(e, "exterior")}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-semibold">
+                Drive Parking Spaces:
+              </label>
+              <input
+                type="number"
+                name="Drive_Parking_Spaces"
+                value={formData.exterior.Drive_Parking_Spaces}
+                onChange={(e) => handleNestedChange(e, "exterior")}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-semibold">Pool:</label>
+              <input
+                type="text"
+                name="Pool"
+                value={formData.exterior.Pool}
+                onChange={(e) => handleNestedChange(e, "exterior")}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
           </div>
         </div>
-
-        {/* Exterior */}
-        <div className="mt-8">
-          <h3 className="text-xl font-bold mb-4">Exterior</h3>
-          <div>
-            <label className="block font-semibold">Property Type:</label>
-            <input
-              type="text"
-              name="Property_Type"
-              value={formData.exterior.Property_Type}
-              onChange={(e) => handleNestedChange(e, "exterior")}
-              className="p-2 border border-gray-300 rounded w-full"
-              required
-            />
+        <div className="flex flex-col sm:flex-row gap-6 justify-between">
+          {/* Utilities */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full sm:w-[50%]">
+            <h3 className="text-xl font-bold">Utilities</h3>
+            <div>
+              <label className="block font-semibold">Fireplace/Stove:</label>
+              <select
+                name="Fireplace_Stove"
+                value={formData.utilities.Fireplace_Stove}
+                onChange={(e: any) => handleNestedChange(e, "utilities")}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              >
+                <option value="">Select</option>
+                <option value="Y">Yes</option>
+                <option value="N">No</option>
+              </select>
+            </div>
+            <div>
+              <label className="block font-semibold">Heat Source:</label>
+              <input
+                type="text"
+                name="Heat_Source"
+                value={formData.utilities.Heat_Source}
+                onChange={(e) => handleNestedChange(e, "utilities")}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-semibold">Heat Type:</label>
+              <input
+                type="text"
+                name="Heat_Type"
+                value={formData.utilities.Heat_Type}
+                onChange={(e) => handleNestedChange(e, "utilities")}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-semibold">
+                Central Air Conditioning:
+              </label>
+              <input
+                type="text"
+                name="Central_Air_Conditioning"
+                value={formData.utilities.Central_Air_Conditioning}
+                onChange={(e) => handleNestedChange(e, "utilities")}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-semibold">Laundry Level:</label>
+              <input
+                type="text"
+                name="Laundry_Level"
+                value={formData.utilities.Laundry_Level}
+                onChange={(e: any) => handleNestedChange(e, "utilities")}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-semibold">Sewers:</label>
+              <input
+                type="text"
+                name="Sewers"
+                value={formData.utilities.Sewers}
+                onChange={(e) => handleNestedChange(e, "utilities")}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-semibold">Water:</label>
+              <input
+                type="text"
+                name="Water"
+                value={formData.utilities.Water}
+                onChange={(e) => handleNestedChange(e, "utilities")}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
           </div>
-          <div>
-            <label className="block font-semibold">Style:</label>
-            <input
-              type="text"
-              name="Style"
-              value={formData.exterior.Style}
-              onChange={(e) => handleNestedChange(e, "exterior")}
-              className="p-2 border border-gray-300 rounded w-full"
-              required
-            />
-          </div>
-          <div>
-            <label className="block font-semibold">Exterior:</label>
-            <input
-              type="text"
-              name="Exterior"
-              value={formData.exterior.Exterior}
-              onChange={(e) => handleNestedChange(e, "exterior")}
-              className="p-2 border border-gray-300 rounded w-full"
-              required
-            />
-          </div>
-          <div>
-            <label className="block font-semibold">Garage Type:</label>
-            <input
-              type="text"
-              name="Garage_Type"
-              value={formData.exterior.Garage_Type}
-              onChange={(e) => handleNestedChange(e, "exterior")}
-              className="p-2 border border-gray-300 rounded w-full"
-              required
-            />
-          </div>
-          <div>
-            <label className="block font-semibold">Drive Parking Spaces:</label>
-            <input
-              type="number"
-              name="Drive_Parking_Spaces"
-              value={formData.exterior.Drive_Parking_Spaces}
-              onChange={(e) => handleNestedChange(e, "exterior")}
-              className="p-2 border border-gray-300 rounded w-full"
-              required
-            />
-          </div>
-          <div>
-            <label className="block font-semibold">Pool:</label>
-            <input
-              type="text"
-              name="Pool"
-              value={formData.exterior.Pool}
-              onChange={(e) => handleNestedChange(e, "exterior")}
-              className="p-2 border border-gray-300 rounded w-full"
-              required
-            />
-          </div>
-        </div>
-
-        {/* Utilities */}
-        <div className="mt-8">
-          <h3 className="text-xl font-bold mb-4">Utilities</h3>
-          <div>
-            <label className="block font-semibold">Fireplace/Stove:</label>
-            <select
-              name="Fireplace_Stove"
-              value={formData.utilities.Fireplace_Stove}
-              onChange={(e: any) => handleNestedChange(e, "utilities")}
-              className="p-2 border border-gray-300 rounded w-full"
-              required
-            >
-              <option value="">Select</option>
-              <option value="Y">Yes</option>
-              <option value="N">No</option>
-            </select>
-          </div>
-          <div>
-            <label className="block font-semibold">Heat Source:</label>
-            <input
-              type="text"
-              name="Heat_Source"
-              value={formData.utilities.Heat_Source}
-              onChange={(e) => handleNestedChange(e, "utilities")}
-              className="p-2 border border-gray-300 rounded w-full"
-              required
-            />
-          </div>
-          <div>
-            <label className="block font-semibold">Heat Type:</label>
-            <input
-              type="text"
-              name="Heat_Type"
-              value={formData.utilities.Heat_Type}
-              onChange={(e) => handleNestedChange(e, "utilities")}
-              className="p-2 border border-gray-300 rounded w-full"
-              required
-            />
-          </div>
-          <div>
-            <label className="block font-semibold">
-              Central Air Conditioning:
-            </label>
-            <input
-              type="text"
-              name="Central_Air_Conditioning"
-              value={formData.utilities.Central_Air_Conditioning}
-              onChange={(e) => handleNestedChange(e, "utilities")}
-              className="p-2 border border-gray-300 rounded w-full"
-              required
-            />
-          </div>
-          <div>
-            <label className="block font-semibold">Laundry Level:</label>
-            <input
-              type="text"
-              name="Laundry_Level"
-              value={formData.utilities.Laundry_Level}
-              onChange={(e: any) => handleNestedChange(e, "utilities")}
-              className="p-2 border border-gray-300 rounded w-full"
-              required
-            />
-          </div>
-          <div>
-            <label className="block font-semibold">Sewers:</label>
-            <input
-              type="text"
-              name="Sewers"
-              value={formData.utilities.Sewers}
-              onChange={(e) => handleNestedChange(e, "utilities")}
-              className="p-2 border border-gray-300 rounded w-full"
-              required
-            />
-          </div>
-          <div>
-            <label className="block font-semibold">Water:</label>
-            <input
-              type="text"
-              name="Water"
-              value={formData.utilities.Water}
-              onChange={(e) => handleNestedChange(e, "utilities")}
-              className="p-2 border border-gray-300 rounded w-full"
-              required
-            />
-          </div>
-        </div>
-
-        {/* At a Glance */}
-        <div className="mt-8">
-          <h3 className="text-xl font-bold mb-4">At a Glance</h3>
-          <div>
-            <label className="block font-semibold">Type:</label>
-            <input
-              type="text"
-              name="Type"
-              value={formData.at_a_glance.Type}
-              onChange={(e) => handleNestedChange(e, "at_a_glance")}
-              className="p-2 border border-gray-300 rounded w-full"
-              required
-            />
-          </div>
-          <div>
-            <label className="block font-semibold">Area:</label>
-            <input
-              type="text"
-              name="Area"
-              value={formData.at_a_glance.Area}
-              onChange={(e) => handleNestedChange(e, "at_a_glance")}
-              className="p-2 border border-gray-300 rounded w-full"
-              required
-            />
-          </div>
-          <div>
-            <label className="block font-semibold">Municipality:</label>
-            <input
-              type="text"
-              name="Municipality"
-              value={formData.at_a_glance.Municipality}
-              onChange={(e) => handleNestedChange(e, "at_a_glance")}
-              className="p-2 border border-gray-300 rounded w-full"
-              required
-            />
-          </div>
-          <div>
-            <label className="block font-semibold">Neighbourhood:</label>
-            <input
-              type="text"
-              name="Neighbourhood"
-              value={formData.at_a_glance.Neighbourhood}
-              onChange={(e) => handleNestedChange(e, "at_a_glance")}
-              className="p-2 border border-gray-300 rounded w-full"
-              required
-            />
-          </div>
-          <div>
-            <label className="block font-semibold">Style:</label>
-            <input
-              type="text"
-              name="Style"
-              value={formData.at_a_glance.Style}
-              onChange={(e) => handleNestedChange(e, "at_a_glance")}
-              className="p-2 border border-gray-300 rounded w-full"
-              required
-            />
-          </div>
-          <div>
-            <label className="block font-semibold">Lot Size:</label>
-            <input
-              type="text"
-              name="LotSize"
-              value={formData.at_a_glance.LotSize}
-              onChange={(e) => handleNestedChange(e, "at_a_glance")}
-              className="p-2 border border-gray-300 rounded w-full"
-              required
-            />
-          </div>
-          <div>
-            <label className="block font-semibold">Tax:</label>
-            <input
-              type="text"
-              name="Tax"
-              value={formData.at_a_glance.Tax}
-              onChange={(e) => handleNestedChange(e, "at_a_glance")}
-              className="p-2 border border-gray-300 rounded w-full"
-              required
-            />
-          </div>
-          <div>
-            <label className="block font-semibold">Beds:</label>
-            <input
-              type="number"
-              name="Beds"
-              value={formData.at_a_glance.Beds}
-              onChange={(e) => handleNestedChange(e, "at_a_glance")}
-              className="p-2 border border-gray-300 rounded w-full"
-              required
-            />
-          </div>
-          <div>
-            <label className="block font-semibold">Baths:</label>
-            <input
-              type="number"
-              name="Baths"
-              value={formData.at_a_glance.Baths}
-              onChange={(e) => handleNestedChange(e, "at_a_glance")}
-              className="p-2 border border-gray-300 rounded w-full"
-              required
-            />
-          </div>
-          <div>
-            <label className="block font-semibold">Fireplace:</label>
-            <select
-              name="Fireplace"
-              value={formData.at_a_glance.Fireplace}
-              onChange={(e: any) => handleNestedChange(e, "at_a_glance")}
-              className="p-2 border border-gray-300 rounded w-full"
-              required
-            >
-              <option value="">Select</option>
-              <option value="Y">Yes</option>
-              <option value="N">No</option>
-            </select>
-          </div>
-          <div>
-            <label className="block font-semibold">Pool:</label>
-            <input
-              type="text"
-              name="Pool"
-              value={formData.at_a_glance.Pool}
-              onChange={(e) => handleNestedChange(e, "at_a_glance")}
-              className="p-2 border border-gray-300 rounded w-full"
-              required
-            />
+          {/* At a Glance */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full sm:w-[50%]">
+            <h3 className="text-xl font-bold">At a Glance</h3>
+            <div>
+              <label className="block font-semibold">Type:</label>
+              <input
+                type="text"
+                name="Type"
+                value={formData.at_a_glance.Type}
+                onChange={(e) => handleNestedChange(e, "at_a_glance")}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-semibold">Area:</label>
+              <input
+                type="text"
+                name="Area"
+                value={formData.at_a_glance.Area}
+                onChange={(e) => handleNestedChange(e, "at_a_glance")}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-semibold">Municipality:</label>
+              <input
+                type="text"
+                name="Municipality"
+                value={formData.at_a_glance.Municipality}
+                onChange={(e) => handleNestedChange(e, "at_a_glance")}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-semibold">Neighbourhood:</label>
+              <input
+                type="text"
+                name="Neighbourhood"
+                value={formData.at_a_glance.Neighbourhood}
+                onChange={(e) => handleNestedChange(e, "at_a_glance")}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-semibold">Style:</label>
+              <input
+                type="text"
+                name="Style"
+                value={formData.at_a_glance.Style}
+                onChange={(e) => handleNestedChange(e, "at_a_glance")}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-semibold">Lot Size:</label>
+              <input
+                type="text"
+                name="LotSize"
+                value={formData.at_a_glance.LotSize}
+                onChange={(e) => handleNestedChange(e, "at_a_glance")}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-semibold">Tax:</label>
+              <input
+                type="text"
+                name="Tax"
+                value={formData.at_a_glance.Tax}
+                onChange={(e) => handleNestedChange(e, "at_a_glance")}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-semibold">Beds:</label>
+              <input
+                type="number"
+                name="Beds"
+                value={formData.at_a_glance.Beds}
+                onChange={(e) => handleNestedChange(e, "at_a_glance")}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-semibold">Baths:</label>
+              <input
+                type="number"
+                name="Baths"
+                value={formData.at_a_glance.Baths}
+                onChange={(e) => handleNestedChange(e, "at_a_glance")}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-semibold">Fireplace:</label>
+              <select
+                name="Fireplace"
+                value={formData.at_a_glance.Fireplace}
+                onChange={(e: any) => handleNestedChange(e, "at_a_glance")}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              >
+                <option value="">Select</option>
+                <option value="Y">Yes</option>
+                <option value="N">No</option>
+              </select>
+            </div>
+            <div>
+              <label className="block font-semibold">Pool:</label>
+              <input
+                type="text"
+                name="Pool"
+                value={formData.at_a_glance.Pool}
+                onChange={(e) => handleNestedChange(e, "at_a_glance")}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+            </div>
           </div>
         </div>
 
@@ -741,7 +775,7 @@ const PropertyForm: React.FC = () => {
             name="street_view"
             value={formData.street_view}
             onChange={handleChange}
-            className="p-2 border border-gray-300 rounded w-full"
+            className="p-3 border border-gray-300 rounded w-full"
             required
           />
         </div>
@@ -753,14 +787,14 @@ const PropertyForm: React.FC = () => {
             name="map_location"
             value={formData.map_location}
             onChange={handleChange}
-            className="p-2 border border-gray-300 rounded w-full"
+            className="p-3 border border-gray-300 rounded w-full"
             required
           />
         </div>
 
         <button
           type="submit"
-          className="mt-4 bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+          className="mt-4 bg-indigo-600 text-white px-5 py-3 rounded hover:bg-blue-600"
         >
           Create Property
         </button>

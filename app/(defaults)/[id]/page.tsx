@@ -17,16 +17,14 @@ type Props = {
 const Page = async ({ params }: Props) => {
   const idPrefix = params.id.slice(0, 4);
   let displayProduct;
-
   if (idPrefix === "NXYZ") {
     const property = await fetchSingleProperty(params.id);
     displayProduct = property;
-  } else {
+  } else if (idPrefix === "PXYZ") {
     const preConstProperty = await fetchSinglePreconstructedProperty(params.id);
-    if (preConstProperty) {
-      displayProduct = preConstProperty;
-    }
+    displayProduct = preConstProperty;
   }
+
   return (
     <div className="container mx-auto">
       <PropertySummary details={displayProduct} />

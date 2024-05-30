@@ -3,8 +3,31 @@
 import React, { useState } from "react";
 import axios from "axios";
 
+type FormData = {
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  password: string;
+  licenseNumber: string;
+  agencyName: string;
+  agencyAddress: string;
+  yearsOfExperience: number;
+  specializations: string;
+  profilePicture: File | null;
+  governmentID: string;
+  linkedInProfile: string;
+  website: string;
+  marketingPreferences: boolean;
+  preferredCommunicationChannels: string;
+  languagesSpoken: string;
+  serviceAreas: string;
+  professionalBio: string;
+  certificationsAwards: string;
+  references: string;
+};
+
 const AgentSignup: React.FC = () => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     fullName: "",
     email: "",
     phoneNumber: "",
@@ -14,7 +37,7 @@ const AgentSignup: React.FC = () => {
     agencyAddress: "",
     yearsOfExperience: 0,
     specializations: "",
-    profilePicture: "",
+    profilePicture: null,
     governmentID: "",
     linkedInProfile: "",
     website: "",
@@ -38,7 +61,9 @@ const AgentSignup: React.FC = () => {
     const { name, value, type } = e.target;
     let newValue: any = value;
 
-    if (type === "checkbox" && e.target instanceof HTMLInputElement) {
+    if (type === "file" && e.target instanceof HTMLInputElement) {
+      newValue = e.target.files ? e.target.files[0] : null;
+    } else if (type === "checkbox" && e.target instanceof HTMLInputElement) {
       newValue = e.target.checked;
     }
 
@@ -50,22 +75,24 @@ const AgentSignup: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const data = new FormData();
+    (Object.keys(formData) as (keyof FormData)[]).forEach((key) => {
+      if (formData[key]) {
+        data.append(key, formData[key] as any);
+      }
+    });
+
     try {
       const response = await axios.post(
         "https://backend-real-estate-m1zm.onrender.com/register-agent",
+        data,
         {
-          ...formData,
-          specializations: formData.specializations.split(","),
-          preferredCommunicationChannels:
-            formData.preferredCommunicationChannels.split(","),
-          languagesSpoken: formData.languagesSpoken.split(","),
-          serviceAreas: formData.serviceAreas.split(","),
-          certificationsAwards: formData.certificationsAwards.split(","),
-          references: formData.references
-            .split(",")
-            .map((reference) => reference.trim()),
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         }
       );
+
       if (response.status === 201) {
         setSuccess(true);
         setError(null);
@@ -77,9 +104,9 @@ const AgentSignup: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto my-4 px-4 lg:px-20">
-      <div className="w-full mx-auto lg:w-[60%]">
-        <h2 className="text-2xl font-bold mb-6">Agent Signup</h2>
+    <div className="max-w-4xl mx-auto px-4 lg:px-20 my-10">
+      <div className="w-full mx-auto lg:w-[40%] bg-white p-6 rounded-lg shadow-lg">
+        <h2 className="text-3xl font-bold text-center mb-6">Agent Signup</h2>
         {error && <p className="text-red-500 mb-4">{error}</p>}
         {success && (
           <p className="text-green-500 mb-4">Registration successful!</p>
@@ -92,7 +119,7 @@ const AgentSignup: React.FC = () => {
               name="fullName"
               value={formData.fullName}
               onChange={handleChange}
-              className="p-2 border border-gray-300 rounded"
+              className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
               required
             />
           </div>
@@ -103,7 +130,7 @@ const AgentSignup: React.FC = () => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="p-2 border border-gray-300 rounded"
+              className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
               required
             />
           </div>
@@ -114,7 +141,7 @@ const AgentSignup: React.FC = () => {
               name="phoneNumber"
               value={formData.phoneNumber}
               onChange={handleChange}
-              className="p-2 border border-gray-300 rounded"
+              className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
               required
             />
           </div>
@@ -125,7 +152,7 @@ const AgentSignup: React.FC = () => {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              className="p-2 border border-gray-300 rounded"
+              className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
               required
             />
           </div>
@@ -136,7 +163,7 @@ const AgentSignup: React.FC = () => {
               name="licenseNumber"
               value={formData.licenseNumber}
               onChange={handleChange}
-              className="p-2 border border-gray-300 rounded"
+              className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
               required
             />
           </div>
@@ -147,7 +174,7 @@ const AgentSignup: React.FC = () => {
               name="agencyName"
               value={formData.agencyName}
               onChange={handleChange}
-              className="p-2 border border-gray-300 rounded"
+              className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
               required
             />
           </div>
@@ -158,7 +185,7 @@ const AgentSignup: React.FC = () => {
               name="agencyAddress"
               value={formData.agencyAddress}
               onChange={handleChange}
-              className="p-2 border border-gray-300 rounded"
+              className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
               required
             />
           </div>
@@ -169,7 +196,7 @@ const AgentSignup: React.FC = () => {
               name="yearsOfExperience"
               value={formData.yearsOfExperience}
               onChange={handleChange}
-              className="p-2 border border-gray-300 rounded"
+              className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
               required
             />
           </div>
@@ -182,18 +209,17 @@ const AgentSignup: React.FC = () => {
               name="specializations"
               value={formData.specializations}
               onChange={handleChange}
-              className="p-2 border border-gray-300 rounded"
+              className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
               required
             />
           </div>
           <div className="flex flex-col">
             <label className="font-semibold">Profile Picture URL:</label>
             <input
-              type="text"
+              type="file"
               name="profilePicture"
-              value={formData.profilePicture}
               onChange={handleChange}
-              className="p-2 border border-gray-300 rounded"
+              className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
               required
             />
           </div>
@@ -204,7 +230,7 @@ const AgentSignup: React.FC = () => {
               name="governmentID"
               value={formData.governmentID}
               onChange={handleChange}
-              className="p-2 border border-gray-300 rounded"
+              className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
               required
             />
           </div>
@@ -215,7 +241,7 @@ const AgentSignup: React.FC = () => {
               name="linkedInProfile"
               value={formData.linkedInProfile}
               onChange={handleChange}
-              className="p-2 border border-gray-300 rounded"
+              className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
           <div className="flex flex-col">
@@ -225,18 +251,21 @@ const AgentSignup: React.FC = () => {
               name="website"
               value={formData.website}
               onChange={handleChange}
-              className="p-2 border border-gray-300 rounded"
+              className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
           <div className="flex flex-col">
             <label className="font-semibold">Marketing Preferences:</label>
-            <input
-              type="checkbox"
-              name="marketingPreferences"
-              checked={formData.marketingPreferences}
-              onChange={handleChange}
-              className="mr-2"
-            />
+            <div className="mt-1">
+              <input
+                type="checkbox"
+                name="marketingPreferences"
+                checked={formData.marketingPreferences}
+                onChange={handleChange}
+                className="mr-2 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <span className="text-sm text-gray-700">Yes</span>
+            </div>
           </div>
           <div className="flex flex-col">
             <label className="font-semibold">
@@ -247,7 +276,7 @@ const AgentSignup: React.FC = () => {
               name="preferredCommunicationChannels"
               value={formData.preferredCommunicationChannels}
               onChange={handleChange}
-              className="p-2 border border-gray-300 rounded"
+              className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
               required
             />
           </div>
@@ -260,7 +289,7 @@ const AgentSignup: React.FC = () => {
               name="languagesSpoken"
               value={formData.languagesSpoken}
               onChange={handleChange}
-              className="p-2 border border-gray-300 rounded"
+              className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
               required
             />
           </div>
@@ -273,7 +302,7 @@ const AgentSignup: React.FC = () => {
               name="serviceAreas"
               value={formData.serviceAreas}
               onChange={handleChange}
-              className="p-2 border border-gray-300 rounded"
+              className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
               required
             />
           </div>
@@ -283,7 +312,7 @@ const AgentSignup: React.FC = () => {
               name="professionalBio"
               value={formData.professionalBio}
               onChange={handleChange}
-              className="p-2 border border-gray-300 rounded"
+              className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
               required
             ></textarea>
           </div>
@@ -296,7 +325,7 @@ const AgentSignup: React.FC = () => {
               name="certificationsAwards"
               value={formData.certificationsAwards}
               onChange={handleChange}
-              className="p-2 border border-gray-300 rounded"
+              className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
               required
             />
           </div>
@@ -309,13 +338,13 @@ const AgentSignup: React.FC = () => {
               name="references"
               value={formData.references}
               onChange={handleChange}
-              className="p-2 border border-gray-300 rounded"
+              className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
               required
             />
           </div>
           <button
             type="submit"
-            className="mt-4 bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+            className="mt-4 w-full bg-blue-600 text-white py-2 px-4 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
             Sign Up
           </button>

@@ -96,7 +96,7 @@ const PreConstructedProject = () => {
             >
               <div className="rounded overflow-hidden shadow-lg hover:shadow-xl dark:bg-gray-900">
                 <Image
-                  src={card.property_images[0]}
+                  src={`https://backend-real-estate-m1zm.onrender.com/uploads/${card.property_images[0].filename}`}
                   alt="Property Image"
                   width={600}
                   height={300}

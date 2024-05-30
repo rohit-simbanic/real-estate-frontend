@@ -46,15 +46,21 @@ const LandTransferTaxCalculator = () => {
   };
 
   const calculateBCTax = (askingPrice: number) => {
+    let tax = 0;
     if (askingPrice <= 200000) {
-      return askingPrice * 0.01;
-    } else if (askingPrice <= 2000000) {
-      return askingPrice * 0.02;
-    } else if (askingPrice <= 3000000) {
-      return askingPrice * 0.03;
+      tax += askingPrice * 0.01;
     } else {
-      return askingPrice * 0.02;
+      tax += 200000 * 0.01;
+      askingPrice -= 200000;
+
+      if (askingPrice <= 1800000) {
+        tax += askingPrice * 0.02;
+      } else {
+        tax += 1800000 * 0.02;
+        askingPrice -= 1800000;
+      }
     }
+    return tax;
   };
 
   const calculateManitobaTax = (askingPrice: number) => {
@@ -146,6 +152,13 @@ const LandTransferTaxCalculator = () => {
           rebateReturn = provincialTax + municipalTax;
         } else {
           rebateReturn = 4000;
+        }
+        break;
+      case "Toronto":
+        if (askingPrice < 400000) {
+          rebateReturn = provincialTax + municipalTax;
+        } else {
+          rebateReturn = 8475;
         }
         break;
       case "British Columbia":
@@ -246,12 +259,17 @@ const LandTransferTaxCalculator = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Land Transfer Tax Calculator</h1>
-      <form className="space-y-4">
+    <div className="max-w-xl mx-auto p-8 bg-white shadow-lg rounded-lg my-10">
+      <h1 className="text-3xl font-bold text-center mb-6">
+        Land Transfer Tax Calculator
+      </h1>
+      <form className="space-y-6">
         <div>
-          <label htmlFor="askingPrice" className="block">
-            Asking Price:
+          <label
+            htmlFor="askingPrice"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Asking Price
           </label>
           <input
             type="number"
@@ -259,33 +277,39 @@ const LandTransferTaxCalculator = () => {
             name="askingPrice"
             value={formValues.askingPrice}
             onChange={handleChange}
-            className="border p-2 w-full"
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
             required
           />
         </div>
-        <div>
-          <label htmlFor="firstTimeBuyer" className="block">
-            First-Time Buyer:
-          </label>
+        <div className="flex items-center">
           <input
             type="checkbox"
             id="firstTimeBuyer"
             name="firstTimeBuyer"
             checked={formValues.firstTimeBuyer}
             onChange={handleChange}
-            className="border p-2"
+            className="h-4 w-4 text-blue-600 border-gray-300 rounded"
           />
+          <label
+            htmlFor="firstTimeBuyer"
+            className="ml-2 block text-sm font-medium text-gray-700"
+          >
+            First-Time Buyer
+          </label>
         </div>
         <div>
-          <label htmlFor="location" className="block">
-            Location:
+          <label
+            htmlFor="location"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Location
           </label>
           <select
             id="location"
             name="location"
             value={formValues.location}
             onChange={handleChange}
-            className="border p-2 w-full"
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
             required
           >
             <option value="" disabled>
@@ -312,14 +336,14 @@ const LandTransferTaxCalculator = () => {
         <button
           type="button"
           onClick={calculateTax}
-          className="bg-blue-500 text-white py-2 px-4 rounded"
+          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
         >
           Calculate
         </button>
       </form>
 
       {results && (
-        <div id="results" className="mt-8">
+        <div id="results" className="mt-8 p-4 bg-gray-100 rounded-lg">
           <h2 className="text-xl font-bold">Results</h2>
           <p>Total Transfer Tax: ${results.totalTransferTax.toFixed(2)}</p>
           <p>Provincial Tax: ${results.provincialTax.toFixed(2)}</p>

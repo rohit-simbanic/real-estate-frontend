@@ -61,7 +61,7 @@ interface FormData {
   available_for: string;
   listing_id: string;
   property_description: string;
-  property_images: string[];
+  property_images: File[];
   general_details: GeneralDetails;
   room_interior: RoomInterior;
   exterior: Exterior;
@@ -196,30 +196,43 @@ const EditPropertyForm: React.FC = () => {
     }));
   };
   const handleImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      property_images: value.split(",").map((img) => img.trim()),
-    }));
+    if (e.target.files) {
+      const files = Array.from(e.target.files);
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        property_images: files,
+      }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      const updatedFormData = {
-        ...formData,
-        property_images: formData.property_images.map((img) => img.trim()),
-      };
+      const formDataToSend = new FormData();
+
+      formData.property_images.forEach((file) => {
+        formDataToSend.append("property_images", file);
+      });
+
+      Object.keys(formData).forEach((key) => {
+        const value = formData[key as keyof FormData];
+        if (key !== "property_images") {
+          if (typeof value === "object" && value !== null) {
+            formDataToSend.append(key, JSON.stringify(value));
+          } else {
+            formDataToSend.append(key, value as string);
+          }
+        }
+      });
 
       const endpoint = `https://backend-real-estate-m1zm.onrender.com/properties/${formData.listing_id}`;
       const response = await fetch(endpoint, {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(updatedFormData),
+        body: formDataToSend,
       });
 
       if (!response.ok) {
@@ -308,12 +321,12 @@ const EditPropertyForm: React.FC = () => {
             Property Images (comma-separated URLs):
           </label>
           <input
-            type="text"
+            type="file"
             name="property_images"
-            value={formData.property_images.join(", ")}
+            multiple
             onChange={handleImagesChange}
             className="p-2 border border-gray-300 rounded w-full"
-            required
+            accept="image/*"
           />
         </div>
 

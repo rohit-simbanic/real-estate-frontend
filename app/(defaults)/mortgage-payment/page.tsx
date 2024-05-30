@@ -24,10 +24,10 @@ const MortgagePaymentCalculator = () => {
   };
 
   const mortgagePaymentCalculator = (
-    mortgageAmount: number,
-    interestRate: number,
-    amortizationTerm: number,
-    frequency: string
+    mortgageAmount,
+    interestRate,
+    amortizationTerm,
+    frequency
   ) => {
     let annualInterestRate = interestRate / 100;
     let paymentsPerYear;
@@ -92,25 +92,33 @@ const MortgagePaymentCalculator = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Mortgage Payment Calculator</h1>
-      <form className="space-y-4">
+    <div className="max-w-lg mx-auto p-8 bg-white shadow-lg rounded-lg my-10">
+      <h1 className="text-3xl font-bold text-center mb-6">
+        Mortgage Payment Calculator
+      </h1>
+      <form className="space-y-6">
         <div>
-          <label htmlFor="mortgageAmount" className="block">
-            Mortgage Amount ($):
+          <label
+            htmlFor="mortgageAmount"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Mortgage Amount ($)
           </label>
           <input
             type="number"
             id="mortgageAmount"
             value={formValues.mortgageAmount}
             onChange={handleChange}
-            className="border p-2 w-full"
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
             required
           />
         </div>
         <div>
-          <label htmlFor="interestRate" className="block">
-            Interest Rate (%):
+          <label
+            htmlFor="interestRate"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Interest Rate (%)
           </label>
           <input
             type="number"
@@ -118,32 +126,38 @@ const MortgagePaymentCalculator = () => {
             id="interestRate"
             value={formValues.interestRate}
             onChange={handleChange}
-            className="border p-2 w-full"
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
             required
           />
         </div>
         <div>
-          <label htmlFor="amortizationTerm" className="block">
-            Amortization Term (years):
+          <label
+            htmlFor="amortizationTerm"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Amortization Term (years)
           </label>
           <input
             type="number"
             id="amortizationTerm"
             value={formValues.amortizationTerm}
             onChange={handleChange}
-            className="border p-2 w-full"
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
             required
           />
         </div>
         <div>
-          <label htmlFor="frequency" className="block">
-            Payment Frequency:
+          <label
+            htmlFor="frequency"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Payment Frequency
           </label>
           <select
             id="frequency"
             value={formValues.frequency}
             onChange={handleChange}
-            className="border p-2 w-full"
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
             required
           >
             <option value="weekly">Weekly (52 payments/year)</option>
@@ -160,19 +174,19 @@ const MortgagePaymentCalculator = () => {
         <button
           type="button"
           onClick={calculateMortgage}
-          className="bg-blue-500 text-white py-2 px-4 rounded"
+          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
         >
           Calculate
         </button>
       </form>
 
       <h2 className="text-xl font-bold mt-8">Results:</h2>
-      <p id="payment-result">
+      <p id="payment-result" className="mt-4">
         Your payment:{" "}
         {results.mortgagePayment !== null &&
           `$${results.mortgagePayment.toFixed(2)}`}
       </p>
-      <p id="interest-result">
+      <p id="interest-result" className="mt-2">
         Total interest:{" "}
         {results.totalInterest !== null &&
           `$${results.totalInterest.toFixed(2)}`}

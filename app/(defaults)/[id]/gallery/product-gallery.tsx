@@ -3,10 +3,11 @@ import Image from "next/image";
 import React, { useState } from "react";
 
 interface ImageSliderProps {
-  images: string[];
+  images: { filename: string }[];
 }
 
 const ImageSlider: React.FC<ImageSliderProps> = ({ images }) => {
+  console.log("images", images);
   const [slideIndex, setSlideIndex] = useState(1);
 
   const plusSlides = (n: number) => {
@@ -31,7 +32,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images }) => {
             }`}
           >
             <Image
-              src={image}
+              src={`https://backend-real-estate-m1zm.onrender.com/uploads/${image.filename}`}
               alt={`Slide ${index + 1}`}
               width={1700}
               height={650}
@@ -71,7 +72,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images }) => {
         {images.map((image, index) => (
           <div key={index} className="flex-1">
             <Image
-              src={image}
+              src={`https://backend-real-estate-m1zm.onrender.com/uploads/${image.filename}`}
               alt={`Thumbnail ${index + 1}`}
               height={340}
               width={340}

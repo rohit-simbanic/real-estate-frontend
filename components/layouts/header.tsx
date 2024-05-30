@@ -6,13 +6,14 @@ import { useTheme } from "@/contexts/theme-context";
 import Image from "next/image";
 import { fieldLabel } from "@/assets/field-label";
 import ToggleButton from "@/theme/components/toggle-button/button-toggle";
-import { redirect } from "next/navigation";
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const [isChecked, setIsChecked] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+  const [isFixed, setIsFixed] = useState(false);
   console.log("isAuthenticated", isAuthenticated);
 
   const handleLogin = () => {
@@ -40,13 +41,42 @@ const Header: React.FC = () => {
     if (token) {
       setIsAuthenticated(true);
     }
+
+    let lastScrollTop = 0;
+    const handleScroll = () => {
+      const scrollTop =
+        window.pageYOffset || document.documentElement.scrollTop;
+
+      if (scrollTop === 0) {
+        setIsFixed(false);
+        setIsHeaderVisible(true);
+      } else if (scrollTop > lastScrollTop) {
+        // Scroll down
+        setIsHeaderVisible(false);
+      } else {
+        // Scroll up
+        setIsHeaderVisible(true);
+        setIsFixed(true);
+      }
+      lastScrollTop = scrollTop;
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
   const menuItems = fieldLabel["menu-item"];
   return (
-    <nav className="flex flex-wrap items-center justify-between p-5 bg-white dark:bg-[#1b0a0a]">
+    <nav
+      className={`flex flex-wrap items-center justify-between p-5 bg-gray-100 dark:bg-[#1b0a0a] transition-transform duration-300 ${
+        isFixed ? "fixed top-0 w-full z-50" : ""
+      } ${isHeaderVisible ? "" : "-translate-y-full"}`}
+    >
       <div className="flex justify-between w-full md:hidden">
         <Link className="block text-teal-600" href="/">
           <span className="sr-only">Home</span>
@@ -61,7 +91,7 @@ const Header: React.FC = () => {
             xmlns="http://www.w3.org/2000/svg"
             overflow="inherit"
           >
-            <g id="SVGRepo_bgCarrier" stroke-width="0" />
+            <g id="SVGRepo_bgCarrier" strokeWidth="0" />
 
             <g
               id="SVGRepo_tracerCarrier"
@@ -104,7 +134,7 @@ const Header: React.FC = () => {
           xmlns="http://www.w3.org/2000/svg"
           overflow="inherit"
         >
-          <g id="SVGRepo_bgCarrier" stroke-width="0" />
+          <g id="SVGRepo_bgCarrier" strokeWidth="0" />
 
           <g
             id="SVGRepo_tracerCarrier"

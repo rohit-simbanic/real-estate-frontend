@@ -62,7 +62,7 @@ interface FormData {
   available_for: string;
   listing_id: string;
   property_description: string;
-  property_images: string[];
+  property_images: File[];
   general_details: GeneralDetails;
   room_interior: RoomInterior;
   exterior: Exterior;
@@ -150,53 +150,6 @@ const EditPreConstructedPropertyForm: React.FC = () => {
             const propertyData = {
               ...data,
               property_images: data.property_images || [], // Ensure property_images is always an array
-              general_details: {
-                Price: data.general_details?.Price || "",
-                Taxes: data.general_details?.Taxes || "",
-                Address: data.general_details?.Address || "",
-                Lot_Size: data.general_details?.Lot_Size || "",
-                Directions: data.general_details?.Directions || "",
-              },
-              room_interior: {
-                Rooms: data.room_interior?.Rooms || 0,
-                Rooms_plus: data.room_interior?.Rooms_plus || 0,
-                Bedrooms: data.room_interior?.Bedrooms || 0,
-                Bedrooms_plus: data.room_interior?.Bedrooms_plus || 0,
-                Kitchens: data.room_interior?.Kitchens || 0,
-                Family_Room: data.room_interior?.Family_Room || "",
-                Basement: data.room_interior?.Basement || "",
-              },
-              exterior: {
-                Property_Type: data.exterior?.Property_Type || "",
-                Style: data.exterior?.Style || "",
-                Exterior: data.exterior?.Exterior || "",
-                Garage_Type: data.exterior?.Garage_Type || "",
-                Drive_Parking_Spaces: data.exterior?.Drive_Parking_Spaces || 0,
-                Pool: data.exterior?.Pool || "",
-              },
-              utilities: {
-                Fireplace_Stove: data.utilities?.Fireplace_Stove || "",
-                Heat_Source: data.utilities?.Heat_Source || "",
-                Heat_Type: data.utilities?.Heat_Type || "",
-                Central_Air_Conditioning:
-                  data.utilities?.Central_Air_Conditioning || "",
-                Laundry_Level: data.utilities?.Laundry_Level || "",
-                Sewers: data.utilities?.Sewers || "",
-                Water: data.utilities?.Water || "",
-              },
-              at_a_glance: {
-                Type: data.at_a_glance?.Type || "",
-                Area: data.at_a_glance?.Area || "",
-                Municipality: data.at_a_glance?.Municipality || "",
-                Neighbourhood: data.at_a_glance?.Neighbourhood || "",
-                Style: data.at_a_glance?.Style || "",
-                LotSize: data.at_a_glance?.LotSize || "",
-                Tax: data.at_a_glance?.Tax || "",
-                Beds: data.at_a_glance?.Beds || 0,
-                Baths: data.at_a_glance?.Baths || 0,
-                Fireplace: data.at_a_glance?.Fireplace || "",
-                Pool: data.at_a_glance?.Pool || "",
-              },
             };
             setFormData(propertyData);
           })
@@ -245,30 +198,43 @@ const EditPreConstructedPropertyForm: React.FC = () => {
     }));
   };
   const handleImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      property_images: value.split(",").map((img) => img.trim()),
-    }));
+    const files = e.target.files;
+    if (files) {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        property_images: Array.from(files),
+      }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      const updatedFormData = {
-        ...formData,
-        property_images: formData.property_images.map((img) => img.trim()),
-      };
+      const formDataToSend = new FormData();
+
+      formData.property_images.forEach((file) => {
+        formDataToSend.append("property_images", file);
+      });
+
+      Object.keys(formData).forEach((key) => {
+        const value = formData[key as keyof FormData];
+        if (key !== "property_images") {
+          if (typeof value === "object" && value !== null) {
+            formDataToSend.append(key, JSON.stringify(value));
+          } else {
+            formDataToSend.append(key, value as string);
+          }
+        }
+      });
 
       const endpoint = `https://backend-real-estate-m1zm.onrender.com/pre-constructed-property/${formData.listing_id}`;
       const response = await fetch(endpoint, {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(updatedFormData),
+        body: formDataToSend,
       });
 
       if (!response.ok) {
@@ -367,9 +333,9 @@ const EditPreConstructedPropertyForm: React.FC = () => {
             Property Images (comma-separated URLs):
           </label>
           <input
-            type="text"
+            type="file"
             name="property_images"
-            value={formData.property_images.join(", ")}
+            multiple
             onChange={handleImagesChange}
             className="p-2 border border-gray-300 rounded w-full"
             required
