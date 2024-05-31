@@ -324,7 +324,7 @@ const PropertyForm: React.FC = () => {
       appendNestedObject(formData, data);
 
       const response = await axios.post(
-        "http://localhost:5000/add-property",
+        "https://backend-real-estate-m1zm.onrender.com/add-property",
         data,
         {
           headers: {
