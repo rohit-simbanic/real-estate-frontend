@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/auth-provider";
 
 const LoginAgent: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -13,7 +14,7 @@ const LoginAgent: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
   const router = useRouter();
-
+  const { login } = useAuth();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({
@@ -26,14 +27,13 @@ const LoginAgent: React.FC = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "https://backend-real-estate-m1zm.onrender.com/login",
+        "http://localhost:5000/login",
         formData
       );
       if (response.status === 200) {
         setSuccess(true);
         setError(null);
-        localStorage.setItem("token", response.data.token);
-        localStorage.setItem("agentId", response.data.agentId);
+        login(response.data.token, response.data.agentId);
         router.push("/admin");
       }
     } catch (err) {

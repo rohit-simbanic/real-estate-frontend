@@ -102,7 +102,7 @@ const Tabs: React.FC<PropertyCardProps> = ({ property }) => {
             Lot Size: {property.general_details.Lot_Size}
           </p>
           <p className="dark:text-gray-400">
-            Directions: {property.general_details.Directions_Cross_Streets}
+            Directions: {property.general_details.Directions}
           </p>
         </div>
         <div className={`p-4 ${activeTab === "interior" ? "" : "hidden"}`}>

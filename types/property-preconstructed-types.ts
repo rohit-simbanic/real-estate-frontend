@@ -24,7 +24,7 @@ export interface GeneralDetails {
   Taxes: string;
   Address: string;
   Lot_Size: string;
-  Directions_Cross_Streets: string;
+  Directions: string;
 }
 
 export interface RoomInterior {

@@ -19,7 +19,7 @@ const footerSections: FooterSection[] = [
   {
     title: "Helpful Links",
     links: [
-      { label: "Admin Login", href: "#" },
+      { label: "Admin Login", href: "/admin/login" },
       { label: "Privacy Policy", href: "#" },
       { label: "Terms & Conditions", href: "#" },
       { label: "Client Login", href: "#" },
@@ -39,7 +39,7 @@ const Footer = () => {
 
           <ContactButton
             text="Let's Get Started"
-            href="#"
+            href="/contact"
             textColor="indigo-600"
             bgColor="white"
             hoverBgColor="transparent"

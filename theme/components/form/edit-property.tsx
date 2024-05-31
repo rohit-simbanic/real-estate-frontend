@@ -140,9 +140,7 @@ const EditPropertyForm: React.FC = () => {
     if (searchParams) {
       const propertyId = searchParams.get("propertyId");
       if (propertyId) {
-        fetch(
-          `https://backend-real-estate-m1zm.onrender.com/properties/${propertyId}`
-        )
+        fetch(`http://localhost:5000/properties/${propertyId}`)
           .then((response) => response.json())
           .then((data) => {
             const propertyData = {
@@ -226,7 +224,7 @@ const EditPropertyForm: React.FC = () => {
         }
       });
 
-      const endpoint = `https://backend-real-estate-m1zm.onrender.com/properties/${formData.listing_id}`;
+      const endpoint = `http://localhost:5000/properties/${formData.listing_id}`;
       const response = await fetch(endpoint, {
         method: "PUT",
         headers: {

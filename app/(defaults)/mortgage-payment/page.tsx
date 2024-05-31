@@ -4,9 +4,9 @@ import React, { useState } from "react";
 
 const MortgagePaymentCalculator = () => {
   const [formValues, setFormValues] = useState({
-    mortgageAmount: "",
-    interestRate: "",
-    amortizationTerm: "",
+    mortgageAmount: "500000",
+    interestRate: "6",
+    amortizationTerm: "20",
     frequency: "weekly",
   });
 
@@ -15,8 +15,26 @@ const MortgagePaymentCalculator = () => {
     totalInterest: null,
   });
 
+  const [errors, setErrors] = useState([]);
+
   const handleChange = (e) => {
     const { id, value } = e.target;
+
+    let newErrors = { ...errors };
+    if (value < 0 || value === "") {
+      newErrors[id] = "Value must be at least 0.";
+    } else if (id === "downpaymentPercentage" && value > 100) {
+      newErrors[id] = "Downpayment percentage cannot exceed 100%.";
+    } else if (
+      id === "downpayment" &&
+      parseFloat(value) > parseFloat(formValues.askingPrice)
+    ) {
+      newErrors[id] = "Downpayment amount cannot be greater than asking price";
+    } else {
+      delete newErrors[id];
+    }
+    setErrors(newErrors);
+
     setFormValues({
       ...formValues,
       [id]: value,
@@ -112,6 +130,9 @@ const MortgagePaymentCalculator = () => {
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
             required
           />
+          {errors.mortgageAmount && (
+            <p className="text-red-500">{errors.mortgageAmount}</p>
+          )}
         </div>
         <div>
           <label
@@ -129,6 +150,9 @@ const MortgagePaymentCalculator = () => {
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
             required
           />
+          {errors.interestRate && (
+            <p className="text-red-500">{errors.interestRate}</p>
+          )}
         </div>
         <div>
           <label
@@ -145,6 +169,9 @@ const MortgagePaymentCalculator = () => {
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
             required
           />
+          {errors.amortizationTerm && (
+            <p className="text-red-500">{errors.amortizationTerm}</p>
+          )}
         </div>
         <div>
           <label
@@ -175,6 +202,7 @@ const MortgagePaymentCalculator = () => {
           type="button"
           onClick={calculateMortgage}
           className="w-full bg-blue-600 text-white py-2 px-4 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          disabled={Object.keys(errors).length > 0}
         >
           Calculate
         </button>

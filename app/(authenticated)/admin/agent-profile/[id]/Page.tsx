@@ -19,7 +19,7 @@ const AgentProfile = ({ params }: Props) => {
     const fetchAgent = async () => {
       try {
         const response = await axios.get(
-          `https://backend-real-estate-m1zm.onrender.com/agent/${params.id}`
+          `http://localhost:5000/agent/${params.id}`
         );
         setAgent(response.data);
         setFormData(response.data);
@@ -62,7 +62,7 @@ const AgentProfile = ({ params }: Props) => {
 
     try {
       const response = await axios.put(
-        `https://backend-real-estate-m1zm.onrender.com/agent/${params.id}`,
+        `http://localhost:5000/agent/${params.id}`,
         data,
         {
           headers: {
@@ -80,7 +80,7 @@ const AgentProfile = ({ params }: Props) => {
   const handlePasswordReset = async () => {
     try {
       await axios.put(
-        `https://backend-real-estate-m1zm.onrender.com/agent/${params.id}/reset-password`,
+        `http://localhost:5000/agent/${params.id}/reset-password`,
         {
           password: newPassword,
         }
@@ -136,7 +136,7 @@ const AgentProfile = ({ params }: Props) => {
           <div className="flex flex-col items-center space-y-4 mt-6">
             {agent.profilePicture ? (
               <Image
-                src={`https://backend-real-estate-m1zm.onrender.com${agent.profilePicture}`}
+                src={`http://localhost:5000${agent.profilePicture}`}
                 alt="Profile"
                 className="w-32 h-32 rounded-full"
                 width={128}

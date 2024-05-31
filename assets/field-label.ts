@@ -21,7 +21,7 @@ export const fieldLabel = {
     " Real Estate Website Solutions by Best For Agents Inc.",
   "menu-item": [
     { title: "Home", href: "/" },
-    { title: "Selling", href: "/" },
+    { title: "Dashboard", href: "/admin" },
     { title: "Contact", href: "/contact" },
   ],
   "cpa-footer-title": "Make Your Next Career Move!",

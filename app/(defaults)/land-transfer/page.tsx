@@ -4,17 +4,33 @@ import React, { useState } from "react";
 
 const LandTransferTaxCalculator = () => {
   const [formValues, setFormValues] = useState({
-    askingPrice: "",
+    askingPrice: "500000",
     firstTimeBuyer: false,
     location: "",
   });
 
   const [results, setResults] = useState(null);
+  const [errors, setErrors] = useState([]);
 
   const handleChange = (e: {
     target: { name: any; value: any; type: any; checked: any };
   }) => {
-    const { name, value, type, checked } = e.target;
+    const { id, name, value, type, checked } = e.target;
+
+    let newErrors = { ...errors };
+    if (value < 0 || value === "") {
+      newErrors[id] = "Value must be at least 0.";
+    } else if (id === "downpaymentPercentage" && value > 100) {
+      newErrors[id] = "Downpayment percentage cannot exceed 100%.";
+    } else if (
+      id === "downpayment" &&
+      parseFloat(value) > parseFloat(formValues.askingPrice)
+    ) {
+      newErrors[id] = "Downpayment amount cannot be greater than asking price";
+    } else {
+      delete newErrors[id];
+    }
+    setErrors(newErrors);
     setFormValues({
       ...formValues,
       [name]: type === "checkbox" ? checked : value,
@@ -280,6 +296,9 @@ const LandTransferTaxCalculator = () => {
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
             required
           />
+          {errors.askingPrice && (
+            <p className="text-red-500">{errors.askingPrice}</p>
+          )}
         </div>
         <div className="flex items-center">
           <input
@@ -336,6 +355,7 @@ const LandTransferTaxCalculator = () => {
         <button
           type="button"
           onClick={calculateTax}
+          disabled={Object.keys(errors).length > 0}
           className="w-full bg-blue-600 text-white py-2 px-4 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
         >
           Calculate

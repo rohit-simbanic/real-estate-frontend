@@ -11,6 +11,7 @@ const LeadForm: React.FC = () => {
     phone: "",
     message: "",
   });
+  console.log("form data", formData.email);
   const [errors, setErrors] = useState({
     name: "",
     email: "",

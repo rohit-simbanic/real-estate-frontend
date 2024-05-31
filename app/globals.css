@@ -39,3 +39,21 @@ body {
 .hidden-header {
   @apply -translate-y-full;
 }
+
+.scrollable-container {
+  scrollbar-width: thin; /* For Firefox */
+  scrollbar-color: #4c51bf #edf2f7; /* For Firefox */
+}
+.scrollable-container::-webkit-scrollbar {
+  width: 8px; /* Width of the scrollbar */
+}
+
+.scrollable-container::-webkit-scrollbar-track {
+  background: #edf2f7; /* Background of the scrollbar track */
+}
+
+.scrollable-container::-webkit-scrollbar-thumb {
+  background-color: #4c51bf; /* Color of the scrollbar thumb */
+  border-radius: 10px; /* Rounded corners */
+  border: 2px solid #edf2f7; /* Padding around the thumb */
+}

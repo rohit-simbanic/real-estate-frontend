@@ -7,27 +7,18 @@ import Image from "next/image";
 import { fieldLabel } from "@/assets/field-label";
 import ToggleButton from "@/theme/components/toggle-button/button-toggle";
 import axios from "axios";
+import { useAuth } from "@/contexts/auth-provider";
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const [isChecked, setIsChecked] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const [isFixed, setIsFixed] = useState(false);
-  const [agent, setAgent] = useState<any>(null);
   const [agentId, setAgentId] = useState<string | null>(null);
-  console.log("isAuthenticated", isAuthenticated);
-
-  const handleLogin = () => {
-    setIsAuthenticated(true);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("agentId");
-    setIsAuthenticated(false);
-  };
+  const { isAuthenticated, agent, logout } = useAuth();
+  console.log("isAuthenticated", agentId);
+  console.log("agent", agent?.fullName);
 
   const handleChange = () => {
     setTheme(theme === "light" ? "dark" : "light");
@@ -39,11 +30,6 @@ const Header: React.FC = () => {
     const storedIsChecked = localStorage.getItem("isChecked");
     if (storedIsChecked !== null) {
       setIsChecked(JSON.parse(storedIsChecked));
-    }
-
-    const token = localStorage.getItem("token");
-    if (token) {
-      setIsAuthenticated(true);
     }
 
     let lastScrollTop = 0;
@@ -75,27 +61,7 @@ const Header: React.FC = () => {
     setIsMenuOpen(!isMenuOpen);
   };
   const menuItems = fieldLabel["menu-item"];
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedAgentId = localStorage.getItem("agentId");
-      setAgentId(storedAgentId);
-    }
-  }, []);
 
-  useEffect(() => {
-    const fetchAgent = async () => {
-      try {
-        const response = await axios.get(
-          `https://backend-real-estate-m1zm.onrender.com/agent/${agentId}`
-        );
-        setAgent(response.data);
-      } catch (err) {
-        console.error("Error fetching agent data:", err);
-      }
-    };
-
-    fetchAgent();
-  }, [agentId]);
   const getInitial = (name: string) => {
     return name ? name.charAt(0).toUpperCase() : "";
   };
@@ -203,7 +169,7 @@ const Header: React.FC = () => {
                 bgColor="teal-600"
                 hoverBgColor="blue-700"
                 shadow={true}
-                onClick={handleLogout}
+                onClick={logout}
               />
             ) : (
               <>
@@ -217,7 +183,6 @@ const Header: React.FC = () => {
                   bgColor="teal-600"
                   hoverBgColor="blue-700"
                   shadow={true}
-                  onClick={handleLogin}
                 />
                 <ButtonAuth
                   text="Register"
@@ -263,16 +228,16 @@ const Header: React.FC = () => {
                   bgColor="teal-600"
                   hoverBgColor="blue-700"
                   shadow={true}
-                  onClick={handleLogout}
+                  onClick={logout}
                 />
                 {agent?.profilePicture ? (
                   <Link href={"/admin/agent-profile"}>
                     <Image
-                      src={`https://backend-real-estate-m1zm.onrender.com${agent.profilePicture}`}
+                      src={`http://localhost:5000${agent.profilePicture}`}
                       alt="Profile"
                       height={52}
                       width={52}
-                      className="rounded-[50%] flex items-center justify-center"
+                      className="rounded-[50%] flex items-center justify-center h-[52px] w-[53px]"
                     />
                   </Link>
                 ) : (
@@ -295,7 +260,6 @@ const Header: React.FC = () => {
                   bgColor="teal-600"
                   hoverBgColor="blue-700"
                   shadow={true}
-                  onClick={handleLogin}
                 />
                 <ButtonAuth
                   text="Register"

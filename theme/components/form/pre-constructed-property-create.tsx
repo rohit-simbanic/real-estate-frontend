@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
-import axios from "axios";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 interface GeneralDetails {
   Price: string;
@@ -131,10 +131,108 @@ const initialFormData: FormData = {
 
 const PreConstructedPropertyForm: React.FC = () => {
   const [formData, setFormData] = useState<FormData>(initialFormData);
-
   const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [success, setSuccess] = useState<boolean>(false);
+  const [activeTab, setActiveTab] = useState<string>("category");
   const router = useRouter();
+
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {};
+
+    if (!formData.name) newErrors.name = "Name is required";
+    if (!formData.category) newErrors.category = "Category is required";
+    if (!formData.price) newErrors.price = "Price is required";
+    if (!formData.available_for)
+      newErrors.available_for = "Available for is required";
+    if (!formData.listing_id) newErrors.listing_id = "Listing ID is required";
+    if (!formData.property_description)
+      newErrors.property_description = "Property description is required";
+    if (!formData.property_images.length)
+      newErrors.property_images = "At least five property images are required";
+
+    const { general_details, room_interior, exterior, utilities, at_a_glance } =
+      formData;
+
+    if (!general_details.Price)
+      newErrors.general_details_Price = "Price is required";
+    if (!general_details.Taxes)
+      newErrors.general_details_Taxes = "Taxes are required";
+    if (!general_details.Address)
+      newErrors.general_details_Address = "Address is required";
+    if (!general_details.Lot_Size)
+      newErrors.general_details_Lot_Size = "Lot size is required";
+    if (!general_details.Directions)
+      newErrors.general_details_Directions = "Directions are required";
+
+    if (!room_interior.Rooms)
+      newErrors.room_interior_Rooms = "Number of rooms is required";
+    if (!room_interior.Rooms_plus)
+      newErrors.room_interior_Rooms_plus = "Number of rooms plus is required";
+    if (!room_interior.Bedrooms)
+      newErrors.room_interior_Bedrooms = "Number of bedrooms is required";
+    if (!room_interior.Bedrooms_plus)
+      newErrors.room_interior_Bedrooms_plus =
+        "Number of bedrooms plus is required";
+    if (!room_interior.Kitchens)
+      newErrors.room_interior_Kitchens = "Number of kitchens is required";
+    if (!room_interior.Family_Room)
+      newErrors.room_interior_Family_Room = "Family room info is required";
+    if (!room_interior.Basement)
+      newErrors.room_interior_Basement = "Basement info is required";
+
+    if (!exterior.Property_Type)
+      newErrors.exterior_Property_Type = "Property type is required";
+    if (!exterior.Style) newErrors.exterior_Style = "Style is required";
+    if (!exterior.Exterior)
+      newErrors.exterior_Exterior = "Exterior info is required";
+    if (!exterior.Garage_Type)
+      newErrors.exterior_Garage_Type = "Garage type is required";
+    if (!exterior.Drive_Parking_Spaces)
+      newErrors.exterior_Drive_Parking_Spaces =
+        "Drive parking spaces info is required";
+    if (!exterior.Pool) newErrors.exterior_Pool = "Pool info is required";
+
+    if (!utilities.Fireplace_Stove)
+      newErrors.utilities_Fireplace_Stove = "Fireplace/Stove info is required";
+    if (!utilities.Heat_Source)
+      newErrors.utilities_Heat_Source = "Heat source is required";
+    if (!utilities.Heat_Type)
+      newErrors.utilities_Heat_Type = "Heat type is required";
+    if (!utilities.Central_Air_Conditioning)
+      newErrors.utilities_Central_Air_Conditioning =
+        "Central air conditioning info is required";
+    if (!utilities.Laundry_Level)
+      newErrors.utilities_Laundry_Level = "Laundry level is required";
+    if (!utilities.Sewers)
+      newErrors.utilities_Sewers = "Sewers info is required";
+    if (!utilities.Water) newErrors.utilities_Water = "Water info is required";
+
+    if (!at_a_glance.Type) newErrors.at_a_glance_Type = "Type is required";
+    if (!at_a_glance.Area) newErrors.at_a_glance_Area = "Area is required";
+    if (!at_a_glance.Municipality)
+      newErrors.at_a_glance_Municipality = "Municipality is required";
+    if (!at_a_glance.Neighbourhood)
+      newErrors.at_a_glance_Neighbourhood = "Neighbourhood is required";
+    if (!at_a_glance.Style) newErrors.at_a_glance_Style = "Style is required";
+    if (!at_a_glance.LotSize)
+      newErrors.at_a_glance_LotSize = "Lot size is required";
+    if (!at_a_glance.Tax) newErrors.at_a_glance_Tax = "Tax info is required";
+    if (!at_a_glance.Beds)
+      newErrors.at_a_glance_Beds = "Number of beds is required";
+    if (!at_a_glance.Baths)
+      newErrors.at_a_glance_Baths = "Number of baths is required";
+    if (!at_a_glance.Fireplace)
+      newErrors.at_a_glance_Fireplace = "Fireplace info is required";
+    if (!at_a_glance.Pool) newErrors.at_a_glance_Pool = "Pool info is required";
+
+    if (!formData.street_view)
+      newErrors.street_view = "Street View is required";
+    if (!formData.map_location)
+      newErrors.map_location = "Map Location is required";
+
+    return newErrors;
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -145,18 +243,12 @@ const PreConstructedPropertyForm: React.FC = () => {
       [name]: value,
     }));
   };
+
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
-    }));
-  };
-  const handleListingIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      listing_id: `PXYZ${value.replace(/^PXYZ/, "")}`,
     }));
   };
 
@@ -173,9 +265,17 @@ const PreConstructedPropertyForm: React.FC = () => {
       },
     }));
   };
+
+  const handleListingIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      listing_id: `PXYZ${value.replace(/^PXYZ/, "")}`,
+    }));
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target;
-    console.log("files:", files);
     if (files) {
       setFormData((prevFormData) => ({
         ...prevFormData,
@@ -208,9 +308,13 @@ const PreConstructedPropertyForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
     try {
       const token = localStorage.getItem("token");
-
       const files = handleFileUpload(formData.property_images);
 
       // Prepare FormData
@@ -223,7 +327,7 @@ const PreConstructedPropertyForm: React.FC = () => {
       appendNestedObject(formData, data);
 
       const response = await axios.post(
-        "https://backend-real-estate-m1zm.onrender.com/pre-constructed-property",
+        "http://localhost:5000/pre-constructed-property",
         data,
         {
           headers: {
@@ -235,26 +339,33 @@ const PreConstructedPropertyForm: React.FC = () => {
 
       setSuccess(true);
       setError(null);
+      setErrors({});
       setFormData(initialFormData); // Clear form after successful creation
       router.push("/admin");
     } catch (err) {
-      console.log(err);
-      setError("Error creating property. Please try again.");
+      console.error(err);
+      setError("Error saving property. Please try again.");
       setSuccess(false);
     }
   };
 
-  return (
-    <div className="max-w-2xl p-8 w-full mx-auto lg:w-[40%] bg-white rounded-lg shadow-lg">
-      <h2 className="text-2xl font-bold mb-6">Create Property</h2>
-      {error && <p className="text-red-500 mb-4">{error}</p>}
-      {success && (
-        <p className="text-green-500 mb-4">Property created successfully!</p>
-      )}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Property Information */}
-        <div className="flex flex-col sm:flex-row gap-6 justify-between">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full sm:w-[50%]">
+  const tabContent = () => {
+    switch (activeTab) {
+      case "category":
+        return (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
+            <div>
+              <label className="block font-semibold">Name:</label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+              />
+              {errors.name && <p className="text-red-500">{errors.name}</p>}
+            </div>
             <div>
               <label className="block font-semibold">Category:</label>
               <select
@@ -267,17 +378,9 @@ const PreConstructedPropertyForm: React.FC = () => {
                 <option value="">Select Category</option>
                 <option value="pre-constructed">Pre Constructed</option>
               </select>
-            </div>
-            <div>
-              <label className="block font-semibold">Name:</label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className="p-3 border border-gray-300 rounded w-full"
-                required
-              />
+              {errors.category && (
+                <p className="text-red-500">{errors.category}</p>
+              )}
             </div>
             <div>
               <label className="block font-semibold">Price:</label>
@@ -289,6 +392,7 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.price && <p className="text-red-500">{errors.price}</p>}
             </div>
             <div>
               <label className="block font-semibold">Available For:</label>
@@ -300,7 +404,11 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.available_for && (
+                <p className="text-red-500">{errors.available_for}</p>
+              )}
             </div>
+
             <div>
               <label className="block font-semibold">Listing ID:</label>
               <input
@@ -311,7 +419,11 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.listing_id && (
+                <p className="text-red-500">{errors.listing_id}</p>
+              )}
             </div>
+
             <div>
               <label className="block font-semibold">
                 Property Description:
@@ -323,11 +435,13 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               ></textarea>
+              {errors.property_description && (
+                <p className="text-red-500">{errors.property_description}</p>
+              )}
             </div>
+
             <div>
-              <label className="block font-semibold">
-                Property Images (comma-separated URLs):
-              </label>
+              <label className="block font-semibold">Property Images:</label>
               <input
                 type="file"
                 name="property_images"
@@ -336,11 +450,16 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.property_images && (
+                <p className="text-red-500">{errors.property_images}</p>
+              )}
             </div>
           </div>
-          {/* General Details */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full sm:w-[50%]">
-            <h3 className="text-xl font-bold mb-0">General Details</h3>
+        );
+      case "general_details":
+        return (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
+            <h3 className="text-xl font-bold mb-4">General Details</h3>
             <div>
               <label className="block font-semibold">Price:</label>
               <input
@@ -351,7 +470,11 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.general_details_Price && (
+                <p className="text-red-500">{errors.general_details_Price}</p>
+              )}
             </div>
+
             <div>
               <label className="block font-semibold">Taxes:</label>
               <input
@@ -362,7 +485,11 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.general_details_Taxes && (
+                <p className="text-red-500">{errors.general_details_Taxes}</p>
+              )}
             </div>
+
             <div>
               <label className="block font-semibold">Address:</label>
               <input
@@ -373,7 +500,11 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.general_details_Address && (
+                <p className="text-red-500">{errors.general_details_Address}</p>
+              )}
             </div>
+
             <div>
               <label className="block font-semibold">Lot Size:</label>
               <input
@@ -384,7 +515,13 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.general_details_Lot_Size && (
+                <p className="text-red-500">
+                  {errors.general_details_Lot_Size}
+                </p>
+              )}
             </div>
+
             <div>
               <label className="block font-semibold">
                 Directions/Cross Streets:
@@ -397,13 +534,18 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.general_details_Directions && (
+                <p className="text-red-500">
+                  {errors.general_details_Directions}
+                </p>
+              )}
             </div>
           </div>
-        </div>
-        {/* Room Interior */}
-        <div className="flex flex-col sm:flex-row gap-6 justify-between">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full sm:w-[50%]">
-            <h3 className="text-xl font-bold mb-4">Room Interior</h3>
+        );
+      case "room_interior":
+        return (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
+            <h3 className="text-xl font-bold">Room Interior</h3>
             <div>
               <label className="block font-semibold">Rooms:</label>
               <input
@@ -414,7 +556,11 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.room_interior_Rooms && (
+                <p className="text-red-500">{errors.room_interior_Rooms}</p>
+              )}
             </div>
+
             <div>
               <label className="block font-semibold">Rooms plus:</label>
               <input
@@ -425,7 +571,13 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.room_interior_Rooms_plus && (
+                <p className="text-red-500">
+                  {errors.room_interior_Rooms_plus}
+                </p>
+              )}
             </div>
+
             <div>
               <label className="block font-semibold">Bedrooms:</label>
               <input
@@ -436,7 +588,11 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.room_interior_Bedrooms && (
+                <p className="text-red-500">{errors.room_interior_Bedrooms}</p>
+              )}
             </div>
+
             <div>
               <label className="block font-semibold">Bedrooms plus:</label>
               <input
@@ -447,7 +603,13 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.room_interior_Bedrooms_plus && (
+                <p className="text-red-500">
+                  {errors.room_interior_Bedrooms_plus}
+                </p>
+              )}
             </div>
+
             <div>
               <label className="block font-semibold">Kitchens:</label>
               <input
@@ -458,7 +620,11 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.room_interior_Kitchens && (
+                <p className="text-red-500">{errors.room_interior_Kitchens}</p>
+              )}
             </div>
+
             <div>
               <label className="block font-semibold">Family Room:</label>
               <select
@@ -472,6 +638,11 @@ const PreConstructedPropertyForm: React.FC = () => {
                 <option value="Y">Yes</option>
                 <option value="N">No</option>
               </select>
+              {errors.room_interior_Family_Room && (
+                <p className="text-red-500">
+                  {errors.room_interior_Family_Room}
+                </p>
+              )}
             </div>
             <div>
               <label className="block font-semibold">Basement:</label>
@@ -483,12 +654,16 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.room_interior_Basement && (
+                <p className="text-red-500">{errors.room_interior_Basement}</p>
+              )}
             </div>
           </div>
-
-          {/* Exterior */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full sm:w-[50%]">
-            <h3 className="text-xl font-bold mb-4">Exterior</h3>
+        );
+      case "exterior":
+        return (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
+            <h3 className="text-xl font-bold">Exterior</h3>
             <div>
               <label className="block font-semibold">Property Type:</label>
               <input
@@ -499,6 +674,9 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.exterior_Property_Type && (
+                <p className="text-red-500">{errors.exterior_Property_Type}</p>
+              )}
             </div>
             <div>
               <label className="block font-semibold">Style:</label>
@@ -510,6 +688,9 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.exterior_Style && (
+                <p className="text-red-500">{errors.exterior_Style}</p>
+              )}
             </div>
             <div>
               <label className="block font-semibold">Exterior:</label>
@@ -521,6 +702,9 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.exterior_Exterior && (
+                <p className="text-red-500">{errors.exterior_Exterior}</p>
+              )}
             </div>
             <div>
               <label className="block font-semibold">Garage Type:</label>
@@ -532,6 +716,9 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.exterior_Garage_Type && (
+                <p className="text-red-500">{errors.exterior_Garage_Type}</p>
+              )}
             </div>
             <div>
               <label className="block font-semibold">
@@ -545,6 +732,11 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.exterior_Drive_Parking_Spaces && (
+                <p className="text-red-500">
+                  {errors.exterior_Drive_Parking_Spaces}
+                </p>
+              )}
             </div>
             <div>
               <label className="block font-semibold">Pool:</label>
@@ -556,13 +748,16 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.exterior_Pool && (
+                <p className="text-red-500">{errors.exterior_Pool}</p>
+              )}
             </div>
           </div>
-        </div>
-        {/* Utilities */}
-        <div className="flex flex-col sm:flex-row gap-6 justify-between">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full sm:w-[50%]">
-            <h3 className="text-xl font-bold mb-4">Utilities</h3>
+        );
+      case "utilities":
+        return (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
+            <h3 className="text-xl font-bold">Utilities</h3>
             <div>
               <label className="block font-semibold">Fireplace/Stove:</label>
               <select
@@ -576,6 +771,11 @@ const PreConstructedPropertyForm: React.FC = () => {
                 <option value="Y">Yes</option>
                 <option value="N">No</option>
               </select>
+              {errors.utilities_Fireplace_Stove && (
+                <p className="text-red-500">
+                  {errors.utilities_Fireplace_Stove}
+                </p>
+              )}
             </div>
             <div>
               <label className="block font-semibold">Heat Source:</label>
@@ -587,6 +787,9 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.utilities_Heat_Source && (
+                <p className="text-red-500">{errors.utilities_Heat_Source}</p>
+              )}
             </div>
             <div>
               <label className="block font-semibold">Heat Type:</label>
@@ -598,6 +801,9 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.utilities_Heat_Type && (
+                <p className="text-red-500">{errors.utilities_Heat_Type}</p>
+              )}
             </div>
             <div>
               <label className="block font-semibold">
@@ -611,6 +817,11 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.utilities_Central_Air_Conditioning && (
+                <p className="text-red-500">
+                  {errors.utilities_Central_Air_Conditioning}
+                </p>
+              )}
             </div>
             <div>
               <label className="block font-semibold">Laundry Level:</label>
@@ -618,10 +829,13 @@ const PreConstructedPropertyForm: React.FC = () => {
                 type="text"
                 name="Laundry_Level"
                 value={formData.utilities.Laundry_Level}
-                onChange={(e: any) => handleNestedChange(e, "utilities")}
+                onChange={(e) => handleNestedChange(e, "utilities")}
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.utilities_Laundry_Level && (
+                <p className="text-red-500">{errors.utilities_Laundry_Level}</p>
+              )}
             </div>
             <div>
               <label className="block font-semibold">Sewers:</label>
@@ -633,6 +847,9 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.utilities_Sewers && (
+                <p className="text-red-500">{errors.utilities_Sewers}</p>
+              )}
             </div>
             <div>
               <label className="block font-semibold">Water:</label>
@@ -644,12 +861,16 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.utilities_Water && (
+                <p className="text-red-500">{errors.utilities_Water}</p>
+              )}
             </div>
           </div>
-
-          {/* At a Glance */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full sm:w-[50%]">
-            <h3 className="text-xl font-bold mb-4">At a Glance</h3>
+        );
+      case "at_a_glance":
+        return (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
+            <h3 className="text-xl font-bold">At a Glance</h3>
             <div>
               <label className="block font-semibold">Type:</label>
               <input
@@ -660,6 +881,9 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.at_a_glance_Type && (
+                <p className="text-red-500">{errors.at_a_glance_Type}</p>
+              )}
             </div>
             <div>
               <label className="block font-semibold">Area:</label>
@@ -671,6 +895,9 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.at_a_glance_Area && (
+                <p className="text-red-500">{errors.at_a_glance_Area}</p>
+              )}
             </div>
             <div>
               <label className="block font-semibold">Municipality:</label>
@@ -682,6 +909,11 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.at_a_glance_Municipality && (
+                <p className="text-red-500">
+                  {errors.at_a_glance_Municipality}
+                </p>
+              )}
             </div>
             <div>
               <label className="block font-semibold">Neighbourhood:</label>
@@ -693,6 +925,11 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.at_a_glance_Neighbourhood && (
+                <p className="text-red-500">
+                  {errors.at_a_glance_Neighbourhood}
+                </p>
+              )}
             </div>
             <div>
               <label className="block font-semibold">Style:</label>
@@ -704,6 +941,9 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.at_a_glance_Style && (
+                <p className="text-red-500">{errors.at_a_glance_Style}</p>
+              )}
             </div>
             <div>
               <label className="block font-semibold">Lot Size:</label>
@@ -715,6 +955,9 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.at_a_glance_LotSize && (
+                <p className="text-red-500">{errors.at_a_glance_LotSize}</p>
+              )}
             </div>
             <div>
               <label className="block font-semibold">Tax:</label>
@@ -726,6 +969,9 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.at_a_glance_Tax && (
+                <p className="text-red-500">{errors.at_a_glance_Tax}</p>
+              )}
             </div>
             <div>
               <label className="block font-semibold">Beds:</label>
@@ -737,6 +983,9 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.at_a_glance_Beds && (
+                <p className="text-red-500">{errors.at_a_glance_Beds}</p>
+              )}
             </div>
             <div>
               <label className="block font-semibold">Baths:</label>
@@ -748,6 +997,9 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.at_a_glance_Baths && (
+                <p className="text-red-500">{errors.at_a_glance_Baths}</p>
+              )}
             </div>
             <div>
               <label className="block font-semibold">Fireplace:</label>
@@ -762,6 +1014,9 @@ const PreConstructedPropertyForm: React.FC = () => {
                 <option value="Y">Yes</option>
                 <option value="N">No</option>
               </select>
+              {errors.at_a_glance_Fireplace && (
+                <p className="text-red-500">{errors.at_a_glance_Fireplace}</p>
+              )}
             </div>
             <div>
               <label className="block font-semibold">Pool:</label>
@@ -773,39 +1028,151 @@ const PreConstructedPropertyForm: React.FC = () => {
                 className="p-3 border border-gray-300 rounded w-full"
                 required
               />
+              {errors.at_a_glance_Pool && (
+                <p className="text-red-500">{errors.at_a_glance_Pool}</p>
+              )}
             </div>
           </div>
-        </div>
-        <div className="mt-8">
-          <h3 className="text-xl font-bold mb-4">Street View</h3>
-          <input
-            type="text"
-            name="street_view"
-            value={formData.street_view}
-            onChange={handleChange}
-            className="p-3 border border-gray-300 rounded w-full"
-            required
-          />
-        </div>
+        );
+      case "map":
+        return (
+          <>
+            <div className="mt-8">
+              <h3 className="text-xl font-bold mb-4">Street View</h3>
+              <input
+                type="text"
+                name="street_view"
+                value={formData.street_view}
+                onChange={handleChange}
+                className="p-3 border border-gray-300 rounded w-full"
+                required
+                placeholder="https://www.google.com/maps/@43.8518057,-79.3508666,3a,73.7y,270h,90t/data=!3m6!1e1!3m4!1s2ZDYMmV3Ru7cbc6eDhnqvA!2e0!7i16384!8i8192?entry=ttu"
+              />
+              {errors.street_view && (
+                <p className="text-red-500">{errors.street_view}</p>
+              )}
+            </div>
+            <div className="mt-8">
+              <h3 className="text-xl font-bold mb-4">Map Location</h3>
+              <input
+                type="text"
+                name="map_location"
+                value={formData.map_location}
+                onChange={handleChange}
+                className="p-3 border border-gray-300 rounded w-full"
+                placeholder="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2877.1912415808292!2d-79.35056!3d43.8518647!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89d4d4eee6c5e2f1%3A0xbc056247af50dad9!2s41%20Blackwell%20Ct%2C%20Markham%2C%20ON%20L3R%200C5%2C%20Canada!5e0!3m2!1sen!2sin!4v1716295325520!5m2!1sen!2sin"
+                required
+              />
+              {errors.map_location && (
+                <p className="text-red-500">{errors.map_location}</p>
+              )}
+            </div>
+          </>
+        );
+      default:
+        return null;
+    }
+  };
 
-        <div className="mt-8">
-          <h3 className="text-xl font-bold mb-4">Map Location</h3>
-          <input
-            type="text"
-            name="map_location"
-            value={formData.map_location}
-            onChange={handleChange}
-            className="p-3 border border-gray-300 rounded w-full"
-            required
-          />
-        </div>
+  return (
+    <div className="max-w-2xl p-8 w-full mx-auto lg:w-[40%] bg-white rounded-lg shadow-lg">
+      <h2 className="text-2xl font-bold mb-6">
+        Create Pre-Constructed Property
+      </h2>
 
-        <button
-          type="submit"
-          className="mt-4 bg-indigo-600 text-white px-5 py-3 rounded hover:bg-blue-600"
-        >
-          Create Pre-constructed Property
-        </button>
+      {error && <p className="text-red-500 mb-4">{error}</p>}
+      {errors && <p className="text-red-500 mb-4">{errors.length}</p>}
+      {success && (
+        <p className="text-green-500 mb-4">
+          Pre-Constructed Property created successfully!
+        </p>
+      )}
+
+      <div className="mb-6">
+        <div className="flex space-x-4">
+          <button
+            className={`${
+              activeTab === "category"
+                ? "border-b-2 border-indigo-600 text-indigo-600"
+                : ""
+            } pb-2`}
+            onClick={() => setActiveTab("category")}
+          >
+            Category
+          </button>
+          <button
+            className={`${
+              activeTab === "general_details"
+                ? "border-b-2 border-indigo-600 text-indigo-600"
+                : ""
+            } pb-2`}
+            onClick={() => setActiveTab("general_details")}
+          >
+            General Details
+          </button>
+          <button
+            className={`${
+              activeTab === "room_interior"
+                ? "border-b-2 border-indigo-600 text-indigo-600"
+                : ""
+            } pb-2`}
+            onClick={() => setActiveTab("room_interior")}
+          >
+            Room Interior
+          </button>
+          <button
+            className={`${
+              activeTab === "exterior"
+                ? "border-b-2 border-indigo-600 text-indigo-600"
+                : ""
+            } pb-2`}
+            onClick={() => setActiveTab("exterior")}
+          >
+            Exterior
+          </button>
+          <button
+            className={`${
+              activeTab === "utilities"
+                ? "border-b-2 border-indigo-600 text-indigo-600"
+                : ""
+            } pb-2`}
+            onClick={() => setActiveTab("utilities")}
+          >
+            Utilities
+          </button>
+          <button
+            className={`${
+              activeTab === "at_a_glance"
+                ? "border-b-2 border-indigo-600 text-indigo-600"
+                : ""
+            } pb-2`}
+            onClick={() => setActiveTab("at_a_glance")}
+          >
+            At a Glance
+          </button>
+          <button
+            className={`${
+              activeTab === "map"
+                ? "border-b-2 border-indigo-600 text-indigo-600"
+                : ""
+            } pb-2`}
+            onClick={() => setActiveTab("map")}
+          >
+            Map
+          </button>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="max-h-[500px] overflow-y-auto scrollable-container px-3">
+          {tabContent()}
+          <button
+            type="submit"
+            className="mt-4 bg-indigo-600 text-white px-5 py-3 rounded hover:bg-blue-600"
+          >
+            Create Property
+          </button>
+        </div>
       </form>
     </div>
   );

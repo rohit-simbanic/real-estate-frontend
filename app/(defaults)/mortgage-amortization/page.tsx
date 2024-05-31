@@ -1,59 +1,92 @@
 //@ts-nocheck
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 const MortgageCalculator = () => {
   const [formValues, setFormValues] = useState({
-    askingPrice: "",
-    downpayment: "",
-    downpaymentPercentage: "",
-    interestRate: "",
-    mortgageTerm: "",
-    amortizationTerm: "",
+    askingPrice: "500000",
+    downpayment: "50000",
+    downpaymentPercentage: "10",
+    interestRate: "6",
+    mortgageTerm: "5",
+    amortizationTerm: "10",
     firstTimeHomeBuyer: "yes",
     frequency: "Weekly",
   });
 
-  const [results, setResults] = useState(null);
-
-  const updateDownpaymentPercentage = () => {
-    const askingPrice = parseFloat(formValues.askingPrice);
-    const downpayment = parseFloat(formValues.downpayment);
-    const downpaymentPercentage = (downpayment / askingPrice) * 100;
-
-    setFormValues((previousState) => {
-      return { ...previousState, downpaymentPercentage };
-    });
-  };
-
-  const updateDownpaymentAmount = () => {
-    const askingPrice = parseFloat(formValues.askingPrice);
-    const downpaymentPercentage = parseFloat(formValues.downpaymentPercentage);
-    const downpayment = (downpaymentPercentage / 100) * askingPrice;
-    setFormValues((previousState) => {
-      return { ...previousState, downpayment };
-    });
-  };
+  const [errors, setErrors] = useState<any>({});
+  const [results, setResults] = useState<any>(null);
+  const lastUpdatedField = useRef(null);
 
   useEffect(() => {
-    if (formValues.downpayment) {
-      updateDownpaymentPercentage();
-    } else if (formValues.downpaymentPercentage) {
-      updateDownpaymentAmount();
+    if (
+      lastUpdatedField.current === "downpayment" &&
+      formValues.downpayment &&
+      formValues.askingPrice
+    ) {
+      const askingPrice = parseFloat(formValues.askingPrice);
+      const downpayment = parseFloat(formValues.downpayment);
+      const downpaymentPercentage = ((downpayment / askingPrice) * 100).toFixed(
+        2
+      );
+
+      setFormValues((previousState) => ({
+        ...previousState,
+        downpaymentPercentage,
+      }));
+    } else if (
+      lastUpdatedField.current === "downpaymentPercentage" &&
+      formValues.downpaymentPercentage &&
+      formValues.askingPrice
+    ) {
+      const askingPrice = parseFloat(formValues.askingPrice);
+      const downpaymentPercentage = parseFloat(
+        formValues.downpaymentPercentage
+      );
+      const downpayment = ((downpaymentPercentage / 100) * askingPrice).toFixed(
+        2
+      );
+
+      setFormValues((previousState) => ({
+        ...previousState,
+        downpayment,
+      }));
     }
+
+    lastUpdatedField.current = null;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formValues.downpayment, formValues.downpaymentPercentage]);
 
   const handleChange = (e) => {
-    setFormValues(
-      Object.assign({}, formValues, { [e.target.id]: e.target.value })
-    );
+    const { id, value } = e.target;
+    lastUpdatedField.current = id;
+    // Validate input values
+    let newErrors = { ...errors };
+    if (value < 0 || value === "") {
+      newErrors[id] = "Value must be at least 0.";
+    } else if (id === "downpaymentPercentage" && value > 100) {
+      newErrors[id] = "Downpayment percentage cannot exceed 100%.";
+    } else if (
+      id === "downpayment" &&
+      parseFloat(value) > parseFloat(formValues.askingPrice)
+    ) {
+      newErrors[id] = "Downpayment amount cannot be greater than asking price";
+    } else {
+      delete newErrors[id];
+    }
+    setErrors(newErrors);
+
+    setFormValues({
+      ...formValues,
+      [id]: value,
+    });
   };
 
   const calculateCMHCInsurancePremium = (
     mortgageAmount,
     purchasePrice,
-    amortizationPeriod
+    amortizationPeriod,
+    firstTimeHomeBuyer
   ) => {
     const ltvRatio = (mortgageAmount / purchasePrice) * 100;
     let premiumRate;
@@ -78,6 +111,10 @@ const MortgageCalculator = () => {
       } else {
         premiumRate = 0.0225;
       }
+    }
+
+    if (firstTimeHomeBuyer === "yes") {
+      premiumRate *= 0.9;
     }
 
     return mortgageAmount * premiumRate;
@@ -118,7 +155,8 @@ const MortgageCalculator = () => {
     const cmhcPremium = calculateCMHCInsurancePremium(
       askingPrice - downpayment,
       askingPrice,
-      amortizationTerm
+      amortizationTerm,
+      firstTimeHomeBuyer
     );
     const amountFinanced = askingPrice - downpayment + cmhcPremium;
     const periodsPerYear = {
@@ -135,7 +173,7 @@ const MortgageCalculator = () => {
       (amountFinanced * ratePerPeriod) /
       (1 - Math.pow(1 + ratePerPeriod, -totalPayments));
 
-    let schedule = [];
+    let schedule: any = [];
     let balance = amountFinanced;
     let totalInterestPaid = 0;
 
@@ -180,7 +218,7 @@ const MortgageCalculator = () => {
   };
 
   return (
-    <div className="!max-w-[44rem] bg-white shadow-lg mx-auto p-4 my-10">
+    <div className="w-[90%] sm:w-[50%] bg-white shadow-lg mx-auto p-4 my-10">
       <h1 className="text-2xl font-bold mb-4">
         Mortgage Amortization Calculator
       </h1>
@@ -197,6 +235,9 @@ const MortgageCalculator = () => {
             className="border border-gray-300 p-2 w-full rounded"
             required
           />
+          {errors.askingPrice && (
+            <p className="text-red-500">{errors.askingPrice}</p>
+          )}
         </div>
         <div>
           <label htmlFor="downpayment" className="block mb-2 font-semibold">
@@ -209,6 +250,9 @@ const MortgageCalculator = () => {
             onChange={handleChange}
             className="border border-gray-300 p-2 w-full rounded"
           />
+          {errors.downpayment && (
+            <p className="text-red-500">{errors.downpayment}</p>
+          )}
         </div>
         <div>
           <label
@@ -225,6 +269,9 @@ const MortgageCalculator = () => {
             className="border border-gray-300 p-2 w-full rounded"
             required
           />
+          {errors.downpaymentPercentage && (
+            <p className="text-red-500">{errors.downpaymentPercentage}</p>
+          )}
         </div>
         <div>
           <label htmlFor="interestRate" className="block mb-2 font-semibold">
@@ -238,6 +285,9 @@ const MortgageCalculator = () => {
             className="border border-gray-300 p-2 w-full rounded"
             required
           />
+          {errors.interestRate && (
+            <p className="text-red-500">{errors.interestRate}</p>
+          )}
         </div>
         <div>
           <label htmlFor="mortgageTerm" className="block mb-2 font-semibold">
@@ -251,6 +301,9 @@ const MortgageCalculator = () => {
             className="border border-gray-300 p-2 w-full rounded"
             required
           />
+          {errors.mortgageTerm && (
+            <p className="text-red-500">{errors.mortgageTerm}</p>
+          )}
         </div>
         <div>
           <label
@@ -267,6 +320,9 @@ const MortgageCalculator = () => {
             className="border border-gray-300 p-2 w-full rounded"
             required
           />
+          {errors.amortizationTerm && (
+            <p className="text-red-500">{errors.amortizationTerm}</p>
+          )}
         </div>
         <div>
           <label
@@ -308,6 +364,7 @@ const MortgageCalculator = () => {
         </div>
         <button
           type="button"
+          disabled={Object.keys(errors).length > 0}
           onClick={calculateMortgage}
           className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
         >
@@ -336,48 +393,50 @@ const MortgageCalculator = () => {
             <h3 className="text-lg font-semibold mt-4">
               Amortization Payment Schedule:
             </h3>
-            <table className="border-collapse border border-gray-500 w-full mt-2">
-              <thead>
-                <tr>
-                  <th className="border border-gray-500 px-2 py-1">
-                    Payment Number
-                  </th>
-                  <th className="border border-gray-500 px-2 py-1">
-                    Total Payment
-                  </th>
-                  <th className="border border-gray-500 px-2 py-1">
-                    Principal Paid
-                  </th>
-                  <th className="border border-gray-500 px-2 py-1">
-                    Interest Paid
-                  </th>
-                  <th className="border border-gray-500 px-2 py-1">
-                    Remaining Balance
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {results.schedule.map((payment) => (
-                  <tr key={payment.paymentNumber}>
-                    <td className="border border-gray-500 px-2 py-1 text-center">
-                      {payment.paymentNumber}
-                    </td>
-                    <td className="border border-gray-500 px-2 py-1 text-right">
-                      {payment.totalPayment.toFixed(2)}
-                    </td>
-                    <td className="border border-gray-500 px-2 py-1 text-right">
-                      {payment.principalPaid.toFixed(2)}
-                    </td>
-                    <td className="border border-gray-500 px-2 py-1 text-right">
-                      {payment.interestPaid.toFixed(2)}
-                    </td>
-                    <td className="border border-gray-500 px-2 py-1 text-right">
-                      {payment.remainingBalance.toFixed(2)}
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="border-collapse border border-gray-500 mt-2 min-w-full">
+                <thead>
+                  <tr>
+                    <th className="border border-gray-500 px-2 py-1">
+                      Payment Number
+                    </th>
+                    <th className="border border-gray-500 px-2 py-1">
+                      Total Payment
+                    </th>
+                    <th className="border border-gray-500 px-2 py-1">
+                      Principal Paid
+                    </th>
+                    <th className="border border-gray-500 px-2 py-1">
+                      Interest Paid
+                    </th>
+                    <th className="border border-gray-500 px-2 py-1">
+                      Remaining Balance
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {results.schedule.map((payment) => (
+                    <tr key={payment.paymentNumber}>
+                      <td className="border border-gray-500 px-2 py-1 text-center">
+                        {payment.paymentNumber}
+                      </td>
+                      <td className="border border-gray-500 px-2 py-1 text-right">
+                        {payment.totalPayment.toFixed(2)}
+                      </td>
+                      <td className="border border-gray-500 px-2 py-1 text-right">
+                        {payment.principalPaid.toFixed(2)}
+                      </td>
+                      <td className="border border-gray-500 px-2 py-1 text-right">
+                        {payment.interestPaid.toFixed(2)}
+                      </td>
+                      <td className="border border-gray-500 px-2 py-1 text-right">
+                        {Math.abs(payment.remainingBalance.toFixed(2))}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>

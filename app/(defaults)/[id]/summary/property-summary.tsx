@@ -8,7 +8,7 @@ interface PropertyCardProps {
 const PropertySummary: React.FC<PropertyCardProps> = ({ details }) => {
   // console.log("all details:", details);
   return (
-    <div className="flex items-center justify-start gap-4 p-4 rounded-lg bg-gray-400 mt-7 w-full">
+    <div className="flex flex-col sm:flex-row items-center justify-start gap-4 p-4 m-3 rounded-sm bg-gray-100 mt-7 w-full shadow-lg">
       <span className="text-orange-500 font-semibold">{details.price}</span>
       <span className="text-blue-600 font-medium">
         Available for - {details.available_for}

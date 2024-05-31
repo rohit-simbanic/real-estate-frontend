@@ -1,16 +1,11 @@
-import type { Metadata } from "next";
+"use client";
+
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/contexts/theme-context";
+import { AuthProvider } from "@/contexts/auth-provider";
 
 const inter = Inter({ subsets: ["latin"] });
-
-export const metadata: Metadata = {
-  title: {
-    template: "%s | Template - Real Estate Template",
-    default: "Template - A Multipurpose Template",
-  },
-};
 
 export default function RootLayout({
   children,
@@ -20,7 +15,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`inter.className bg-white w-full`}>
-        <ThemeProvider>{children} </ThemeProvider>
+        <ThemeProvider>
+          <AuthProvider>{children} </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -52,6 +52,8 @@ const config: Config = {
     "sm:flex-col",
     "max-w-4xl",
     "bg-gray-300",
+    "max-h-[500px]",
+    "overflow-y-auto",
   ],
   plugins: [],
 };
