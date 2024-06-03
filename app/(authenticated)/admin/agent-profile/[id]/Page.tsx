@@ -1,9 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useParams } from "next/navigation";
 import Image from "next/image";
-import ButtonLogin from "@/components/button/button-login";
 
 type Props = {
   params: { id: string };
@@ -107,14 +105,6 @@ const AgentProfile = ({ params }: Props) => {
   const getInitial = (name: string) => {
     return name ? name.charAt(0).toUpperCase() : "";
   };
-
-  if (!agent)
-    return (
-      <div className="text-center max-w-xs mx-auto py-10">
-        <h2>Please login now to get access to your new account</h2>
-        <ButtonLogin href={"/admin/login"} />
-      </div>
-    );
 
   return (
     <div className="max-w-4xl mx-auto px-4 lg:px-20 my-10">
