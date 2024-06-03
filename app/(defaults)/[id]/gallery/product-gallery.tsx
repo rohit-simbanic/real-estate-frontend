@@ -24,7 +24,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images }) => {
   return (
     <div className="container mx-auto p-1 w-[70%]">
       <div className="relative">
-        {images.map((image, index) => (
+        {images?.map((image, index) => (
           <div
             key={index}
             className={`slides ${
@@ -69,7 +69,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images }) => {
       </div>
 
       <div className="flex mt-4 space-x-2">
-        {images.map((image, index) => (
+        {images?.map((image, index) => (
           <div key={index} className="flex-1">
             <Image
               src={`https://backend-real-estate-m1zm.onrender.com/uploads/${image.filename}`}

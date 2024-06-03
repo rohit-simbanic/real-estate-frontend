@@ -6,6 +6,7 @@ interface AuthContextType {
   agent: any;
   login: (token: string, agentId: string) => void;
   logout: () => void;
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -15,6 +16,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [agent, setAgent] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -23,6 +25,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       setIsAuthenticated(true);
       fetchAgent(agentId); // Function to fetch agent data based on agentId
     }
+    setLoading(false);
   }, []);
 
   const fetchAgent = async (agentId: string) => {
@@ -51,7 +54,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, agent, login, logout }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, agent, login, logout, loading }}
+    >
       {children}
     </AuthContext.Provider>
   );

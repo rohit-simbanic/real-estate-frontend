@@ -21,7 +21,7 @@ const HomePage: React.FC = () => {
     <div>
       <Banner />
       <FeaturedListing onEdit={handleEdit} />
-      <PreConstructedProject />
+      <PreConstructedProject onEdit={handleEdit} />
       <SoldProperties />
       <CalculatorGrid items={calculatorItems} />
       <MapComponent />

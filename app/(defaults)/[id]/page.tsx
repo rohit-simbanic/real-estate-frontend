@@ -29,12 +29,12 @@ const Page = async ({ params }: Props) => {
     <div className="container mx-auto">
       <PropertySummary details={displayProduct} />
       <div className="flex justify-between items-center gap-3 max-md:flex-col">
-        <ImageSlider images={displayProduct.property_images} />
+        <ImageSlider images={displayProduct?.property_images} />
         <LeadForm />
       </div>
       <div className="flex justify-between items-center gap-3 max-md:flex-col">
         <Tabs property={displayProduct} />
-        <AtAGlanceComponent details={displayProduct.at_a_glance} />
+        <AtAGlanceComponent details={displayProduct?.at_a_glance} />
       </div>
       <StreetView details={displayProduct} />
     </div>

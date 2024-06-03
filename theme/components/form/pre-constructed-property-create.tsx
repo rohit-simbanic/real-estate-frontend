@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
@@ -128,14 +128,20 @@ const initialFormData: FormData = {
   latitude: "",
   longitude: "",
 };
+interface PropertyFormProps {
+  propertyId: string | null;
+}
 
-const PreConstructedPropertyForm: React.FC = () => {
+const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
+  propertyId,
+}) => {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [error, setError] = useState<string | null>(null);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [success, setSuccess] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("category");
   const router = useRouter();
+  console.log("propertyId", propertyId);
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
@@ -378,19 +384,30 @@ const PreConstructedPropertyForm: React.FC = () => {
         .filter((file): file is { file: File; url: string } => file !== null); // Remove null values
     }
 
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      property_images: [...prevFormData.property_images, ...newFiles],
-    }));
+    setFormData((prevFormData) => {
+      const uniqueFiles = newFiles.filter(
+        (newFile) =>
+          !prevFormData.property_images.some(
+            (existingFile) => existingFile.url === newFile.url
+          )
+      );
+      return {
+        ...prevFormData,
+        property_images: [...prevFormData.property_images, ...uniqueFiles],
+      };
+    });
   };
 
   const handleDeleteImage = (index: number) => {
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      property_images: prevFormData.property_images.filter(
+    setFormData((prevFormData) => {
+      const updatedImages = prevFormData.property_images.filter(
         (_, i) => i !== index
-      ),
-    }));
+      );
+      return {
+        ...prevFormData,
+        property_images: updatedImages,
+      };
+    });
   };
 
   const handleFileUpload = (files: File[]): File[] => {
@@ -437,16 +454,30 @@ const PreConstructedPropertyForm: React.FC = () => {
       // Append other fields
       appendNestedObject(formData, data);
 
-      const response = await axios.post(
-        "https://backend-real-estate-m1zm.onrender.com/pre-constructed-property",
-        data,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      let response;
+      if (propertyId) {
+        response = await axios.put(
+          `http://localhost:5000/pre-constructed-property/${propertyId}`,
+          data,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+      } else {
+        response = await axios.post(
+          "http://localhost:5000/pre-constructed-property",
+          data,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+      }
 
       setSuccess(true);
       setError(null);
@@ -459,6 +490,50 @@ const PreConstructedPropertyForm: React.FC = () => {
       setSuccess(false);
     }
   };
+  const extractCoordinates = (url: string) => {
+    const regex = /@([0-9.-]+),([0-9.-]+)/;
+    const matches = url.match(regex);
+    if (matches) {
+      return {
+        latitude: matches[1],
+        longitude: matches[2],
+      };
+    }
+    return { latitude: "", longitude: "" };
+  };
+  useEffect(() => {
+    if (propertyId) {
+      const fetchPropertyData = async () => {
+        try {
+          const response = await axios.get(
+            `https://backend-real-estate-m1zm.onrender.com/pre-constructed-property/${propertyId}`
+          );
+          const propertyData = response.data;
+          console.log("property data", propertyData);
+
+          const { street_view } = propertyData;
+          const { latitude, longitude } = extractCoordinates(street_view);
+
+          const formattedPropertyData = {
+            ...propertyData,
+            latitude,
+            longitude,
+            property_images: propertyData.property_images.map((img: any) => ({
+              file: null,
+              url: `https://backend-real-estate-m1zm.onrender.com/uploads/${img.filename}`,
+            })),
+          };
+
+          setFormData(formattedPropertyData);
+        } catch (err) {
+          console.error(err);
+          setError("Failed to fetch property data.");
+        }
+      };
+
+      fetchPropertyData();
+    }
+  }, [propertyId]);
 
   const tabContent = () => {
     switch (activeTab) {
@@ -576,6 +651,7 @@ const PreConstructedPropertyForm: React.FC = () => {
                           className="w-full h-auto rounded"
                         />
                         <button
+                          type="button"
                           onClick={() => handleDeleteImage(index)}
                           className="absolute top-0 right-0 bg-red-600 text-white p-1 rounded-full"
                         >
@@ -1174,14 +1250,18 @@ const PreConstructedPropertyForm: React.FC = () => {
   return (
     <div className="max-w-2xl p-8 w-full mx-auto lg:w-[40%] bg-white rounded-lg shadow-lg">
       <h2 className="text-2xl font-bold mb-6">
-        Create Pre-Constructed Property
+        {propertyId
+          ? "Edit Pre-Constructed Property"
+          : "Create Pre-Constructed Property"}
       </h2>
 
       {error && <p className="text-red-500 mb-4">{error}</p>}
       {errors && <p className="text-red-500 mb-4">{errors.length}</p>}
       {success && (
         <p className="text-green-500 mb-4">
-          Pre-Constructed Property created successfully!
+          {propertyId
+            ? "Pre-Constructed Property updated successfully!"
+            : "Pre-Constructed Property created successfully!"}
         </p>
       )}
 
@@ -1281,7 +1361,7 @@ const PreConstructedPropertyForm: React.FC = () => {
             type="submit"
             className="mt-4 bg-indigo-600 text-white px-5 py-3 rounded hover:bg-blue-600"
           >
-            Create Property
+            {propertyId ? "Update Property" : "Create Property"}
           </button>
         </div>
       </form>

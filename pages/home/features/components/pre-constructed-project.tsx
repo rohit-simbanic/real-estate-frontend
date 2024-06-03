@@ -10,8 +10,14 @@ import { PreconstructedPropertyDetails } from "@/types/property-preconstructed-t
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-
-const PreConstructedProject = () => {
+interface PreConstructedProjectProps {
+  onEdit: (id: string) => void;
+  propertyId?: string | null;
+}
+const PreConstructedProject: React.FC<PreConstructedProjectProps> = ({
+  onEdit,
+  propertyId,
+}) => {
   const [propertyItem, setPropertyItem] = useState<
     PreconstructedPropertyDetails[]
   >([]);
@@ -22,6 +28,9 @@ const PreConstructedProject = () => {
   const pathname = usePathname();
   const router = useRouter();
 
+  const handleEdit = (property: PropertyDetails) => {
+    onEdit(property.listing_id);
+  };
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -45,9 +54,6 @@ const PreConstructedProject = () => {
 
     fetchData();
   }, [pathname]);
-  const handleEdit = (property: PropertyDetails) => {
-    router.push(`/admin/edit-preconstructed?propertyId=${property.listing_id}`);
-  };
 
   const handleDelete = async (propertyId: string) => {
     try {
