@@ -6,7 +6,7 @@ import React from "react";
 interface PropertyCardProps {
   details: PropertyDetails;
   index: number;
-  onEdit?: (property: PropertyDetails) => void;
+  onEdit?: (propertyId: string) => void;
   onDelete?: (propertyId: string) => void;
   isAdmin: boolean;
 }
@@ -45,7 +45,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
 }) => {
   console.log("details:", details);
   const handleEdit = () => {
-    if (onEdit) onEdit(details);
+    if (onEdit) onEdit(details.listing_id);
   };
 
   const handleDelete = () => {
@@ -56,7 +56,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
       <Link href={details.listing_id}>
         <Image
           alt="Property image"
-          src={`https://backend-real-estate-m1zm.onrender.com/uploads/${details.property_images[0].filename}`}
+          src={`http://localhost:5000/uploads/${details.property_images[0].filename}`}
           className=" w-full rounded-md object-cover !h-[300px]"
           width={1770}
           height={700}
@@ -69,8 +69,8 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
               <dt className="sr-only">Price</dt>
               <dd className="text-sm text-gray-500">{details.price}</dd>
 
-              <div className="rounded-full bg-yellow-500 py-1 px-2 text-xs font-medium text-white w-16 my-3">
-                {details.available_for}
+              <div className="rounded-full bg-yellow-500 py-1 px-2 text-xs font-medium text-white w-16 my-3 flex items-center justify-center">
+                {details.category}
               </div>
             </div>
             <div>

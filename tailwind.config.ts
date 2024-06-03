@@ -54,6 +54,11 @@ const config: Config = {
     "bg-gray-300",
     "max-h-[500px]",
     "overflow-y-auto",
+    "text-indigo-600",
+    "text-indigo-600",
+    "text-red-500",
+    "font-bold",
+    "md:flex-row",
   ],
   plugins: [],
 };

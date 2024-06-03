@@ -15,11 +15,18 @@ const AgentProfile = ({ params }: Props) => {
   const [newPassword, setNewPassword] = useState<string>("");
   const [activeTab, setActiveTab] = useState<string>("profile");
 
+  const validatePassword = (password: string) => {
+    if (!/^(?=.*[!@#$%^&*])(?=.*[A-Za-z\d]).{7,}$/.test(password)) {
+      return "Password must be at least 7 characters long and include at least one special character";
+    }
+    return null;
+  };
+
   useEffect(() => {
     const fetchAgent = async () => {
       try {
         const response = await axios.get(
-          `https://backend-real-estate-m1zm.onrender.com/agent/${params.id}`
+          `http://localhost:5000/agent/${params.id}`
         );
         setAgent(response.data);
         setFormData(response.data);
@@ -62,7 +69,7 @@ const AgentProfile = ({ params }: Props) => {
 
     try {
       const response = await axios.put(
-        `https://backend-real-estate-m1zm.onrender.com/agent/${params.id}`,
+        `http://localhost:5000/agent/${params.id}`,
         data,
         {
           headers: {
@@ -78,9 +85,14 @@ const AgentProfile = ({ params }: Props) => {
   };
 
   const handlePasswordReset = async () => {
+    const passwordError = validatePassword(newPassword);
+    if (passwordError) {
+      alert(passwordError);
+      return;
+    }
     try {
       await axios.put(
-        `https://backend-real-estate-m1zm.onrender.com/agent/${params.id}/reset-password`,
+        `http://localhost:5000/agent/${params.id}/reset-password`,
         {
           password: newPassword,
         }
@@ -108,7 +120,7 @@ const AgentProfile = ({ params }: Props) => {
     <div className="max-w-4xl mx-auto px-4 lg:px-20 my-10">
       <div className="bg-white p-6 rounded-lg shadow-lg">
         <div className="border-b border-gray-200">
-          <nav className="flex space-x-4">
+          <nav className="flex flex-col sm:flex-row space-x-4">
             <button
               className={`py-2 px-4 ${
                 activeTab === "profile"
@@ -118,6 +130,16 @@ const AgentProfile = ({ params }: Props) => {
               onClick={() => setActiveTab("profile")}
             >
               Profile Details
+            </button>
+            <button
+              className={`py-2 px-4 ${
+                activeTab === "details"
+                  ? "border-b-2 border-blue-500 text-blue-500"
+                  : "text-gray-500"
+              }`}
+              onClick={() => setActiveTab("details")}
+            >
+              Additional Details
             </button>
             <button
               className={`py-2 px-4 ${
@@ -133,10 +155,10 @@ const AgentProfile = ({ params }: Props) => {
         </div>
 
         {activeTab === "profile" && (
-          <div className="flex flex-col items-center space-y-4 mt-6">
+          <div className="flex flex-col items-center space-y-4 mt-6 max-h-[600px] overflow-y-auto scrollable-container px-2">
             {agent.profilePicture ? (
               <Image
-                src={`https://backend-real-estate-m1zm.onrender.com${agent.profilePicture}`}
+                src={`http://localhost:5000${agent.profilePicture}`}
                 alt="Profile"
                 className="w-32 h-32 rounded-full"
                 width={128}
@@ -147,7 +169,9 @@ const AgentProfile = ({ params }: Props) => {
                 {getInitial(agent.fullName)}
               </div>
             )}
-            <p className="text-lg font-semibold">Name: {agent.fullName}</p>
+            <p className="text-lg font-semibold ">
+              <span className="underline">Name:</span> {agent.fullName}
+            </p>
             <p className="text-lg">
               <span className="font-bold">Email: </span>
               {agent.email}
@@ -157,62 +181,66 @@ const AgentProfile = ({ params }: Props) => {
               {agent.phoneNumber}
             </p>
             <p className="text-lg">
-              <span className="font-bold">License no:</span>
+              <span className="font-bold">License no: </span>
               {agent.licenseNumber}
             </p>
             <p className="text-lg">
-              <span className="font-bold">Agency Name:</span>
+              <span className="font-bold">Agency Name: </span>
               {agent.agencyName}
             </p>
             <p className="text-lg">
-              <span className="font-bold">Agency Address:</span>
+              <span className="font-bold">Agency Address: </span>
               {agent.agencyAddress}
             </p>
+          </div>
+        )}
+        {activeTab === "details" && (
+          <div className="flex flex-col items-center space-y-4 mt-6 max-h-[600px] overflow-y-auto scrollable-container px-2">
             <p className="text-lg">
-              <span className="font-bold">Year of Experience:</span>{" "}
+              <span className="font-bold">Year of Experience: </span>{" "}
               {agent.yearsOfExperience}
             </p>
             <p className="text-lg">
-              <span className="font-bold">Specializations:</span>
+              <span className="font-bold">Specializations: </span>
               {agent.specializations}
             </p>
             <p className="text-lg">
-              <span className="font-bold">Govt ID:</span>
+              <span className="font-bold">Govt ID: </span>
               {agent.governmentID}
             </p>
             <p className="text-lg">
-              <span className="font-bold">Linkedin Profile:</span>
+              <span className="font-bold">Linkedin Profile: </span>
               {agent.linkedInProfile}
             </p>
             <p className="text-lg">
-              <span className="font-bold">Website:</span> {agent.website}
+              <span className="font-bold">Website: </span> {agent.website}
             </p>
             <p className="text-lg">
-              <span className="font-bold">Marteting preferences?:</span>
+              <span className="font-bold">Marketing preferences?: </span>
               {agent.marketingPreferences}
             </p>
             <p className="text-lg">
-              <span className="font-bold">Communication Channel:</span>
+              <span className="font-bold">Communication Channel: </span>
               {agent.preferredCommunicationChannels}
             </p>
             <p className="text-lg">
-              <span className="font-bold">Language spoken:</span>
+              <span className="font-bold">Language spoken: </span>
               {agent.languagesSpoken}
             </p>
             <p className="text-lg">
-              <span className="font-bold">Service Areas:</span>
+              <span className="font-bold">Service Areas: </span>
               {agent.serviceAreas}
             </p>
             <p className="text-lg">
-              <span className="font-bold">Bio:</span>
+              <span className="font-bold">Bio: </span>
               {agent.professionalBio}
             </p>
             <p className="text-lg">
-              <span className="font-bold">Certifications:</span>
+              <span className="font-bold">Certifications: </span>
               {agent.certificationsAwards}
             </p>
             <p className="text-lg">
-              <span className="font-bold">References:</span>
+              <span className="font-bold">References: </span>
               {agent.references}
             </p>
             <div className="mt-6">
@@ -235,9 +263,8 @@ const AgentProfile = ({ params }: Props) => {
             </div>
           </div>
         )}
-
         {activeTab === "edit" && (
-          <div className="mt-6">
+          <div className="mt-6 max-h-[600px] overflow-y-auto scrollable-container px-2">
             <h2 className="text-3xl font-bold text-center mb-6">
               Edit Profile
             </h2>
@@ -336,7 +363,6 @@ const AgentProfile = ({ params }: Props) => {
                   value={formData.governmentID}
                   onChange={handleInputChange}
                   className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
-                  required
                 />
               </div>
               <div className="flex flex-col">

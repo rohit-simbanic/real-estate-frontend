@@ -71,16 +71,10 @@ const AgentSignup: React.FC = () => {
     }
     if (!formData.phoneNumber)
       newErrors.phoneNumber = "Phone Number is required";
-    if (!formData.licenseNumber)
-      newErrors.licenseNumber = "License Number is required";
-    if (!formData.governmentID)
-      newErrors.governmentID = "Government ID is required";
 
     // Check if email is already registered
     try {
-      const response = await axios.get(
-        "https://backend-real-estate-m1zm.onrender.com/agents"
-      );
+      const response = await axios.get("http://localhost:5000/agents");
       const agents = response.data;
       const emailExists = agents.some(
         (agent: any) => agent.email === formData.email
@@ -133,7 +127,7 @@ const AgentSignup: React.FC = () => {
 
     try {
       const response = await axios.post(
-        "https://backend-real-estate-m1zm.onrender.com/register-agent",
+        "http://localhost:5000/register-agent",
         data,
         {
           headers: {
@@ -228,60 +222,38 @@ const AgentSignup: React.FC = () => {
               <span className="text-red-500">{errors.phoneNumber}</span>
             )}
           </div>
-          <div className="flex flex-col">
+          <div className="hidden">
             <label className="font-semibold">License Number:</label>
             <input
               type="text"
               name="licenseNumber"
               value={formData.licenseNumber}
               onChange={handleChange}
-              className={`mt-1 p-2 border ${
-                errors.licenseNumber
-                  ? "border-red-500 font-bold"
-                  : "border-gray-300"
-              } rounded focus:ring-blue-500 focus:border-blue-500`}
-              required
+              className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
             />
-            {errors.licenseNumber && (
-              <span className="text-red-500">{errors.licenseNumber}</span>
-            )}
           </div>
-          <div className="flex flex-col">
+          <div className="hidden">
             <label className="font-semibold">Government ID:</label>
             <input
               type="text"
               name="governmentID"
               value={formData.governmentID}
               onChange={handleChange}
-              className={`mt-1 p-2 border ${
-                errors.governmentID
-                  ? "border-red-500 font-bold"
-                  : "border-gray-300"
-              } rounded focus:ring-blue-500 focus:border-blue-500`}
-              required
+              className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
             />
-            {errors.governmentID && (
-              <span className="text-red-500">{errors.governmentID}</span>
-            )}
           </div>
-          <div className="flex flex-col">
+          <div className="hidden">
             <label className="font-semibold">Website URL:</label>
             <input
               type="text"
               name="website"
               value={formData.website}
               onChange={handleChange}
-              className={`mt-1 p-2 border ${
-                errors.website ? "border-red-500 font-bold" : "border-gray-300"
-              } rounded focus:ring-blue-500 focus:border-blue-500`}
-              required
+              className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
             />
-            {errors.website && (
-              <span className="text-red-500">{errors.website}</span>
-            )}
           </div>
-          <div className="flex flex-col">
-            <label className="font-semibold">Profile Picture URL:</label>
+          <div className="hidden">
+            <label className="font-semibold">Profile Picture:</label>
             <input
               type="file"
               name="profilePicture"

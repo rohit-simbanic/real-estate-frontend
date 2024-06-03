@@ -233,7 +233,7 @@ const Header: React.FC = () => {
                 {agent?.profilePicture ? (
                   <Link href={"/admin/agent-profile"}>
                     <Image
-                      src={`https://backend-real-estate-m1zm.onrender.com${agent.profilePicture}`}
+                      src={`http://localhost:5000${agent.profilePicture}`}
                       alt="Profile"
                       height={52}
                       width={52}

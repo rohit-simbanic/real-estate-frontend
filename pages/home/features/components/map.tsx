@@ -1,24 +1,82 @@
 "use client";
 import { fieldLabel } from "@/assets/field-label";
 import React, { useState, FormEvent } from "react";
+import emailjs from "@emailjs/browser";
 
 const MapComponent: React.FC = () => {
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    message: "",
+  });
+  const [errors, setErrors] = useState({
+    email: "",
+    message: "",
+  });
 
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(event.target.value);
+    setFormData({ ...formData, email: event.target.value });
+    setErrors({ ...errors, email: "" });
   };
 
   const handleMessageChange = (
     event: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
-    setMessage(event.target.value);
+    setFormData({ ...formData, message: event.target.value });
+    setErrors({ ...errors, message: "" });
   };
 
-  const handleSubmit = (event: FormEvent) => {
+  const validate = () => {
+    let valid = true;
+    const newErrors = {
+      email: "",
+      message: "",
+    };
+
+    if (!formData.email) {
+      newErrors.email = "Email is required";
+      valid = false;
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Email address is invalid";
+      valid = false;
+    }
+
+    if (!formData.message) {
+      newErrors.message = "Message is required";
+      valid = false;
+    }
+
+    setErrors(newErrors);
+    return valid;
+  };
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log("Submitting:", { email, message });
+
+    if (!validate()) {
+      return;
+    }
+
+    const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!;
+    const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID_HOME!;
+    const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!;
+
+    const templateParams = {
+      from_email: formData.email,
+      message: formData.message,
+    };
+
+    emailjs
+      .send(serviceId, templateId, templateParams, publicKey)
+      .then((response) => {
+        console.log("Email sent successfully!", response);
+        setFormData({
+          email: "",
+          message: "",
+        });
+      })
+      .catch((error) => {
+        console.error("Error sending email:", error);
+      });
   };
 
   return (
@@ -52,9 +110,12 @@ const MapComponent: React.FC = () => {
                 id="email"
                 name="email"
                 className="w-full bg-white dark:bg-gray-800 rounded border dark:border-gray-800 border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
-                value={email}
+                value={formData.email}
                 onChange={handleEmailChange}
               />
+              {errors.email && (
+                <span className="text-red-500 text-sm">{errors.email}</span>
+              )}
             </div>
             <div className="relative mb-4">
               <label
@@ -67,9 +128,12 @@ const MapComponent: React.FC = () => {
                 id="message"
                 name="message"
                 className="w-full bg-white dark:bg-gray-800 rounded border dark:border-gray-800 border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 h-32 text-base outline-none text-gray-700 py-1 px-3 resize-none leading-6 transition-colors duration-200 ease-in-out"
-                value={message}
+                value={formData.message}
                 onChange={handleMessageChange}
               ></textarea>
+              {errors.message && (
+                <span className="text-red-500 text-sm">{errors.message}</span>
+              )}
             </div>
             <button
               type="submit"

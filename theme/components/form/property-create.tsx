@@ -60,14 +60,14 @@ interface FormData {
   available_for: string;
   listing_id: string;
   property_description: string;
-  property_images: File[];
+  property_images: { file: File; url: string }[];
   general_details: GeneralDetails;
   room_interior: RoomInterior;
   exterior: Exterior;
   utilities: Utilities;
   at_a_glance: AtAGlance;
-  street_view: string;
-  map_location: string;
+  latitude: string;
+  longitude: string;
 }
 
 const initialFormData: FormData = {
@@ -123,17 +123,24 @@ const initialFormData: FormData = {
     Fireplace: "",
     Pool: "",
   },
-  street_view: "",
-  map_location: "",
+  latitude: "",
+  longitude: "",
 };
 
-const PropertyForm: React.FC = () => {
+interface PropertyFormProps {
+  propertyId: string | null;
+}
+const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId }) => {
   const [formData, setFormData] = useState<FormData>(initialFormData);
+  console.log("formData", formData);
+  console.log("propertyId", propertyId);
   const [error, setError] = useState<string | null>(null);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [success, setSuccess] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("category");
   const router = useRouter();
+  const searchParams = useSearchParams();
+
   console.log("errors", errors);
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
@@ -145,8 +152,13 @@ const PropertyForm: React.FC = () => {
     if (!formData.listing_id) newErrors.listing_id = "Listing ID is required";
     if (!formData.property_description)
       newErrors.property_description = "Property description is required";
-    if (!formData.property_images.length)
-      newErrors.property_images = "At least five property image is required";
+    if (
+      formData.property_images.length < 5 ||
+      formData.property_images.length > 11
+    ) {
+      newErrors.property_images =
+        "At least five property images are required but not exceeding ten images.";
+    }
 
     const { general_details, room_interior, exterior, utilities, at_a_glance } =
       formData;
@@ -222,11 +234,78 @@ const PropertyForm: React.FC = () => {
     if (!at_a_glance.Fireplace)
       newErrors.at_a_glance_Fireplace = "Fireplace info is required";
     if (!at_a_glance.Pool) newErrors.at_a_glance_Pool = "Pool info is required";
-    if (!formData.street_view)
-      newErrors.street_view = "Street View is required";
-    if (!formData.map_location)
-      newErrors.map_location = "Map Location is required";
+    if (!formData.latitude) newErrors.latitude = "Latitude is required";
+    if (!formData.longitude) newErrors.longitude = "Longitude is required";
     return newErrors;
+  };
+
+  const hasTabErrors = (tab: string) => {
+    switch (tab) {
+      case "category":
+        return !!(
+          errors.category ||
+          errors.price ||
+          errors.available_for ||
+          errors.listing_id ||
+          errors.property_description ||
+          errors.property_images
+        );
+      case "general_details":
+        return !!(
+          errors.general_details_Price ||
+          errors.general_details_Taxes ||
+          errors.general_details_Address ||
+          errors.general_details_Lot_Size ||
+          errors.general_details_Directions
+        );
+      case "room_interior":
+        return !!(
+          errors.room_interior_Rooms ||
+          errors.room_interior_Rooms_plus ||
+          errors.room_interior_Bedrooms ||
+          errors.room_interior_Bedrooms_plus ||
+          errors.room_interior_Kitchens ||
+          errors.room_interior_Family_Room ||
+          errors.room_interior_Basement
+        );
+      case "exterior":
+        return !!(
+          errors.exterior_Property_Type ||
+          errors.exterior_Style ||
+          errors.exterior_Exterior ||
+          errors.exterior_Garage_Type ||
+          errors.exterior_Drive_Parking_Spaces ||
+          errors.exterior_Pool
+        );
+      case "utilities":
+        return !!(
+          errors.utilities_Fireplace_Stove ||
+          errors.utilities_Heat_Source ||
+          errors.utilities_Heat_Type ||
+          errors.utilities_Central_Air_Conditioning ||
+          errors.utilities_Laundry_Level ||
+          errors.utilities_Sewers ||
+          errors.utilities_Water
+        );
+      case "at_a_glance":
+        return !!(
+          errors.at_a_glance_Type ||
+          errors.at_a_glance_Area ||
+          errors.at_a_glance_Municipality ||
+          errors.at_a_glance_Neighbourhood ||
+          errors.at_a_glance_Style ||
+          errors.at_a_glance_LotSize ||
+          errors.at_a_glance_Tax ||
+          errors.at_a_glance_Beds ||
+          errors.at_a_glance_Baths ||
+          errors.at_a_glance_Fireplace ||
+          errors.at_a_glance_Pool
+        );
+      case "map":
+        return !!(errors.latitude || errors.longitude);
+      default:
+        return false;
+    }
   };
 
   const handleChange = (
@@ -271,12 +350,64 @@ const PropertyForm: React.FC = () => {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target;
+    const maxSize = 5 * 1024 * 1024; // 5 MB size limit
+    const allowedFormats = [
+      "image/png",
+      "image/jpeg",
+      "image/jpg",
+      "image/webp",
+    ];
+    let newFiles: { file: File; url: string }[] = [];
+
     if (files) {
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        property_images: Array.from(files),
-      }));
+      newFiles = Array.from(files)
+        .map((file) => {
+          if (!allowedFormats.includes(file.type)) {
+            setErrors((prevErrors) => ({
+              ...prevErrors,
+              property_images: `Only PNG, JPG, JPEG, and WEBP formats are allowed.`,
+            }));
+            return null;
+          }
+          if (file.size > maxSize) {
+            setErrors((prevErrors) => ({
+              ...prevErrors,
+              property_images: `File size should not exceed 5 MB.`,
+            }));
+            return null;
+          }
+          return {
+            file,
+            url: URL.createObjectURL(file),
+          };
+        })
+        .filter((file): file is { file: File; url: string } => file !== null); // Remove null values
     }
+
+    setFormData((prevFormData) => {
+      const uniqueFiles = newFiles.filter(
+        (newFile) =>
+          !prevFormData.property_images.some(
+            (existingFile) => existingFile.url === newFile.url
+          )
+      );
+      return {
+        ...prevFormData,
+        property_images: [...prevFormData.property_images, ...uniqueFiles],
+      };
+    });
+  };
+
+  const handleDeleteImage = (index: number) => {
+    setFormData((prevFormData) => {
+      const updatedImages = prevFormData.property_images.filter(
+        (_, i) => i !== index
+      );
+      return {
+        ...prevFormData,
+        property_images: updatedImages,
+      };
+    });
   };
 
   const handleFileUpload = (files: File[]): File[] => {
@@ -309,10 +440,13 @@ const PropertyForm: React.FC = () => {
       setErrors(validationErrors);
       return;
     }
+
     try {
       console.log("uploading start");
       const token = localStorage.getItem("token");
-      const files = handleFileUpload(formData.property_images);
+      const files = handleFileUpload(
+        formData.property_images.map((image) => image.file)
+      );
 
       // Prepare FormData
       const data = new FormData();
@@ -323,16 +457,31 @@ const PropertyForm: React.FC = () => {
       // Append other fields
       appendNestedObject(formData, data);
 
-      const response = await axios.post(
-        "https://backend-real-estate-m1zm.onrender.com/add-property",
-        data,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      let response;
+      if (propertyId) {
+        console.log("before append property", data);
+        response = await axios.put(
+          `http://localhost:5000/properties/${propertyId}`,
+          data,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+      } else {
+        response = await axios.post(
+          "http://localhost:5000/add-property",
+          data,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+      }
 
       setSuccess(true);
       setError(null);
@@ -345,6 +494,50 @@ const PropertyForm: React.FC = () => {
       setSuccess(false);
     }
   };
+  const extractCoordinates = (url: string) => {
+    const regex = /@([0-9.-]+),([0-9.-]+)/;
+    const matches = url.match(regex);
+    if (matches) {
+      return {
+        latitude: matches[1],
+        longitude: matches[2],
+      };
+    }
+    return { latitude: "", longitude: "" };
+  };
+  useEffect(() => {
+    if (propertyId) {
+      const fetchPropertyData = async () => {
+        try {
+          const response = await axios.get(
+            `http://localhost:5000/properties/${propertyId}`
+          );
+          const propertyData = response.data;
+          console.log("property data", propertyData);
+
+          const { street_view } = propertyData;
+          const { latitude, longitude } = extractCoordinates(street_view);
+
+          const formattedPropertyData = {
+            ...propertyData,
+            latitude,
+            longitude,
+            property_images: propertyData.property_images.map((img: any) => ({
+              file: null,
+              url: `http://localhost:5000/uploads/${img.filename}`,
+            })),
+          };
+
+          setFormData(formattedPropertyData);
+        } catch (err) {
+          console.error(err);
+          setError("Failed to fetch property data.");
+        }
+      };
+
+      fetchPropertyData();
+    }
+  }, [propertyId]);
 
   const tabContent = () => {
     switch (activeTab) {
@@ -358,7 +551,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.category}
                 onChange={handleSelectChange}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               >
                 <option value="">Select Category</option>
                 <option value="featured">Featured</option>
@@ -376,20 +568,22 @@ const PropertyForm: React.FC = () => {
                 value={formData.price}
                 onChange={handleChange}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               />
               {errors.price && <p className="text-red-500">{errors.price}</p>}
             </div>
             <div>
               <label className="block font-semibold">Available For:</label>
-              <input
-                type="text"
+              <select
                 name="available_for"
                 value={formData.available_for}
-                onChange={handleChange}
+                onChange={handleSelectChange}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
-              />
+              >
+                <option value="">Select one</option>
+                <option value="sale">Sale</option>
+                <option value="lease">Lease</option>
+              </select>
+
               {errors.available_for && (
                 <p className="text-red-500">{errors.available_for}</p>
               )}
@@ -403,7 +597,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.listing_id}
                 onChange={handleListingIdChange}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               />
               {errors.listing_id && (
                 <p className="text-red-500">{errors.listing_id}</p>
@@ -419,7 +612,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.property_description}
                 onChange={handleChange}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               ></textarea>
               {errors.property_description && (
                 <p className="text-red-500">{errors.property_description}</p>
@@ -436,10 +628,33 @@ const PropertyForm: React.FC = () => {
                 multiple
                 onChange={handleFileChange}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               />
-              {errors.property_images && (
-                <p className="text-red-500">{errors.property_images}</p>
+              {errors.property_images &&
+                formData.property_images.length < 5 && (
+                  <p className="text-red-500">{errors.property_images}</p>
+                )}
+              {formData.property_images.length > 0 && (
+                <div className="mt-2">
+                  <p>Uploaded Images:</p>
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    {formData.property_images.map((image, index) => (
+                      <div key={index} className="relative">
+                        <img
+                          src={image.url}
+                          alt={`Property Image ${index + 1}`}
+                          className="w-full h-auto rounded"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteImage(index)}
+                          className="absolute top-0 right-0 bg-red-600 text-white p-1 rounded-full"
+                        >
+                          &times;
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               )}
             </div>
           </div>
@@ -456,7 +671,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.general_details.Price}
                 onChange={(e) => handleNestedChange(e, "general_details")}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               />
               {errors.general_details_Price && (
                 <p className="text-red-500">{errors.general_details_Price}</p>
@@ -471,7 +685,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.general_details.Taxes}
                 onChange={(e) => handleNestedChange(e, "general_details")}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               />
               {errors.general_details_Taxes && (
                 <p className="text-red-500">{errors.general_details_Taxes}</p>
@@ -486,7 +699,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.general_details.Address}
                 onChange={(e) => handleNestedChange(e, "general_details")}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               />
               {errors.general_details_Address && (
                 <p className="text-red-500">{errors.general_details_Address}</p>
@@ -501,7 +713,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.general_details.Lot_Size}
                 onChange={(e) => handleNestedChange(e, "general_details")}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               />
               {errors.general_details_Lot_Size && (
                 <p className="text-red-500">
@@ -520,7 +731,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.general_details.Directions}
                 onChange={(e) => handleNestedChange(e, "general_details")}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               />
               {errors.general_details_Directions && (
                 <p className="text-red-500">
@@ -542,7 +752,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.room_interior.Rooms}
                 onChange={(e) => handleNestedChange(e, "room_interior")}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               />
               {errors.room_interior_Rooms && (
                 <p className="text-red-500">{errors.room_interior_Rooms}</p>
@@ -557,7 +766,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.room_interior.Rooms_plus}
                 onChange={(e) => handleNestedChange(e, "room_interior")}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               />
               {errors.room_interior_Rooms_plus && (
                 <p className="text-red-500">
@@ -574,7 +782,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.room_interior.Bedrooms}
                 onChange={(e) => handleNestedChange(e, "room_interior")}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               />
               {errors.room_interior_Bedrooms && (
                 <p className="text-red-500">{errors.room_interior_Bedrooms}</p>
@@ -589,7 +796,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.room_interior.Bedrooms_plus}
                 onChange={(e) => handleNestedChange(e, "room_interior")}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               />
               {errors.room_interior_Bedrooms_plus && (
                 <p className="text-red-500">
@@ -606,7 +812,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.room_interior.Kitchens}
                 onChange={(e) => handleNestedChange(e, "room_interior")}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               />
               {errors.room_interior_Kitchens && (
                 <p className="text-red-500">{errors.room_interior_Kitchens}</p>
@@ -620,7 +825,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.room_interior.Family_Room}
                 onChange={(e: any) => handleNestedChange(e, "room_interior")}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               >
                 <option value="">Select</option>
                 <option value="Y">Yes</option>
@@ -640,7 +844,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.room_interior.Basement}
                 onChange={(e) => handleNestedChange(e, "room_interior")}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               />
               {errors.room_interior_Basement && (
                 <p className="text-red-500">{errors.room_interior_Basement}</p>
@@ -660,7 +863,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.exterior.Property_Type}
                 onChange={(e) => handleNestedChange(e, "exterior")}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               />
               {errors.exterior_Property_Type && (
                 <p className="text-red-500">{errors.exterior_Property_Type}</p>
@@ -674,7 +876,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.exterior.Style}
                 onChange={(e) => handleNestedChange(e, "exterior")}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               />
               {errors.exterior_Style && (
                 <p className="text-red-500">{errors.exterior_Style}</p>
@@ -688,7 +889,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.exterior.Exterior}
                 onChange={(e) => handleNestedChange(e, "exterior")}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               />
               {errors.exterior_Exterior && (
                 <p className="text-red-500">{errors.exterior_Exterior}</p>
@@ -702,7 +902,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.exterior.Garage_Type}
                 onChange={(e) => handleNestedChange(e, "exterior")}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               />
               {errors.exterior_Garage_Type && (
                 <p className="text-red-500">{errors.exterior_Garage_Type}</p>
@@ -718,7 +917,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.exterior.Drive_Parking_Spaces}
                 onChange={(e) => handleNestedChange(e, "exterior")}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               />
               {errors.exterior_Drive_Parking_Spaces && (
                 <p className="text-red-500">
@@ -734,7 +932,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.exterior.Pool}
                 onChange={(e) => handleNestedChange(e, "exterior")}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               />
               {errors.exterior_Pool && (
                 <p className="text-red-500">{errors.exterior_Pool}</p>
@@ -753,7 +950,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.utilities.Fireplace_Stove}
                 onChange={(e: any) => handleNestedChange(e, "utilities")}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               >
                 <option value="">Select</option>
                 <option value="Y">Yes</option>
@@ -773,7 +969,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.utilities.Heat_Source}
                 onChange={(e) => handleNestedChange(e, "utilities")}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               />
               {errors.utilities_Heat_Source && (
                 <p className="text-red-500">{errors.utilities_Heat_Source}</p>
@@ -787,7 +982,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.utilities.Heat_Type}
                 onChange={(e) => handleNestedChange(e, "utilities")}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               />
               {errors.utilities_Heat_Type && (
                 <p className="text-red-500">{errors.utilities_Heat_Type}</p>
@@ -803,7 +997,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.utilities.Central_Air_Conditioning}
                 onChange={(e) => handleNestedChange(e, "utilities")}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               />
               {errors.utilities_Central_Air_Conditioning && (
                 <p className="text-red-500">
@@ -819,7 +1012,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.utilities.Laundry_Level}
                 onChange={(e) => handleNestedChange(e, "utilities")}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               />
               {errors.utilities_Laundry_Level && (
                 <p className="text-red-500">{errors.utilities_Laundry_Level}</p>
@@ -833,7 +1025,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.utilities.Sewers}
                 onChange={(e) => handleNestedChange(e, "utilities")}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               />
               {errors.utilities_Sewers && (
                 <p className="text-red-500">{errors.utilities_Sewers}</p>
@@ -847,7 +1038,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.utilities.Water}
                 onChange={(e) => handleNestedChange(e, "utilities")}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               />
               {errors.utilities_Water && (
                 <p className="text-red-500">{errors.utilities_Water}</p>
@@ -867,7 +1057,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.at_a_glance.Type}
                 onChange={(e) => handleNestedChange(e, "at_a_glance")}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               />
               {errors.at_a_glance_Type && (
                 <p className="text-red-500">{errors.at_a_glance_Type}</p>
@@ -881,7 +1070,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.at_a_glance.Area}
                 onChange={(e) => handleNestedChange(e, "at_a_glance")}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               />
               {errors.at_a_glance_Area && (
                 <p className="text-red-500">{errors.at_a_glance_Area}</p>
@@ -895,7 +1083,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.at_a_glance.Municipality}
                 onChange={(e) => handleNestedChange(e, "at_a_glance")}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               />
               {errors.at_a_glance_Municipality && (
                 <p className="text-red-500">
@@ -911,7 +1098,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.at_a_glance.Neighbourhood}
                 onChange={(e) => handleNestedChange(e, "at_a_glance")}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               />
               {errors.at_a_glance_Neighbourhood && (
                 <p className="text-red-500">
@@ -927,7 +1113,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.at_a_glance.Style}
                 onChange={(e) => handleNestedChange(e, "at_a_glance")}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               />
               {errors.at_a_glance_Style && (
                 <p className="text-red-500">{errors.at_a_glance_Style}</p>
@@ -941,7 +1126,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.at_a_glance.LotSize}
                 onChange={(e) => handleNestedChange(e, "at_a_glance")}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               />
               {errors.at_a_glance_LotSize && (
                 <p className="text-red-500">{errors.at_a_glance_LotSize}</p>
@@ -955,7 +1139,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.at_a_glance.Tax}
                 onChange={(e) => handleNestedChange(e, "at_a_glance")}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               />
               {errors.at_a_glance_Tax && (
                 <p className="text-red-500">{errors.at_a_glance_Tax}</p>
@@ -969,7 +1152,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.at_a_glance.Beds}
                 onChange={(e) => handleNestedChange(e, "at_a_glance")}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               />
               {errors.at_a_glance_Beds && (
                 <p className="text-red-500">{errors.at_a_glance_Beds}</p>
@@ -983,7 +1165,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.at_a_glance.Baths}
                 onChange={(e) => handleNestedChange(e, "at_a_glance")}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               />
               {errors.at_a_glance_Baths && (
                 <p className="text-red-500">{errors.at_a_glance_Baths}</p>
@@ -996,7 +1177,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.at_a_glance.Fireplace}
                 onChange={(e: any) => handleNestedChange(e, "at_a_glance")}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               >
                 <option value="">Select</option>
                 <option value="Y">Yes</option>
@@ -1014,7 +1194,6 @@ const PropertyForm: React.FC = () => {
                 value={formData.at_a_glance.Pool}
                 onChange={(e) => handleNestedChange(e, "at_a_glance")}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
               />
               {errors.at_a_glance_Pool && (
                 <p className="text-red-500">{errors.at_a_glance_Pool}</p>
@@ -1026,33 +1205,31 @@ const PropertyForm: React.FC = () => {
         return (
           <>
             <div className="mt-8">
-              <h3 className="text-xl font-bold mb-4">Street View</h3>
+              <h3 className="text-xl font-bold mb-4">Latitude</h3>
               <input
-                type="text"
-                name="street_view"
-                value={formData.street_view}
+                type="number"
+                step="any"
+                name="latitude"
+                value={formData.latitude}
                 onChange={handleChange}
                 className="p-3 border border-gray-300 rounded w-full"
-                required
-                placeholder="https://www.google.com/maps/@43.8518057,-79.3508666,3a,73.7y,270h,90t/data=!3m6!1e1!3m4!1s2ZDYMmV3Ru7cbc6eDhnqvA!2e0!7i16384!8i8192?entry=ttu"
               />
-              {errors.street_view && (
-                <p className="text-red-500">{errors.street_view}</p>
+              {errors.latitude && (
+                <p className="text-red-500">{errors.latitude}</p>
               )}
             </div>
             <div className="mt-8">
-              <h3 className="text-xl font-bold mb-4">Map Location</h3>
+              <h3 className="text-xl font-bold mb-4">Longitude</h3>
               <input
-                type="text"
-                name="map_location"
-                value={formData.map_location}
+                type="number"
+                step="any"
+                name="longitude"
+                value={formData.longitude}
                 onChange={handleChange}
                 className="p-3 border border-gray-300 rounded w-full"
-                placeholder="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2877.1912415808292!2d-79.35056!3d43.8518647!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89d4d4eee6c5e2f1%3A0xbc056247af50dad9!2s41%20Blackwell%20Ct%2C%20Markham%2C%20ON%20L3R%200C5%2C%20Canada!5e0!3m2!1sen!2sin!4v1716295325520!5m2!1sen!2sin"
-                required
               />
-              {errors.map_location && (
-                <p className="text-red-500">{errors.map_location}</p>
+              {errors.longitude && (
+                <p className="text-red-500">{errors.longitude}</p>
               )}
             </div>
           </>
@@ -1064,20 +1241,29 @@ const PropertyForm: React.FC = () => {
 
   return (
     <div className="max-w-2xl p-8 w-full mx-auto lg:w-[40%] bg-white rounded-lg shadow-lg">
-      <h2 className="text-2xl font-bold mb-6">Create Property</h2>
+      <h2 className="text-2xl font-bold mb-6">
+        {propertyId ? "Edit Property" : "Create Property"}
+      </h2>
 
       {error && <p className="text-red-500 mb-4">{error}</p>}
-      {errors && <p className="text-red-500 mb-4">{errors.length}</p>}
+
       {success && (
-        <p className="text-green-500 mb-4">Property created successfully!</p>
+        <p className="text-green-500 mb-4">
+          {" "}
+          {propertyId
+            ? "Property edited successfully "
+            : "Property created successfully!"}
+        </p>
       )}
 
       <div className="mb-6">
-        <div className="flex space-x-4">
+        <div className="flex space-x-4 flex-col md:flex-row gap-4">
           <button
             className={`${
               activeTab === "category"
                 ? "border-b-2 border-indigo-600 text-indigo-600"
+                : hasTabErrors("category")
+                ? "text-red-500 font-bold"
                 : ""
             } pb-2`}
             onClick={() => setActiveTab("category")}
@@ -1088,6 +1274,8 @@ const PropertyForm: React.FC = () => {
             className={`${
               activeTab === "general_details"
                 ? "border-b-2 border-indigo-600 text-indigo-600"
+                : hasTabErrors("general_details")
+                ? "text-red-500 font-bold"
                 : ""
             } pb-2`}
             onClick={() => setActiveTab("general_details")}
@@ -1098,6 +1286,8 @@ const PropertyForm: React.FC = () => {
             className={`${
               activeTab === "room_interior"
                 ? "border-b-2 border-indigo-600 text-indigo-600"
+                : hasTabErrors("room_interior")
+                ? "text-red-500 font-bold"
                 : ""
             } pb-2`}
             onClick={() => setActiveTab("room_interior")}
@@ -1108,6 +1298,8 @@ const PropertyForm: React.FC = () => {
             className={`${
               activeTab === "exterior"
                 ? "border-b-2 border-indigo-600 text-indigo-600"
+                : hasTabErrors("exterior")
+                ? "text-red-500 font-bold"
                 : ""
             } pb-2`}
             onClick={() => setActiveTab("exterior")}
@@ -1118,6 +1310,8 @@ const PropertyForm: React.FC = () => {
             className={`${
               activeTab === "utilities"
                 ? "border-b-2 border-indigo-600 text-indigo-600"
+                : hasTabErrors("utilities")
+                ? "text-red-500 font-bold"
                 : ""
             } pb-2`}
             onClick={() => setActiveTab("utilities")}
@@ -1128,6 +1322,8 @@ const PropertyForm: React.FC = () => {
             className={`${
               activeTab === "at_a_glance"
                 ? "border-b-2 border-indigo-600 text-indigo-600"
+                : hasTabErrors("at_a_glance")
+                ? "text-red-500 font-bold"
                 : ""
             } pb-2`}
             onClick={() => setActiveTab("at_a_glance")}
@@ -1138,6 +1334,8 @@ const PropertyForm: React.FC = () => {
             className={`${
               activeTab === "map"
                 ? "border-b-2 border-indigo-600 text-indigo-600"
+                : hasTabErrors("map")
+                ? "text-red-500 font-bold"
                 : ""
             } pb-2`}
             onClick={() => setActiveTab("map")}
@@ -1154,7 +1352,7 @@ const PropertyForm: React.FC = () => {
             type="submit"
             className="mt-4 bg-indigo-600 text-white px-5 py-3 rounded hover:bg-blue-600"
           >
-            Create Property
+            {propertyId ? "Edit Property" : "Create Property"}
           </button>
         </div>
       </form>

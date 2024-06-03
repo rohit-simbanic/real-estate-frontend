@@ -7,7 +7,7 @@ import { PropertyDetails } from "@/types/property-card-types";
 import { fetchProperties } from "@/helpers/product-fetch";
 import { usePathname, useRouter } from "next/navigation";
 
-const FeaturedListing = () => {
+const FeaturedListing = ({ onEdit }: { onEdit: (id: string) => void }) => {
   const [property, setProperty] = useState<PropertyDetails[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -21,8 +21,8 @@ const FeaturedListing = () => {
       try {
         const endpoint =
           pathname === "/admin"
-            ? "https://backend-real-estate-m1zm.onrender.com/my-properties"
-            : "https://backend-real-estate-m1zm.onrender.com/properties";
+            ? "http://localhost:5000/my-properties"
+            : "http://localhost:5000/properties";
         const data = await fetchProperties(endpoint);
         const featuredProperties = data.filter(
           (item: PropertyDetails) => item.category === "featured"
@@ -37,15 +37,18 @@ const FeaturedListing = () => {
 
     fetchData();
   }, [pathname]);
-  const handleEdit = (property: PropertyDetails) => {
-    router.push(`/admin/edit-property?propertyId=${property.listing_id}`);
+  // const handleEdit = (property: PropertyDetails) => {
+  //   router.push(`/admin/edit-property?propertyId=${property.listing_id}`);
+  // };
+  const handleEdit = (propertyId: string) => {
+    onEdit(propertyId);
   };
 
   const handleDelete = async (propertyId: string) => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `https://backend-real-estate-m1zm.onrender.com/properties/${propertyId}`,
+        `http://localhost:5000/properties/${propertyId}`,
         {
           method: "DELETE",
           headers: {

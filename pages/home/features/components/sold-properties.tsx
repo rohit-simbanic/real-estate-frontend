@@ -22,8 +22,8 @@ const SoldProperties = () => {
       try {
         const endpoint =
           pathname === "/admin"
-            ? "https://backend-real-estate-m1zm.onrender.com/my-properties"
-            : "https://backend-real-estate-m1zm.onrender.com/properties";
+            ? "http://localhost:5000/my-properties"
+            : "http://localhost:5000/properties";
         const data = await fetchProperties(endpoint);
         const soldProperties = data.filter(
           (item: PropertyDetails) => item.category === "sold"
@@ -39,15 +39,11 @@ const SoldProperties = () => {
     fetchData();
   }, [pathname]);
 
-  const handleEdit = (property: PropertyDetails) => {
-    router.push(`/admin/edit-property?propertyId=${property.listing_id}`);
-  };
-
   const handleDelete = async (propertyId: string) => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `https://backend-real-estate-m1zm.onrender.com/properties/${propertyId}`,
+        `http://localhost:5000/properties/${propertyId}`,
         {
           method: "DELETE",
           headers: {
@@ -92,7 +88,6 @@ const SoldProperties = () => {
               <PropertyCard
                 details={item}
                 index={index}
-                onEdit={handleEdit}
                 onDelete={handleDelete}
                 isAdmin={pathname === "/admin"}
               />
