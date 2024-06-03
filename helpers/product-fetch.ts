@@ -27,7 +27,7 @@ export const fetchProperties = async (endpoint: string) => {
 export const fetchSingleProperty = async (id: string) => {
   try {
     const response = await fetch(
-      `https://backend-real-estate-m1zm.onrender.com/properties/${id}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/properties/${id}`,
       {
         next: { revalidate: 0 },
       }
@@ -45,7 +45,7 @@ export const fetchSingleProperty = async (id: string) => {
 
 export const fetchBannerData = async () => {
   const response = await fetch(
-    "https://backend-real-estate-m1zm.onrender.com/banner",
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/banner`,
     {
       cache: "no-store",
     }
@@ -82,7 +82,7 @@ export const fetchPreconstructedProperties = async (endpoint: string) => {
 export const fetchSinglePreconstructedProperty = async (id: string) => {
   try {
     const response = await fetch(
-      `https://backend-real-estate-m1zm.onrender.com/pre-constructed-property/${id}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/pre-constructed-property/${id}`,
       { next: { revalidate: 0 } }
     );
     if (!response.ok) {

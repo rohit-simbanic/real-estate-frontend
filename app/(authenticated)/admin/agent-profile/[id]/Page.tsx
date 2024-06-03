@@ -24,7 +24,7 @@ const AgentProfile = ({ params }: Props) => {
     const fetchAgent = async () => {
       try {
         const response = await axios.get(
-          `https://backend-real-estate-m1zm.onrender.com/agent/${params.id}`
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/agent/${params.id}`
         );
         setAgent(response.data);
         setFormData(response.data);
@@ -67,7 +67,7 @@ const AgentProfile = ({ params }: Props) => {
 
     try {
       const response = await axios.put(
-        `https://backend-real-estate-m1zm.onrender.com/agent/${params.id}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/agent/${params.id}`,
         data,
         {
           headers: {
@@ -90,7 +90,7 @@ const AgentProfile = ({ params }: Props) => {
     }
     try {
       await axios.put(
-        `https://backend-real-estate-m1zm.onrender.com/agent/${params.id}/reset-password`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/agent/${params.id}/reset-password`,
         {
           password: newPassword,
         }
@@ -146,9 +146,9 @@ const AgentProfile = ({ params }: Props) => {
 
         {activeTab === "profile" && (
           <div className="flex flex-col items-center space-y-4 mt-6 max-h-[600px] overflow-y-auto scrollable-container px-2">
-            {agent.profilePicture ? (
+            {agent?.profilePicture ? (
               <Image
-                src={`https://backend-real-estate-m1zm.onrender.com${agent.profilePicture}`}
+                src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${agent.profilePicture}`}
                 alt="Profile"
                 className="w-32 h-32 rounded-full"
                 width={128}
@@ -156,31 +156,31 @@ const AgentProfile = ({ params }: Props) => {
               />
             ) : (
               <div className="initial-circle flex items-center justify-center w-32 h-32 bg-purple-700 text-white rounded-full text-2xl font-bold">
-                {getInitial(agent.fullName)}
+                {getInitial(agent?.fullName)}
               </div>
             )}
             <p className="text-lg font-semibold ">
-              <span className="underline">Name:</span> {agent.fullName}
+              <span className="underline">Name:</span> {agent?.fullName}
             </p>
             <p className="text-lg">
               <span className="font-bold">Email: </span>
-              {agent.email}
+              {agent?.email}
             </p>
             <p className="text-lg">
               <span className="font-bold">Phone: </span>
-              {agent.phoneNumber}
+              {agent?.phoneNumber}
             </p>
             <p className="text-lg">
               <span className="font-bold">License no: </span>
-              {agent.licenseNumber}
+              {agent?.licenseNumber}
             </p>
             <p className="text-lg">
               <span className="font-bold">Agency Name: </span>
-              {agent.agencyName}
+              {agent?.agencyName}
             </p>
             <p className="text-lg">
               <span className="font-bold">Agency Address: </span>
-              {agent.agencyAddress}
+              {agent?.agencyAddress}
             </p>
           </div>
         )}
@@ -188,50 +188,50 @@ const AgentProfile = ({ params }: Props) => {
           <div className="flex flex-col items-center space-y-4 mt-6 max-h-[600px] overflow-y-auto scrollable-container px-2">
             <p className="text-lg">
               <span className="font-bold">Year of Experience: </span>{" "}
-              {agent.yearsOfExperience}
+              {agent?.yearsOfExperience}
             </p>
             <p className="text-lg">
               <span className="font-bold">Specializations: </span>
-              {agent.specializations}
+              {agent?.specializations}
             </p>
             <p className="text-lg">
               <span className="font-bold">Govt ID: </span>
-              {agent.governmentID}
+              {agent?.governmentID}
             </p>
             <p className="text-lg">
               <span className="font-bold">Linkedin Profile: </span>
-              {agent.linkedInProfile}
+              {agent?.linkedInProfile}
             </p>
             <p className="text-lg">
-              <span className="font-bold">Website: </span> {agent.website}
+              <span className="font-bold">Website: </span> {agent?.website}
             </p>
             <p className="text-lg">
               <span className="font-bold">Marketing preferences?: </span>
-              {agent.marketingPreferences}
+              {agent?.marketingPreferences}
             </p>
             <p className="text-lg">
               <span className="font-bold">Communication Channel: </span>
-              {agent.preferredCommunicationChannels}
+              {agent?.preferredCommunicationChannels}
             </p>
             <p className="text-lg">
               <span className="font-bold">Language spoken: </span>
-              {agent.languagesSpoken}
+              {agent?.languagesSpoken}
             </p>
             <p className="text-lg">
               <span className="font-bold">Service Areas: </span>
-              {agent.serviceAreas}
+              {agent?.serviceAreas}
             </p>
             <p className="text-lg">
               <span className="font-bold">Bio: </span>
-              {agent.professionalBio}
+              {agent?.professionalBio}
             </p>
             <p className="text-lg">
               <span className="font-bold">Certifications: </span>
-              {agent.certificationsAwards}
+              {agent?.certificationsAwards}
             </p>
             <p className="text-lg">
               <span className="font-bold">References: </span>
-              {agent.references}
+              {agent?.references}
             </p>
             <div className="mt-6">
               <h3 className="text-xl font-bold mb-4">Reset Password</h3>

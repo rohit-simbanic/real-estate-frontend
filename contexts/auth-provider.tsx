@@ -31,7 +31,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const fetchAgent = async (agentId: string) => {
     try {
       const response = await axios.get(
-        `https://backend-real-estate-m1zm.onrender.com/agents/${agentId}`
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/agents/${agentId}`
       );
       setAgent(response.data);
     } catch (err) {

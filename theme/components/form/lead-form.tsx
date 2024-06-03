@@ -116,7 +116,7 @@ const LeadForm: React.FC = () => {
 
   return (
     <div className="w-[100%] lg:w-[30%] mx-auto bg-white shadow rounded-lg p-6 mt-1 dark:bg-gray-900">
-      <div className="flex flex-row items-center justify-between gap-3">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
         <Image
           className="shadow-lg mb-4"
           src="https://filecenter.bestforagents.com/Customers/358381/fileManager/Ash_Patel.JPG?src=Custom"
@@ -190,11 +190,16 @@ const LeadForm: React.FC = () => {
         {errors.message && (
           <span className="text-red-500 text-sm">{errors.message}</span>
         )}
-        <ReCAPTCHA
-          ref={recaptchaRef}
-          sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
-          onChange={handleCaptchaChange}
-        />
+        <div
+          className="captcha"
+          style={{ transform: "scale(0.85)", transformOrigin: "0 0" }}
+        >
+          <ReCAPTCHA
+            ref={recaptchaRef}
+            sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
+            onChange={handleCaptchaChange}
+          />
+        </div>
         <button
           type="submit"
           className="w-full mt-4 px-4 py-2 text-white bg-black rounded-md hover:bg-gray-800 focus:outline-none focus:ring focus:ring-gray-300"

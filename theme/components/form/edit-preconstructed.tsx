@@ -143,7 +143,7 @@ const EditPreConstructedPropertyForm: React.FC = () => {
       const propertyId = searchParams.get("propertyId");
       if (propertyId) {
         fetch(
-          `https://backend-real-estate-m1zm.onrender.com/pre-constructed-property/${propertyId}`
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/pre-constructed-property/${propertyId}`
         )
           .then((response) => response.json())
           .then((data) => {
@@ -228,7 +228,7 @@ const EditPreConstructedPropertyForm: React.FC = () => {
         }
       });
 
-      const endpoint = `https://backend-real-estate-m1zm.onrender.com/pre-constructed-property/${formData.listing_id}`;
+      const endpoint = `${process.env.NEXT_PUBLIC_BACKEND_URL}/pre-constructed-property/${formData.listing_id}`;
       const response = await fetch(endpoint, {
         method: "PUT",
         headers: {

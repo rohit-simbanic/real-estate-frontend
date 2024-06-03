@@ -21,8 +21,8 @@ const FeaturedListing = ({ onEdit }: { onEdit: (id: string) => void }) => {
       try {
         const endpoint =
           pathname === "/admin"
-            ? "https://backend-real-estate-m1zm.onrender.com/my-properties"
-            : "https://backend-real-estate-m1zm.onrender.com/properties";
+            ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/my-properties`
+            : `${process.env.NEXT_PUBLIC_BACKEND_URL}/properties`;
         const data = await fetchProperties(endpoint);
         const featuredProperties = data.filter(
           (item: PropertyDetails) => item.category === "featured"
@@ -48,7 +48,7 @@ const FeaturedListing = ({ onEdit }: { onEdit: (id: string) => void }) => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `https://backend-real-estate-m1zm.onrender.com/properties/${propertyId}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/properties/${propertyId}`,
         {
           method: "DELETE",
           headers: {

@@ -57,3 +57,8 @@ body {
   border-radius: 10px; /* Rounded corners */
   border: 2px solid #edf2f7; /* Padding around the thumb */
 }
+html,
+body {
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+}

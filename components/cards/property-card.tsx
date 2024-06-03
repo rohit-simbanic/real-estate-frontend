@@ -56,7 +56,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
       <Link href={details.listing_id}>
         <Image
           alt="Property image"
-          src={`https://backend-real-estate-m1zm.onrender.com/uploads/${details.property_images[0].filename}`}
+          src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${details.property_images[0].filename}`}
           className=" w-full rounded-md object-cover !h-[300px]"
           width={1770}
           height={700}

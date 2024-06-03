@@ -15,7 +15,10 @@ const Tabs: React.FC<PropertyCardProps> = ({ property }) => {
   return (
     <div className="rounded border w-full mx-auto mt-4 h-[363px]">
       {/* Tabs */}
-      <ul id="tabs" className="inline-flex pt-2 px-1 w-full border-b">
+      <ul
+        id="tabs"
+        className="flex flex-col sm:flex-row pt-2 px-1 w-full border-b"
+      >
         <li
           className={`${
             activeTab === "general"

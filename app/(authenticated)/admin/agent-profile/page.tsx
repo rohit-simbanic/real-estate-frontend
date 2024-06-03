@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import AgentProfile from "./[id]/Page";
+import withAuth from "@/helpers/with-auth-hoc";
 
 const Page = () => {
   const [agentId, setAgentId] = useState<string | null>(null);
@@ -22,4 +23,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default withAuth(Page);

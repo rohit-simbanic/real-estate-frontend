@@ -37,8 +37,8 @@ const PreConstructedProject: React.FC<PreConstructedProjectProps> = ({
       try {
         const endpoint =
           pathname === "/admin"
-            ? "https://backend-real-estate-m1zm.onrender.com/my-properties"
-            : "https://backend-real-estate-m1zm.onrender.com/pre-constructed-property";
+            ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/my-properties`
+            : `${process.env.NEXT_PUBLIC_BACKEND_URL}/pre-constructed-property`;
         const data = await fetchPreconstructedProperties(endpoint);
         const featuredProperties = data.filter(
           (item: PreconstructedPropertyDetails) =>
@@ -59,7 +59,7 @@ const PreConstructedProject: React.FC<PreConstructedProjectProps> = ({
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `https://backend-real-estate-m1zm.onrender.com/pre-constructed-property/${propertyId}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/pre-constructed-property/${propertyId}`,
         {
           method: "DELETE",
           headers: {
@@ -102,7 +102,7 @@ const PreConstructedProject: React.FC<PreConstructedProjectProps> = ({
             >
               <div className="rounded overflow-hidden shadow-lg hover:shadow-xl dark:bg-gray-900">
                 <Image
-                  src={`https://backend-real-estate-m1zm.onrender.com/uploads/${card.property_images[0].filename}`}
+                  src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${card.property_images[0].filename}`}
                   alt="Property Image"
                   width={600}
                   height={300}

@@ -461,7 +461,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId }) => {
       if (propertyId) {
         console.log("before append property", data);
         response = await axios.put(
-          `https://backend-real-estate-m1zm.onrender.com/properties/${propertyId}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/properties/${propertyId}`,
           data,
           {
             headers: {
@@ -472,7 +472,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId }) => {
         );
       } else {
         response = await axios.post(
-          "https://backend-real-estate-m1zm.onrender.com/add-property",
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/add-property`,
           data,
           {
             headers: {
@@ -510,7 +510,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId }) => {
       const fetchPropertyData = async () => {
         try {
           const response = await axios.get(
-            `https://backend-real-estate-m1zm.onrender.com/properties/${propertyId}`
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/properties/${propertyId}`
           );
           const propertyData = response.data;
           console.log("property data", propertyData);
@@ -524,7 +524,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId }) => {
             longitude,
             property_images: propertyData.property_images.map((img: any) => ({
               file: null,
-              url: `https://backend-real-estate-m1zm.onrender.com/uploads/${img.filename}`,
+              url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${img.filename}`,
             })),
           };
 
