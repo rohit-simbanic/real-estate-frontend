@@ -32,7 +32,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images }) => {
             }`}
           >
             <Image
-              src={`http://localhost:5000/uploads/${image.filename}`}
+              src={`https://backend-real-estate-m1zm.onrender.com/uploads/${image.filename}`}
               alt={`Slide ${index + 1}`}
               width={1700}
               height={650}
@@ -72,7 +72,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images }) => {
         {images.map((image, index) => (
           <div key={index} className="flex-1">
             <Image
-              src={`http://localhost:5000/uploads/${image.filename}`}
+              src={`https://backend-real-estate-m1zm.onrender.com/uploads/${image.filename}`}
               alt={`Thumbnail ${index + 1}`}
               height={340}
               width={340}

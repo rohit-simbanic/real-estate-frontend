@@ -22,8 +22,8 @@ const SoldProperties = () => {
       try {
         const endpoint =
           pathname === "/admin"
-            ? "http://localhost:5000/my-properties"
-            : "http://localhost:5000/properties";
+            ? "https://backend-real-estate-m1zm.onrender.com/my-properties"
+            : "https://backend-real-estate-m1zm.onrender.com/properties";
         const data = await fetchProperties(endpoint);
         const soldProperties = data.filter(
           (item: PropertyDetails) => item.category === "sold"
@@ -43,7 +43,7 @@ const SoldProperties = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `http://localhost:5000/properties/${propertyId}`,
+        `https://backend-real-estate-m1zm.onrender.com/properties/${propertyId}`,
         {
           method: "DELETE",
           headers: {

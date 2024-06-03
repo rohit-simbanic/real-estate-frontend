@@ -461,7 +461,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId }) => {
       if (propertyId) {
         console.log("before append property", data);
         response = await axios.put(
-          `http://localhost:5000/properties/${propertyId}`,
+          `https://backend-real-estate-m1zm.onrender.com/properties/${propertyId}`,
           data,
           {
             headers: {
@@ -472,7 +472,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId }) => {
         );
       } else {
         response = await axios.post(
-          "http://localhost:5000/add-property",
+          "https://backend-real-estate-m1zm.onrender.com/add-property",
           data,
           {
             headers: {
@@ -510,7 +510,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId }) => {
       const fetchPropertyData = async () => {
         try {
           const response = await axios.get(
-            `http://localhost:5000/properties/${propertyId}`
+            `https://backend-real-estate-m1zm.onrender.com/properties/${propertyId}`
           );
           const propertyData = response.data;
           console.log("property data", propertyData);
@@ -524,7 +524,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId }) => {
             longitude,
             property_images: propertyData.property_images.map((img: any) => ({
               file: null,
-              url: `http://localhost:5000/uploads/${img.filename}`,
+              url: `https://backend-real-estate-m1zm.onrender.com/uploads/${img.filename}`,
             })),
           };
 

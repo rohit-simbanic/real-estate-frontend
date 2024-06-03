@@ -74,7 +74,9 @@ const AgentSignup: React.FC = () => {
 
     // Check if email is already registered
     try {
-      const response = await axios.get("http://localhost:5000/agents");
+      const response = await axios.get(
+        "https://backend-real-estate-m1zm.onrender.com/agents"
+      );
       const agents = response.data;
       const emailExists = agents.some(
         (agent: any) => agent.email === formData.email
@@ -127,7 +129,7 @@ const AgentSignup: React.FC = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/register-agent",
+        "https://backend-real-estate-m1zm.onrender.com/register-agent",
         data,
         {
           headers: {
