@@ -17,6 +17,7 @@ const MortgageCalculator = () => {
   const [errors, setErrors] = useState<any>({});
   const [results, setResults] = useState<any>(null);
   const lastUpdatedField = useRef(null);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     if (
@@ -371,21 +372,28 @@ const MortgageCalculator = () => {
           Calculate
         </button>
       </form>
-
-      <h2 className="text-xl font-bold mt-8">Results</h2>
+      <div className="flex justify-between mt-8">
+        <h2 className="text-xl font-bold">Results</h2>
+        {/* <button onClick={() => setShowModal(true)} className="ml-2">
+          <span role="img" aria-label="help">
+            Help❓
+          </span>
+        </button> */}
+      </div>
       <div id="results" className="mt-4">
         {results && (
           <div>
             <p>Downpayment: ${results.downpayment.toFixed(2)}</p>
             <p>
-              Financed Amount (including CMHC): $
-              {results.amountFinanced.toFixed(2)}
+              Financed Amount (including CMHC: ${results.cmhcPremium.toFixed(2)}
+              ): ${results.amountFinanced.toFixed(2)}
             </p>
             <p>Each Payment: ${results.payment.toFixed(2)}</p>
             <p>
-              Principal Paid at Term: ${results.principalPaidAtTerm.toFixed(2)}
+              Principal Paid at Mortgage Term: $
+              {results.principalPaidAtTerm.toFixed(2)}
             </p>
-            <p>Balance at Term: ${results.balanceAtTerm.toFixed(2)}</p>
+            <p>Balance at Mortgage Term: ${results.balanceAtTerm.toFixed(2)}</p>
             <p>
               Interest Paid at Amortization Period: $
               {results.totalInterestPaid.toFixed(2)}
@@ -394,7 +402,7 @@ const MortgageCalculator = () => {
               Amortization Payment Schedule:
             </h3>
             <div className="overflow-x-auto">
-              <table className="border-collapse border border-gray-500 mt-2 min-w-full">
+              <table className="border-collapse border border-gray-500 w-full mt-2">
                 <thead>
                   <tr>
                     <th className="border border-gray-500 px-2 py-1">
