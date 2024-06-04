@@ -130,10 +130,12 @@ const initialFormData: FormData = {
 };
 interface PropertyFormProps {
   propertyId: string | null;
+  onClose?: () => void;
 }
 
 const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
   propertyId,
+  onClose,
 }) => {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [error, setError] = useState<string | null>(null);
@@ -141,7 +143,6 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
   const [success, setSuccess] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("category");
   const router = useRouter();
-  console.log("propertyId", propertyId);
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
@@ -434,6 +435,10 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (onClose) {
+      onClose();
+      setFormData(initialFormData);
+    }
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -520,7 +525,7 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
             longitude,
             property_images: propertyData.property_images.map((img: any) => ({
               file: null,
-              url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/uploads/${img.filename}`,
+              url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${img.filename}`,
             })),
           };
 
@@ -1357,12 +1362,23 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="max-h-[500px] overflow-y-auto scrollable-container px-3">
           {tabContent()}
-          <button
-            type="submit"
-            className="mt-4 bg-indigo-600 text-white px-5 py-3 rounded hover:bg-blue-600"
-          >
-            {propertyId ? "Update Property" : "Create Property"}
-          </button>
+          <div className="flex gap-4">
+            <button
+              type="submit"
+              className="mt-4 bg-indigo-600 text-white px-5 py-3 rounded hover:bg-blue-600"
+            >
+              {propertyId ? "Update Property" : "Create Property"}
+            </button>
+            {onClose && propertyId && (
+              <button
+                type="button"
+                className="mt-4 bg-gray-700 text-white px-5 py-3 rounded hover:bg-gray-600"
+                onClick={onClose}
+              >
+                Cancel
+              </button>
+            )}
+          </div>
         </div>
       </form>
     </div>

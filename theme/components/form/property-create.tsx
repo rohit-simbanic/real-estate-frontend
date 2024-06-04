@@ -129,8 +129,9 @@ const initialFormData: FormData = {
 
 interface PropertyFormProps {
   propertyId: string | null;
+  onClose?: () => void;
 }
-const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId }) => {
+const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   console.log("formData", formData);
   console.log("propertyId", propertyId);
@@ -141,7 +142,6 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  console.log("errors", errors);
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
 
@@ -434,7 +434,10 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId }) => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("uploading init");
+    if (onClose) {
+      onClose();
+      setFormData(initialFormData);
+    }
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -442,7 +445,6 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId }) => {
     }
 
     try {
-      console.log("uploading start");
       const token = localStorage.getItem("token");
       const files = handleFileUpload(
         formData.property_images.map((image) => image.file)
@@ -1350,12 +1352,23 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId }) => {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="max-h-[500px] overflow-y-auto scrollable-container px-3">
           {tabContent()}
-          <button
-            type="submit"
-            className="mt-4 bg-indigo-600 text-white px-5 py-3 rounded hover:bg-blue-600"
-          >
-            {propertyId ? "Edit Property" : "Create Property"}
-          </button>
+          <div className="flex gap-4">
+            <button
+              type="submit"
+              className="mt-4 bg-indigo-600 text-white px-5 py-3 rounded hover:bg-blue-600"
+            >
+              {propertyId ? "Edit Property" : "Create Property"}
+            </button>
+            {onClose && propertyId && (
+              <button
+                type="button"
+                className="mt-4 bg-gray-700 text-white px-5 py-3 rounded hover:bg-gray-600"
+                onClick={onClose}
+              >
+                Cancel
+              </button>
+            )}
+          </div>
         </div>
       </form>
     </div>

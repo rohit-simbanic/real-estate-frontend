@@ -62,6 +62,8 @@ const config: Config = {
     "w-[100%]",
     "lg:w-[30%]",
     "mx-auto",
+    "bg-gray-700",
+    "hover:bg-gray-600",
   ],
   plugins: [],
 };
