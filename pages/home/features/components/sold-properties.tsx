@@ -83,8 +83,10 @@ const SoldProperties = () => {
           currentItems.map((item, index) => (
             <div
               key={index}
-              className={`w-full sm:w-1/2 md:w-1/2 lg:w-1/3 xl:w-1/4 ${
-                pathname === "/admin" ? "lg:w-1/2 xl:w-1/3" : ""
+              className={`w-full ${
+                pathname === "/admin"
+                  ? "lg:w-full xl:w-1/3 "
+                  : "xl:w-1/4 lg:w-1/3 md:w-1/2"
               } px-4 mb-8`}
             >
               <PropertyCard
