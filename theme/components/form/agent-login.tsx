@@ -29,7 +29,7 @@ const LoginAgent: React.FC = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/login`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/login`,
         formData
       );
       if (response.status === 200) {

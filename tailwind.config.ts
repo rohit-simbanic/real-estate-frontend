@@ -59,6 +59,9 @@ const config: Config = {
     "text-red-500",
     "font-bold",
     "md:flex-row",
+    "w-[100%]",
+    "lg:w-[30%]",
+    "mx-auto",
   ],
   plugins: [],
 };

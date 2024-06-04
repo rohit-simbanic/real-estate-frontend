@@ -24,7 +24,7 @@ const AgentProfile = ({ params }: Props) => {
     const fetchAgent = async () => {
       try {
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/agent/${params.id}`
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/agent/${params.id}`
         );
         setAgent(response.data);
         setFormData(response.data);
@@ -67,7 +67,7 @@ const AgentProfile = ({ params }: Props) => {
 
     try {
       const response = await axios.put(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/agent/${params.id}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/agent/${params.id}`,
         data,
         {
           headers: {
@@ -90,7 +90,7 @@ const AgentProfile = ({ params }: Props) => {
     }
     try {
       await axios.put(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/agent/${params.id}/reset-password`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/agent/${params.id}/reset-password`,
         {
           password: newPassword,
         }

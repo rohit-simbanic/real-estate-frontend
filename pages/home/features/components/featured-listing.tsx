@@ -21,8 +21,8 @@ const FeaturedListing = ({ onEdit }: { onEdit: (id: string) => void }) => {
       try {
         const endpoint =
           pathname === "/admin"
-            ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/my-properties`
-            : `${process.env.NEXT_PUBLIC_BACKEND_URL}/properties`;
+            ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/my-properties`
+            : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/properties`;
         const data = await fetchProperties(endpoint);
         const featuredProperties = data.filter(
           (item: PropertyDetails) => item.category === "featured"
@@ -48,7 +48,7 @@ const FeaturedListing = ({ onEdit }: { onEdit: (id: string) => void }) => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/properties/${propertyId}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/properties/${propertyId}`,
         {
           method: "DELETE",
           headers: {

@@ -75,7 +75,7 @@ const AgentSignup: React.FC = () => {
     // Check if email is already registered
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/agents`
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/agents`
       );
       const agents = response.data;
       const emailExists = agents.some(
@@ -129,7 +129,7 @@ const AgentSignup: React.FC = () => {
 
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/register-agent`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/register-agent`,
         data,
         {
           headers: {

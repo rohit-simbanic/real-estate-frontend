@@ -461,7 +461,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId }) => {
       if (propertyId) {
         console.log("before append property", data);
         response = await axios.put(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/properties/${propertyId}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/properties/${propertyId}`,
           data,
           {
             headers: {
@@ -472,7 +472,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId }) => {
         );
       } else {
         response = await axios.post(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/add-property`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/add-property`,
           data,
           {
             headers: {
@@ -510,7 +510,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId }) => {
       const fetchPropertyData = async () => {
         try {
           const response = await axios.get(
-            `${process.env.NEXT_PUBLIC_BACKEND_URL}/properties/${propertyId}`
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/properties/${propertyId}`
           );
           const propertyData = response.data;
           console.log("property data", propertyData);
@@ -1213,6 +1213,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId }) => {
                 value={formData.latitude}
                 onChange={handleChange}
                 className="p-3 border border-gray-300 rounded w-full"
+                placeholder="43.8518637 [get latitude from google map]"
               />
               {errors.latitude && (
                 <p className="text-red-500">{errors.latitude}</p>
@@ -1227,6 +1228,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId }) => {
                 value={formData.longitude}
                 onChange={handleChange}
                 className="p-3 border border-gray-300 rounded w-full"
+                placeholder="-79.3505216 [get longitude from google map]"
               />
               {errors.longitude && (
                 <p className="text-red-500">{errors.longitude}</p>

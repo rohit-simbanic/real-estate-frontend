@@ -37,8 +37,8 @@ const PreConstructedProject: React.FC<PreConstructedProjectProps> = ({
       try {
         const endpoint =
           pathname === "/admin"
-            ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/my-properties`
-            : `${process.env.NEXT_PUBLIC_BACKEND_URL}/pre-constructed-property`;
+            ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/my-properties`
+            : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/pre-constructed-property`;
         const data = await fetchPreconstructedProperties(endpoint);
         const featuredProperties = data.filter(
           (item: PreconstructedPropertyDetails) =>
@@ -59,7 +59,7 @@ const PreConstructedProject: React.FC<PreConstructedProjectProps> = ({
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/pre-constructed-property/${propertyId}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/pre-constructed-property/${propertyId}`,
         {
           method: "DELETE",
           headers: {

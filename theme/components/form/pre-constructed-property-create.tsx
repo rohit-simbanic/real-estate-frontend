@@ -457,7 +457,7 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
       let response;
       if (propertyId) {
         response = await axios.put(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/pre-constructed-property/${propertyId}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/pre-constructed-property/${propertyId}`,
           data,
           {
             headers: {
@@ -468,7 +468,7 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
         );
       } else {
         response = await axios.post(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/pre-constructed-property`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/pre-constructed-property`,
           data,
           {
             headers: {
@@ -506,7 +506,7 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
       const fetchPropertyData = async () => {
         try {
           const response = await axios.get(
-            `${process.env.NEXT_PUBLIC_BACKEND_URL}/pre-constructed-property/${propertyId}`
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/pre-constructed-property/${propertyId}`
           );
           const propertyData = response.data;
           console.log("property data", propertyData);
@@ -520,7 +520,7 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
             longitude,
             property_images: propertyData.property_images.map((img: any) => ({
               file: null,
-              url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${img.filename}`,
+              url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/uploads/${img.filename}`,
             })),
           };
 
