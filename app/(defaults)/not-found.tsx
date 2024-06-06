@@ -9,7 +9,7 @@ export default function NotFound() {
           <p className="text-2xl text-gray-600 mt-2">Oops! Page not found</p>
         </div>
         <p className="text-gray-600 mb-8">
-          Sorry, the page you're looking for doesn't exist or has been moved.
+          Sorry, the page youre looking for doesnt exist or has been moved.
         </p>
         <Link href="/">
           <a className="px-6 py-3 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 transition duration-200">
