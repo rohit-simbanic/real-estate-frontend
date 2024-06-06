@@ -1,5 +1,6 @@
 "use client";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import React, { createContext, useState, useEffect, useContext } from "react";
 
 interface AuthContextType {
@@ -18,7 +19,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [agent, setAgent] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
-
+  const router = useRouter();
   useEffect(() => {
     const token = localStorage.getItem("token");
     const agentId = localStorage.getItem("agentId");
@@ -27,7 +28,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       fetchAgent(agentId); // Function to fetch agent data based on agentId
     }
     setLoading(false);
-  }, []);
+  }, [router]);
 
   const fetchAgent = async (agentId: string) => {
     try {

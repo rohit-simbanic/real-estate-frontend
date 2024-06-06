@@ -14,7 +14,11 @@ const withAuth = (WrappedComponent: React.ComponentType) => {
     }, [isAuthenticated, loading, router]);
 
     if (loading || !isAuthenticated) {
-      return <div>Loading...</div>;
+      return (
+        <div className="flex items-center justify-center min-h-[400px]">
+          Loading...
+        </div>
+      );
     }
 
     return <WrappedComponent {...props} />;

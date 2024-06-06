@@ -18,26 +18,24 @@ const PreConstructedProject: React.FC<PreConstructedProjectProps> = ({
   const [propertyItem, setPropertyItem] = useState<
     PreconstructedPropertyDetails[]
   >([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loadingData, setLoadingData] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
   const totalPages = Math.ceil(propertyItem.length / itemsPerPage);
   const pathname = usePathname();
-  const router = useRouter();
-  const { isAuthenticated } = useAuth();
-
+  const { isAuthenticated, loading } = useAuth();
+  console.log("isAuthenticated", isAuthenticated);
   const handleEdit = (propertyId: string) => {
     onEdit(propertyId);
   };
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
+      setLoadingData(true);
       try {
-        const endpoint =
-          isAuthenticated || pathname === "/admin"
-            ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/my-properties`
-            : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/pre-constructed-property`;
+        const endpoint = isAuthenticated
+          ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/my-properties`
+          : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/pre-constructed-property`;
         const data = await fetchPreconstructedProperties(endpoint);
         const featuredProperties = data.filter(
           (item: PreconstructedPropertyDetails) =>
@@ -47,12 +45,14 @@ const PreConstructedProject: React.FC<PreConstructedProjectProps> = ({
       } catch (error) {
         console.error("Error fetching properties:", error);
       } finally {
-        setLoading(false);
+        setLoadingData(false);
       }
     };
 
-    fetchData();
-  }, [pathname]);
+    if (!loading) {
+      fetchData();
+    }
+  }, [loading]);
 
   const handleDelete = async (propertyId: string) => {
     try {
@@ -89,7 +89,7 @@ const PreConstructedProject: React.FC<PreConstructedProjectProps> = ({
           title="Latest Pre-Construction Projects"
           description="CLICK ON IMAGES FOR MORE DETAILS"
         />
-        {loading ? (
+        {loadingData ? (
           <div className="w-full text-center">
             <p>Loading...</p>
           </div>

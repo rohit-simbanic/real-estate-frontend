@@ -502,7 +502,7 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
   };
   const extractCoordinates = (url: string) => {
     const regex = /@([0-9.-]+),([0-9.-]+)/;
-    const matches = url?.match(regex);
+    const matches = url.match(regex);
     if (matches) {
       return {
         latitude: matches[1],
@@ -511,6 +511,7 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
     }
     return { latitude: "", longitude: "" };
   };
+
   useEffect(() => {
     if (propertyId) {
       const fetchPropertyData = async () => {
@@ -519,10 +520,8 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
             `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/pre-constructed-property/${propertyId}`
           );
           const propertyData = response.data;
-
           const { street_view } = propertyData;
           const { latitude, longitude } = extractCoordinates(street_view);
-
           const formattedPropertyData = {
             ...propertyData,
             latitude,

@@ -6,24 +6,24 @@ import React, { useEffect, useState } from "react";
 import { PropertyDetails } from "@/types/property-card-types";
 import { fetchProperties } from "@/helpers/product-fetch";
 import { usePathname, useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/auth-provider";
 
 const SoldProperties = () => {
   const [property, setProperty] = useState<PropertyDetails[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loadingData, setLoadingData] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
   const totalPages = Math.ceil(property.length / itemsPerPage);
   const pathname = usePathname();
   const router = useRouter();
-
+  const { isAuthenticated, loading } = useAuth();
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
+      setLoadingData(true);
       try {
-        const endpoint =
-          pathname === "/admin"
-            ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/my-properties`
-            : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/properties`;
+        const endpoint = isAuthenticated
+          ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/my-properties`
+          : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/properties`;
         const data = await fetchProperties(endpoint);
         const soldProperties = data.filter(
           (item: PropertyDetails) => item.category === "sold"
@@ -32,12 +32,14 @@ const SoldProperties = () => {
       } catch (error) {
         console.error("Error fetching properties:", error);
       } finally {
-        setLoading(false);
+        setLoadingData(false);
       }
     };
 
-    fetchData();
-  }, [pathname]);
+    if (!loading) {
+      fetchData();
+    }
+  }, [loading]);
 
   const handleDelete = async (propertyId: string) => {
     try {
@@ -75,7 +77,7 @@ const SoldProperties = () => {
           title="Sold Properties"
           description="Check Sold Properties"
         />
-        {loading ? (
+        {loadingData ? (
           <div className="w-full text-center">
             <p>Loading...</p>
           </div>

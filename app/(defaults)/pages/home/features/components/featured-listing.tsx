@@ -13,22 +13,25 @@ interface FeaturedListingProps {
 }
 const FeaturedListing: React.FC<FeaturedListingProps> = ({ onEdit }) => {
   const [property, setProperty] = useState<PropertyDetails[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loadingData, setLoadingData] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
   const totalPages = Math.ceil(property.length / itemsPerPage);
   const pathname = usePathname();
   const router = useRouter();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
+  console.log("isAuthenticated", isAuthenticated);
 
   useEffect(() => {
+    console.log("Starting useEffect hook boundary");
     const fetchData = async () => {
-      setLoading(true);
+      setLoadingData(true);
       try {
-        const endpoint =
-          isAuthenticated || pathname === "/admin"
-            ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/my-properties`
-            : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/properties`;
+        console.log("Inside useEffect hook boundary");
+        const endpoint = isAuthenticated
+          ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/my-properties`
+          : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/properties`;
+        console.log("endpoint:", endpoint);
         const data = await fetchProperties(endpoint);
         const featuredProperties = data.filter(
           (item: PropertyDetails) => item.category === "featured"
@@ -37,12 +40,14 @@ const FeaturedListing: React.FC<FeaturedListingProps> = ({ onEdit }) => {
       } catch (error) {
         console.error("Error fetching properties:", error);
       } finally {
-        setLoading(false);
+        setLoadingData(false);
       }
     };
-
-    fetchData();
-  }, [pathname]);
+    if (!loading) {
+      fetchData();
+    }
+    console.log("End of useEffect hook boundary");
+  }, [loading]);
 
   const handleEdit = (propertyId: string) => {
     onEdit(propertyId);
@@ -84,7 +89,7 @@ const FeaturedListing: React.FC<FeaturedListingProps> = ({ onEdit }) => {
           title="Featured Listings"
           description="Check New Listings"
         />
-        {loading ? (
+        {loadingData ? (
           <div className="w-full text-center">
             <p>Loading...</p>
           </div>
