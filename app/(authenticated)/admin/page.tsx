@@ -1,8 +1,8 @@
 "use client";
+import FeaturedListing from "@/app/(defaults)/pages/home/features/components/featured-listing";
+import PreConstructedProject from "@/app/(defaults)/pages/home/features/components/pre-constructed-project";
+import SoldProperties from "@/app/(defaults)/pages/home/features/components/sold-properties";
 import withAuth from "@/helpers/with-auth-hoc";
-import FeaturedListing from "@/pages/home/features/components/featured-listing";
-import PreConstructedProject from "@/pages/home/features/components/pre-constructed-project";
-import SoldProperties from "@/pages/home/features/components/sold-properties";
 import PreConstructedPropertyForm from "@/theme/components/form/pre-constructed-property-create";
 import PropertyForm from "@/theme/components/form/property-create";
 import React, { useState } from "react";

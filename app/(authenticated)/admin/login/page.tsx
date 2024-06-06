@@ -1,3 +1,5 @@
+"use client";
+import withAuthRedirect from "@/helpers/with-auth-redirect";
 import LoginAgent from "@/theme/components/form/agent-login";
 import Link from "next/link";
 import React from "react";
@@ -16,4 +18,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default withAuthRedirect(Page, "/admin/");
