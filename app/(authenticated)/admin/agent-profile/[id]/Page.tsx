@@ -8,7 +8,9 @@ type Props = {
 };
 
 const AgentProfile = ({ params }: Props) => {
+  console.log("client id: ", params.id);
   const [agent, setAgent] = useState<any>(null);
+  console.log("agent id: ", agent);
   const [formData, setFormData] = useState<any>({});
   const [newPassword, setNewPassword] = useState<string>("");
   const [activeTab, setActiveTab] = useState<string>("profile");
@@ -24,7 +26,7 @@ const AgentProfile = ({ params }: Props) => {
     const fetchAgent = async () => {
       try {
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/agent/${params.id}`
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/agent/agents/${params.id}`
         );
         setAgent(response.data);
         setFormData(response.data);
@@ -67,7 +69,7 @@ const AgentProfile = ({ params }: Props) => {
 
     try {
       const response = await axios.put(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/agent/${params.id}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/agent/agents/${params.id}`,
         data,
         {
           headers: {
@@ -75,6 +77,9 @@ const AgentProfile = ({ params }: Props) => {
           },
         }
       );
+      if (!response) {
+        throw new Error("Network response was not ok");
+      }
       setAgent({ ...agent, ...response.data });
       setActiveTab("profile");
     } catch (err) {
@@ -90,7 +95,7 @@ const AgentProfile = ({ params }: Props) => {
     }
     try {
       await axios.put(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/agent/${params.id}/reset-password`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/agent/agent/${params.id}/reset-password`,
         {
           password: newPassword,
         }
@@ -234,18 +239,20 @@ const AgentProfile = ({ params }: Props) => {
               {agent?.references}
             </p>
             <div className="mt-6">
-              <h3 className="text-xl font-bold mb-4">Reset Password</h3>
-              <div className="flex flex-col space-y-4">
+              <h3 className="text-xl font-bold mb-4 text-center underline">
+                Reset Password
+              </h3>
+              <div className="w-[80%] mx-auto">
                 <input
                   type="password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="New Password"
-                  className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
+                  className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 w-full my-2"
                 />
                 <button
                   onClick={handlePasswordReset}
-                  className="bg-red-600 text-white py-2 px-4 rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                  className="bg-teal-600 text-white py-2 px-4 rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 w-full mb-5"
                 >
                   Reset Password
                 </button>
@@ -300,7 +307,6 @@ const AgentProfile = ({ params }: Props) => {
                   value={formData.licenseNumber}
                   onChange={handleInputChange}
                   className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
-                  required
                 />
               </div>
               <div className="flex flex-col">

@@ -22,8 +22,8 @@ const SoldProperties = () => {
       try {
         const endpoint =
           pathname === "/admin"
-            ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/my-properties`
-            : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/properties`;
+            ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/my-properties`
+            : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/properties`;
         const data = await fetchProperties(endpoint);
         const soldProperties = data.filter(
           (item: PropertyDetails) => item.category === "sold"
@@ -43,7 +43,7 @@ const SoldProperties = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/properties/${propertyId}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/properties/${propertyId}`,
         {
           method: "DELETE",
           headers: {

@@ -27,7 +27,7 @@ export const fetchProperties = async (endpoint: string) => {
 export const fetchSingleProperty = async (id: string) => {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/properties/${id}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/properties/${id}`,
       {
         next: { revalidate: 0 },
       }
@@ -82,7 +82,7 @@ export const fetchPreconstructedProperties = async (endpoint: string) => {
 export const fetchSinglePreconstructedProperty = async (id: string) => {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/pre-constructed-property/${id}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/pre-constructed-property/${id}`,
       { next: { revalidate: 0 } }
     );
     if (!response.ok) {

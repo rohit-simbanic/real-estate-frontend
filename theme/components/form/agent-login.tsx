@@ -29,12 +29,13 @@ const LoginAgent: React.FC = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/login`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/agent/login`,
         formData
       );
       if (response.status === 200) {
         setSuccess(true);
         setError(null);
+        console.log("Login id", response.data.agentId);
         login(response.data.token, response.data.agentId);
         router.push("/admin");
       }

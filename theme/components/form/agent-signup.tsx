@@ -75,7 +75,7 @@ const AgentSignup: React.FC = () => {
     // Check if email is already registered
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/agents`
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/agent/agents`
       );
       const agents = response.data;
       const emailExists = agents.some(
@@ -129,7 +129,7 @@ const AgentSignup: React.FC = () => {
 
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/register-agent`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/agent/register-agent`,
         data,
         {
           headers: {
@@ -271,7 +271,6 @@ const AgentSignup: React.FC = () => {
               value={formData.agencyName}
               onChange={handleChange}
               className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
-              required
             />
           </div>
           <div className="hidden">
@@ -282,7 +281,6 @@ const AgentSignup: React.FC = () => {
               value={formData.agencyAddress}
               onChange={handleChange}
               className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
-              required
             />
           </div>
           <div className="hidden">
@@ -293,7 +291,6 @@ const AgentSignup: React.FC = () => {
               value={formData.yearsOfExperience}
               onChange={handleChange}
               className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
-              required
             />
           </div>
           <div className="hidden">
@@ -306,7 +303,6 @@ const AgentSignup: React.FC = () => {
               value={formData.specializations}
               onChange={handleChange}
               className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
-              required
             />
           </div>
 
@@ -344,7 +340,6 @@ const AgentSignup: React.FC = () => {
               value={formData.preferredCommunicationChannels}
               onChange={handleChange}
               className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
-              required
             />
           </div>
           <div className="hidden">
@@ -357,7 +352,6 @@ const AgentSignup: React.FC = () => {
               value={formData.languagesSpoken}
               onChange={handleChange}
               className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
-              required
             />
           </div>
           <div className="hidden">
@@ -370,7 +364,6 @@ const AgentSignup: React.FC = () => {
               value={formData.serviceAreas}
               onChange={handleChange}
               className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
-              required
             />
           </div>
           <div className="hidden">
@@ -380,7 +373,6 @@ const AgentSignup: React.FC = () => {
               value={formData.professionalBio}
               onChange={handleChange}
               className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
-              required
             ></textarea>
           </div>
           <div className="hidden">
@@ -393,7 +385,6 @@ const AgentSignup: React.FC = () => {
               value={formData.certificationsAwards}
               onChange={handleChange}
               className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
-              required
             />
           </div>
           <div className="hidden">
@@ -406,7 +397,6 @@ const AgentSignup: React.FC = () => {
               value={formData.references}
               onChange={handleChange}
               className="mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
-              required
             />
           </div>
           <button

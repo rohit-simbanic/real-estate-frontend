@@ -122,6 +122,7 @@ const Page = () => {
                 onClick={(e) => {
                   e.preventDefault();
                   setActiveTab(index);
+                  setPropertyId(null);
                 }}
                 className={`inline-flex items-center px-4 py-3 rounded-lg w-full ${
                   activeTab === index

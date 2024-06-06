@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 import { PropertyDetails } from "@/types/property-card-types";
 import { fetchProperties } from "@/helpers/product-fetch";
 import { usePathname, useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/auth-provider";
 
 const FeaturedListing = ({ onEdit }: { onEdit: (id: string) => void }) => {
   const [property, setProperty] = useState<PropertyDetails[]>([]);
@@ -15,14 +16,15 @@ const FeaturedListing = ({ onEdit }: { onEdit: (id: string) => void }) => {
   const totalPages = Math.ceil(property.length / itemsPerPage);
   const pathname = usePathname();
   const router = useRouter();
+  const { isAuthenticated } = useAuth();
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
         const endpoint =
-          pathname === "/admin"
-            ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/my-properties`
-            : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/properties`;
+          isAuthenticated || pathname === "/admin"
+            ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/my-properties`
+            : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/properties`;
         const data = await fetchProperties(endpoint);
         const featuredProperties = data.filter(
           (item: PropertyDetails) => item.category === "featured"
@@ -46,7 +48,7 @@ const FeaturedListing = ({ onEdit }: { onEdit: (id: string) => void }) => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/properties/${propertyId}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/properties/${propertyId}`,
         {
           method: "DELETE",
           headers: {

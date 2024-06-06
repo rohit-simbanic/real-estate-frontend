@@ -1,6 +1,7 @@
 "use client";
 
 import ButtonRegister from "@/components/button/button-register";
+import { useAuth } from "@/contexts/auth-provider";
 import { fetchPreconstructedProperties } from "@/helpers/product-fetch";
 import { Pagination } from "@/theme/components/pagination/pagination";
 import SectionTitle from "@/theme/components/section-title/section-title";
@@ -12,11 +13,9 @@ import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 interface PreConstructedProjectProps {
   onEdit: (id: string) => void;
-  propertyId?: string | null;
 }
 const PreConstructedProject: React.FC<PreConstructedProjectProps> = ({
   onEdit,
-  propertyId,
 }) => {
   const [propertyItem, setPropertyItem] = useState<
     PreconstructedPropertyDetails[]
@@ -27,18 +26,20 @@ const PreConstructedProject: React.FC<PreConstructedProjectProps> = ({
   const totalPages = Math.ceil(propertyItem.length / itemsPerPage);
   const pathname = usePathname();
   const router = useRouter();
+  const { isAuthenticated } = useAuth();
 
-  const handleEdit = (property: PropertyDetails) => {
-    onEdit(property.listing_id);
+  const handleEdit = (propertyId: string) => {
+    onEdit(propertyId);
   };
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
         const endpoint =
-          pathname === "/admin"
-            ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/my-properties`
-            : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/pre-constructed-property`;
+          isAuthenticated || pathname === "/admin"
+            ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/my-properties`
+            : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/pre-constructed-property`;
         const data = await fetchPreconstructedProperties(endpoint);
         const featuredProperties = data.filter(
           (item: PreconstructedPropertyDetails) =>
@@ -59,7 +60,7 @@ const PreConstructedProject: React.FC<PreConstructedProjectProps> = ({
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/pre-constructed-property/${propertyId}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/pre-constructed-property/${propertyId}`,
         {
           method: "DELETE",
           headers: {
@@ -128,7 +129,7 @@ const PreConstructedProject: React.FC<PreConstructedProjectProps> = ({
                     {pathname === "/admin" && (
                       <div className="flex justify-end mt-4 space-x-2">
                         <button
-                          onClick={() => handleEdit(card)}
+                          onClick={() => handleEdit(card.listing_id)}
                           className="text-blue-500"
                         >
                           Edit

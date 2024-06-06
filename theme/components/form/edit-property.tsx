@@ -141,7 +141,7 @@ const EditPropertyForm: React.FC = () => {
       const propertyId = searchParams.get("propertyId");
       if (propertyId) {
         fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/properties/${propertyId}`
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/properties/${propertyId}`
         )
           .then((response) => response.json())
           .then((data) => {
@@ -226,7 +226,7 @@ const EditPropertyForm: React.FC = () => {
         }
       });
 
-      const endpoint = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/properties/${formData.listing_id}`;
+      const endpoint = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/properties/${formData.listing_id}`;
       const response = await fetch(endpoint, {
         method: "PUT",
         headers: {

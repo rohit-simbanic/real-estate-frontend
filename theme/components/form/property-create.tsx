@@ -431,13 +431,16 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
       }
     });
   };
+  const handleCancel = () => {
+    if (onClose) {
+      onClose();
+    }
+    setFormData(initialFormData);
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (onClose) {
-      onClose();
-      setFormData(initialFormData);
-    }
+
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -463,7 +466,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
       if (propertyId) {
         console.log("before append property", data);
         response = await axios.put(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/properties/${propertyId}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/properties/${propertyId}`,
           data,
           {
             headers: {
@@ -474,7 +477,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
         );
       } else {
         response = await axios.post(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/add-property`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/add-property`,
           data,
           {
             headers: {
@@ -488,7 +491,10 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
       setSuccess(true);
       setError(null);
       setErrors({});
-      setFormData(initialFormData); // Clear form after successful creation
+      setFormData(initialFormData);
+      if (onClose) {
+        onClose();
+      }
       router.push("/admin");
     } catch (err) {
       console.error(err);
@@ -512,7 +518,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
       const fetchPropertyData = async () => {
         try {
           const response = await axios.get(
-            `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/properties/${propertyId}`
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/properties/${propertyId}`
           );
           const propertyData = response.data;
           console.log("property data", propertyData);
@@ -539,7 +545,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
 
       fetchPropertyData();
     }
-  }, [propertyId]);
+  }, []);
 
   const tabContent = () => {
     switch (activeTab) {
@@ -1363,7 +1369,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
               <button
                 type="button"
                 className="mt-4 bg-gray-700 text-white px-5 py-3 rounded hover:bg-gray-600"
-                onClick={onClose}
+                onClick={handleCancel}
               >
                 Cancel
               </button>

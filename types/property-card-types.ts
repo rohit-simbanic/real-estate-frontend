@@ -16,6 +16,8 @@ export interface PropertyDetails {
   at_a_glance: AtAGlance;
   street_view: string;
   map_location: string;
+  latitude?: string;
+  longitude?: string;
 }
 
 export interface GeneralDetails {

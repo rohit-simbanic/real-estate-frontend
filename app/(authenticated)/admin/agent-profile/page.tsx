@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import AgentProfile from "./[id]/Page";
 import withAuth from "@/helpers/with-auth-hoc";
+import { useAuth } from "@/contexts/auth-provider";
 
 const Page = () => {
   const [agentId, setAgentId] = useState<string | null>(null);

@@ -139,6 +139,7 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
 }) => {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [error, setError] = useState<string | null>(null);
+  console.log("pre-constructed", propertyId);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [success, setSuccess] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("category");
@@ -318,6 +319,12 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
       [name]: value,
     }));
   };
+  const handleCancel = () => {
+    if (onClose) {
+      onClose();
+    }
+    setFormData(initialFormData);
+  };
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -435,10 +442,6 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (onClose) {
-      onClose();
-      setFormData(initialFormData);
-    }
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -462,7 +465,7 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
       let response;
       if (propertyId) {
         response = await axios.put(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/pre-constructed-property/${propertyId}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/pre-constructed-property/${propertyId}`,
           data,
           {
             headers: {
@@ -473,7 +476,7 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
         );
       } else {
         response = await axios.post(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/pre-constructed-property`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/pre-constructed-property`,
           data,
           {
             headers: {
@@ -487,7 +490,10 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
       setSuccess(true);
       setError(null);
       setErrors({});
-      setFormData(initialFormData); // Clear form after successful creation
+      setFormData(initialFormData);
+      if (onClose) {
+        onClose();
+      }
       router.push("/admin");
     } catch (err) {
       console.error(err);
@@ -497,7 +503,7 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
   };
   const extractCoordinates = (url: string) => {
     const regex = /@([0-9.-]+),([0-9.-]+)/;
-    const matches = url.match(regex);
+    const matches = url?.match(regex);
     if (matches) {
       return {
         latitude: matches[1],
@@ -511,7 +517,7 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
       const fetchPropertyData = async () => {
         try {
           const response = await axios.get(
-            `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/pre-constructed-property/${propertyId}`
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/pre-constructed-property/${propertyId}`
           );
           const propertyData = response.data;
           console.log("property data", propertyData);
@@ -538,7 +544,7 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
 
       fetchPropertyData();
     }
-  }, [propertyId]);
+  }, []);
 
   const tabContent = () => {
     switch (activeTab) {
@@ -1373,7 +1379,7 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
               <button
                 type="button"
                 className="mt-4 bg-gray-700 text-white px-5 py-3 rounded hover:bg-gray-600"
-                onClick={onClose}
+                onClick={handleCancel}
               >
                 Cancel
               </button>
