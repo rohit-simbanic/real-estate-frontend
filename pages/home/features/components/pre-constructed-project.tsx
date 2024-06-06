@@ -1,21 +1,20 @@
 "use client";
 
 import ButtonRegister from "@/components/button/button-register";
-import { useAuth } from "@/contexts/auth-provider";
 import { fetchPreconstructedProperties } from "@/helpers/product-fetch";
 import { Pagination } from "@/theme/components/pagination/pagination";
 import SectionTitle from "@/theme/components/section-title/section-title";
-import { Property } from "@/types/constructed-property-card-types";
-import { PropertyDetails } from "@/types/property-card-types";
 import { PreconstructedPropertyDetails } from "@/types/property-preconstructed-types";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 interface PreConstructedProjectProps {
   onEdit: (id: string) => void;
+  isAuthenticated: boolean;
 }
 const PreConstructedProject: React.FC<PreConstructedProjectProps> = ({
   onEdit,
+  isAuthenticated,
 }) => {
   const [propertyItem, setPropertyItem] = useState<
     PreconstructedPropertyDetails[]
@@ -26,7 +25,6 @@ const PreConstructedProject: React.FC<PreConstructedProjectProps> = ({
   const totalPages = Math.ceil(propertyItem.length / itemsPerPage);
   const pathname = usePathname();
   const router = useRouter();
-  const { isAuthenticated } = useAuth();
 
   const handleEdit = (propertyId: string) => {
     onEdit(propertyId);

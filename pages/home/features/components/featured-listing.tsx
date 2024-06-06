@@ -6,9 +6,15 @@ import React, { useEffect, useState } from "react";
 import { PropertyDetails } from "@/types/property-card-types";
 import { fetchProperties } from "@/helpers/product-fetch";
 import { usePathname, useRouter } from "next/navigation";
-import { useAuth } from "@/contexts/auth-provider";
 
-const FeaturedListing = ({ onEdit }: { onEdit: (id: string) => void }) => {
+interface FeaturedListingProps {
+  onEdit: (id: string) => void;
+  isAuthenticated: boolean;
+}
+const FeaturedListing: React.FC<FeaturedListingProps> = ({
+  onEdit,
+  isAuthenticated,
+}) => {
   const [property, setProperty] = useState<PropertyDetails[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -16,7 +22,7 @@ const FeaturedListing = ({ onEdit }: { onEdit: (id: string) => void }) => {
   const totalPages = Math.ceil(property.length / itemsPerPage);
   const pathname = usePathname();
   const router = useRouter();
-  const { isAuthenticated } = useAuth();
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);

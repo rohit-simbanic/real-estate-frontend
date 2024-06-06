@@ -9,7 +9,11 @@ import calculatorData from "../../data/calculator-items.json";
 import { CalculatorDataProps } from "@/types/calculator-data-types";
 import SoldProperties from "./features/components/sold-properties";
 
-const HomePage: React.FC = () => {
+interface authProps {
+  isAuthenticated: boolean;
+}
+
+const HomePage: React.FC<authProps> = ({ isAuthenticated }) => {
   const [propertyId, setPropertyId] = useState<string | null>(null);
   const calculatorItems: CalculatorDataProps[] =
     calculatorData as CalculatorDataProps[];
@@ -20,8 +24,11 @@ const HomePage: React.FC = () => {
   return (
     <div>
       <Banner />
-      <FeaturedListing onEdit={handleEdit} />
-      <PreConstructedProject onEdit={handleEdit} />
+      <FeaturedListing onEdit={handleEdit} isAuthenticated={isAuthenticated} />
+      <PreConstructedProject
+        onEdit={handleEdit}
+        isAuthenticated={isAuthenticated}
+      />
       <SoldProperties />
       <CalculatorGrid items={calculatorItems} />
       <MapComponent />
