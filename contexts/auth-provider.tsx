@@ -1,4 +1,3 @@
-"use client";
 import axios from "axios";
 import React, { createContext, useState, useEffect, useContext } from "react";
 
