@@ -8,9 +8,7 @@ type Props = {
 };
 
 const AgentProfile = ({ params }: Props) => {
-  console.log("client id: ", params.id);
   const [agent, setAgent] = useState<any>(null);
-  console.log("agent id: ", agent);
   const [formData, setFormData] = useState<any>({});
   const [newPassword, setNewPassword] = useState<string>("");
   const [activeTab, setActiveTab] = useState<string>("profile");

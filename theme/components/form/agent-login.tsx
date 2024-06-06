@@ -35,7 +35,6 @@ const LoginAgent: React.FC = () => {
       if (response.status === 200) {
         setSuccess(true);
         setError(null);
-        console.log("Login id", response.data.agentId);
         login(response.data.token, response.data.agentId);
         router.push("/admin");
       }

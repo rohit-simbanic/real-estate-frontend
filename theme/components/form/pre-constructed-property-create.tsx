@@ -139,7 +139,6 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
 }) => {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [error, setError] = useState<string | null>(null);
-  console.log("pre-constructed", propertyId);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [success, setSuccess] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("category");
@@ -520,7 +519,6 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
             `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/pre-constructed-property/${propertyId}`
           );
           const propertyData = response.data;
-          console.log("property data", propertyData);
 
           const { street_view } = propertyData;
           const { latitude, longitude } = extractCoordinates(street_view);

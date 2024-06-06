@@ -11,7 +11,6 @@ const LeadForm: React.FC = () => {
     phone: "",
     message: "",
   });
-  console.log("form data", formData.email);
   const [errors, setErrors] = useState({
     name: "",
     email: "",
@@ -95,7 +94,6 @@ const LeadForm: React.FC = () => {
     emailjs
       .send(serviceId, templateId, templateParams, publicKey)
       .then((response) => {
-        console.log("Email sent successfully!", response);
         setFormData({
           name: "",
           email: "",
@@ -110,7 +108,6 @@ const LeadForm: React.FC = () => {
   };
 
   const handleCaptchaChange = (value: string | null) => {
-    console.log("Captcha value:", value);
     setCaptchaVerified(true);
   };
 

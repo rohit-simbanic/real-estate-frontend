@@ -17,8 +17,6 @@ const Header: React.FC = () => {
   const [isFixed, setIsFixed] = useState(false);
   const [agentId, setAgentId] = useState<string | null>(null);
   const { isAuthenticated, agent, logout } = useAuth();
-  console.log("isAuthenticated", agentId);
-  console.log("agent", agent?.fullName);
 
   const handleChange = () => {
     setTheme(theme === "light" ? "dark" : "light");

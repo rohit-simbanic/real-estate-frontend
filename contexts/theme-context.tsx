@@ -21,7 +21,6 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   });
   useEffect(() => {
     if (typeof window !== "undefined") {
-      console.log("Applying theme:", theme);
       localStorage.setItem("theme", theme);
       const bodyClass = document.body.classList;
       bodyClass.remove("light", "dark");

@@ -34,7 +34,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/agent/agents/${agentId}`
       );
-      console.log("response: ", response.data);
       setAgent(response.data);
     } catch (err) {
       console.error("Error fetching agent data:", err);

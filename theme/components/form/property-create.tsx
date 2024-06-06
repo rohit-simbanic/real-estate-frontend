@@ -133,8 +133,6 @@ interface PropertyFormProps {
 }
 const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
   const [formData, setFormData] = useState<FormData>(initialFormData);
-  console.log("formData", formData);
-  console.log("propertyId", propertyId);
   const [error, setError] = useState<string | null>(null);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [success, setSuccess] = useState<boolean>(false);
@@ -464,7 +462,6 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
 
       let response;
       if (propertyId) {
-        console.log("before append property", data);
         response = await axios.put(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/properties/${propertyId}`,
           data,
@@ -521,7 +518,6 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
             `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/properties/${propertyId}`
           );
           const propertyData = response.data;
-          console.log("property data", propertyData);
 
           const { street_view } = propertyData;
           const { latitude, longitude } = extractCoordinates(street_view);

@@ -68,7 +68,6 @@ const MapComponent: React.FC = () => {
     emailjs
       .send(serviceId, templateId, templateParams, publicKey)
       .then((response) => {
-        console.log("Email sent successfully!", response);
         setFormData({
           email: "",
           message: "",

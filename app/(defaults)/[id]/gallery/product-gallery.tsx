@@ -7,7 +7,6 @@ interface ImageSliderProps {
 }
 
 const ImageSlider: React.FC<ImageSliderProps> = ({ images }) => {
-  console.log("images", images);
   const [slideIndex, setSlideIndex] = useState(1);
 
   const plusSlides = (n: number) => {

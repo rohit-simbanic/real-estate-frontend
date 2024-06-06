@@ -43,7 +43,6 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
   onDelete,
   isAdmin,
 }) => {
-  console.log("details:", details);
   const handleEdit = () => {
     if (onEdit) onEdit(details.listing_id);
   };

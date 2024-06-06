@@ -15,9 +15,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`inter.className bg-white w-full`}>
-        <ThemeProvider>
-          <AuthProvider>{children} </AuthProvider>
-        </ThemeProvider>
+        <AuthProvider>
+          <ThemeProvider>{children}</ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );
