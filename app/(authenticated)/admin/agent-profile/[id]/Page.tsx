@@ -92,16 +92,26 @@ const AgentProfile = ({ params }: Props) => {
       return;
     }
     try {
-      await axios.put(
+      const response = await axios.put(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/agent/agent/${params.id}/reset-password`,
         {
           password: newPassword,
         }
       );
+      alert(response.data.message);
       setNewPassword("");
-      alert("Password reset successfully");
     } catch (err) {
       console.error("Error resetting password:", err);
+      if (
+        axios.isAxiosError(err) &&
+        err.response &&
+        err.response.status === 400
+      ) {
+        alert(err.response.data.message);
+      } else {
+        console.error("An error occurred while resetting the password:", err);
+        alert("An error occurred while resetting the password.");
+      }
     }
   };
 
