@@ -121,6 +121,7 @@ const AgentSignup: React.FC = () => {
 
     // Ensure hidden fields with default values are included
     const data = new FormData();
+    // Append non-file fields
     (Object.keys(formData) as (keyof FormData)[]).forEach((key) => {
       if (formData[key] !== null && formData[key] !== undefined) {
         data.append(key, formData[key] as any);
@@ -128,6 +129,7 @@ const AgentSignup: React.FC = () => {
     });
 
     try {
+      console.log("data", JSON.stringify(data));
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/agent/register-agent`,
         data,

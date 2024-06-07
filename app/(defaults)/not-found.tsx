@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export default function NotFound() {
+const ErrorPage = () => {
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-r from-purple-400 via-pink-500 to-red-500">
       <div className="max-w-md w-full text-center bg-white p-8 rounded-lg shadow-lg">
@@ -19,4 +19,5 @@ export default function NotFound() {
       </div>
     </div>
   );
-}
+};
+export default ErrorPage;
