@@ -13,6 +13,7 @@ const nextConfig = {
       "icons.iconarchive.com",
       "localhost",
       "backend-real-estate-m1zm.onrender.com",
+      "real-estate-frontend-iota.vercel.app",
     ],
   },
   typescript: {
