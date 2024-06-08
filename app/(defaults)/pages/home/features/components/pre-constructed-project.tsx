@@ -6,7 +6,7 @@ import { fetchPreconstructedProperties } from "@/helpers/product-fetch";
 import { Pagination } from "@/theme/components/pagination/pagination";
 import SectionTitle from "@/theme/components/section-title/section-title";
 import { PreconstructedPropertyDetails } from "@/types/property-preconstructed-types";
-import Image from "next/legacy/image";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 interface PreConstructedProjectProps {
