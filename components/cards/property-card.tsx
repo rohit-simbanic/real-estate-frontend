@@ -60,7 +60,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
               ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/${details.property_images[0]?.filename}`
               : "https://st4.depositphotos.com/14953852/24787/v/450/depositphotos_247872612-stock-illustration-no-image-available-icon-vector.jpg"
           }
-          className=" w-full rounded-md object-cover !h-[500px]"
+          className=" w-full rounded-md object-cover !h-[400px]"
           width={1770}
           height={700}
           priority

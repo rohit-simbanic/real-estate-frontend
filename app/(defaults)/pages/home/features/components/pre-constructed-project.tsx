@@ -122,7 +122,7 @@ const PreConstructedProject: React.FC<PreConstructedProjectProps> = ({
                   width={600}
                   height={300}
                   layout="responsive"
-                  className="!h-[300px]"
+                  className="!h-[400px]"
                   priority
                 />
                 <div className="px-4 py-4">
