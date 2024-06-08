@@ -31,7 +31,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images }) => {
             }`}
           >
             <Image
-              src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${image.filename}`}
+              src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${image.filename}`}
               alt={`Slide ${index + 1}`}
               width={1700}
               height={650}
