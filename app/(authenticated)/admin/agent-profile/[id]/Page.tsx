@@ -9,6 +9,7 @@ type Props = {
 
 const AgentProfile = ({ params }: Props) => {
   const [agent, setAgent] = useState<any>(null);
+  console.log("agents", agent);
   const [formData, setFormData] = useState<any>({});
   const [newPassword, setNewPassword] = useState<string>("");
   const [activeTab, setActiveTab] = useState<string>("profile");
@@ -102,16 +103,6 @@ const AgentProfile = ({ params }: Props) => {
       setNewPassword("");
     } catch (err) {
       console.error("Error resetting password:", err);
-      if (
-        axios.isAxiosError(err) &&
-        err.response &&
-        err.response.status === 400
-      ) {
-        alert(err.response.data.message);
-      } else {
-        console.error("An error occurred while resetting the password:", err);
-        alert("An error occurred while resetting the password.");
-      }
     }
   };
 
@@ -161,7 +152,7 @@ const AgentProfile = ({ params }: Props) => {
           <div className="flex flex-col items-center space-y-4 mt-6 max-h-[600px] overflow-y-auto scrollable-container px-2">
             {agent?.profilePicture ? (
               <Image
-                src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${agent.profilePicture}`}
+                src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${agent.profilePicture}`}
                 alt="Profile"
                 className="w-32 h-32 rounded-full"
                 width={128}

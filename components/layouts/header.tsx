@@ -231,7 +231,7 @@ const Header: React.FC = () => {
                 {agent?.profilePicture ? (
                   <Link href={"/admin/agent-profile"}>
                     <Image
-                      src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${agent.profilePicture}`}
+                      src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${agent.profilePicture}`}
                       alt="Profile"
                       height={52}
                       width={52}

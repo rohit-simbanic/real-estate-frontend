@@ -13,13 +13,14 @@ interface FeaturedListingProps {
 }
 const FeaturedListing: React.FC<FeaturedListingProps> = ({ onEdit }) => {
   const [property, setProperty] = useState<PropertyDetails[]>([]);
+  console.log("featured property:", property);
   const [loadingData, setLoadingData] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
   const totalPages = Math.ceil(property.length / itemsPerPage);
   const pathname = usePathname();
   const router = useRouter();
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, logout } = useAuth();
   console.log("isAuthenticated", isAuthenticated);
 
   useEffect(() => {
@@ -47,32 +48,38 @@ const FeaturedListing: React.FC<FeaturedListingProps> = ({ onEdit }) => {
       fetchData();
     }
     console.log("End of useEffect hook boundary");
-  }, [loading]);
+  }, [loading, logout]);
 
   const handleEdit = (propertyId: string) => {
     onEdit(propertyId);
   };
 
   const handleDelete = async (propertyId: string) => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/properties/${propertyId}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this property?"
+    );
+
+    if (confirmDelete) {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/properties/${propertyId}`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (!response.ok) {
+          throw new Error("Failed to delete property");
         }
-      );
-      if (!response.ok) {
-        throw new Error("Failed to delete property");
+        setProperty((prevProperties) =>
+          prevProperties.filter((prop) => prop.listing_id !== propertyId)
+        );
+      } catch (error) {
+        console.error("Error deleting property:", error);
       }
-      setProperty((prevProperties) =>
-        prevProperties.filter((prop) => prop.listing_id !== propertyId)
-      );
-    } catch (error) {
-      console.error("Error deleting property:", error);
     }
   };
 

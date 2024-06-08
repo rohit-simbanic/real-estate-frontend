@@ -14,6 +14,7 @@ const nextConfig = {
       "localhost",
       "backend-real-estate-m1zm.onrender.com",
       "real-estate-frontend-iota.vercel.app",
+      "st4.depositphotos.com",
     ],
   },
   typescript: {

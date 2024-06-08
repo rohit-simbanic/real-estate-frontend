@@ -64,6 +64,8 @@ const config: Config = {
     "mx-auto",
     "bg-gray-700",
     "hover:bg-gray-600",
+    "w-[200px]",
+    "h-[100px]",
   ],
   plugins: [],
 };

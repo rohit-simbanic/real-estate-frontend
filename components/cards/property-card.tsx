@@ -53,13 +53,12 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
   return (
     <div className="block rounded-lg p-4 dark:shadow-none shadow-sm shadow-indigo-100 bg-[#fff8f8] dark:bg-gray-900">
       <Link href={details.listing_id}>
-        <Image
+        <img
           alt="Property image"
-          src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${details.property_images[0].filename}`}
+          src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${details.property_images[0].filename}`}
           className=" w-full rounded-md object-cover !h-[300px]"
           width={1770}
           height={700}
-          layout="responsive"
         />
 
         <div className="mt-2">

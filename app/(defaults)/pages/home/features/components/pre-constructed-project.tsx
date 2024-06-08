@@ -18,12 +18,13 @@ const PreConstructedProject: React.FC<PreConstructedProjectProps> = ({
   const [propertyItem, setPropertyItem] = useState<
     PreconstructedPropertyDetails[]
   >([]);
+  console.log("pre-constructed properties", propertyItem);
   const [loadingData, setLoadingData] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
   const totalPages = Math.ceil(propertyItem.length / itemsPerPage);
   const pathname = usePathname();
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, logout } = useAuth();
   console.log("isAuthenticated", isAuthenticated);
   const handleEdit = (propertyId: string) => {
     onEdit(propertyId);
@@ -52,30 +53,37 @@ const PreConstructedProject: React.FC<PreConstructedProjectProps> = ({
     if (!loading) {
       fetchData();
     }
-  }, [loading]);
+  }, [loading, logout]);
 
   const handleDelete = async (propertyId: string) => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/pre-constructed-property/${propertyId}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this property?"
+    );
+
+    if (confirmDelete) {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/pre-constructed-property/${propertyId}`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (!response.ok) {
+          throw new Error("Failed to delete property");
         }
-      );
-      if (!response.ok) {
-        throw new Error("Failed to delete property");
+        setPropertyItem((prevProperties) =>
+          prevProperties.filter((prop) => prop.listing_id !== propertyId)
+        );
+      } catch (error) {
+        console.error("Error deleting property:", error);
       }
-      setPropertyItem((prevProperties) =>
-        prevProperties.filter((prop) => prop.listing_id !== propertyId)
-      );
-    } catch (error) {
-      console.error("Error deleting property:", error);
     }
   };
+
   const currentItems = propertyItem.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
@@ -105,7 +113,11 @@ const PreConstructedProject: React.FC<PreConstructedProjectProps> = ({
             >
               <div className="rounded overflow-hidden shadow-lg hover:shadow-xl dark:bg-gray-900">
                 <Image
-                  src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${card.property_images[0].filename}`}
+                  src={
+                    card.property_images.length > 0
+                      ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/${card.property_images[0]?.filename}`
+                      : "https://st4.depositphotos.com/14953852/24787/v/450/depositphotos_247872612-stock-illustration-no-image-available-icon-vector.jpg"
+                  }
                   alt="Property Image"
                   width={600}
                   height={300}

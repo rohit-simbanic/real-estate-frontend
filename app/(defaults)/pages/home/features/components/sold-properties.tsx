@@ -16,7 +16,7 @@ const SoldProperties = () => {
   const totalPages = Math.ceil(property.length / itemsPerPage);
   const pathname = usePathname();
   const router = useRouter();
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, logout } = useAuth();
   useEffect(() => {
     const fetchData = async () => {
       setLoadingData(true);
@@ -39,31 +39,36 @@ const SoldProperties = () => {
     if (!loading) {
       fetchData();
     }
-  }, [loading]);
+  }, [loading, logout]);
 
   const handleDelete = async (propertyId: string) => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/properties/${propertyId}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this property?"
+    );
+
+    if (confirmDelete) {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/properties/${propertyId}`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (!response.ok) {
+          throw new Error("Failed to delete property");
         }
-      );
-      if (!response.ok) {
-        throw new Error("Failed to delete property");
+        setProperty((prevProperties) =>
+          prevProperties.filter((prop) => prop.listing_id !== propertyId)
+        );
+      } catch (error) {
+        console.error("Error deleting property:", error);
       }
-      setProperty((prevProperties) =>
-        prevProperties.filter((prop) => prop.listing_id !== propertyId)
-      );
-    } catch (error) {
-      console.error("Error deleting property:", error);
     }
   };
-
   const currentItems = property.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage

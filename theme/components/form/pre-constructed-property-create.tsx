@@ -61,7 +61,7 @@ interface FormData {
   available_for: string;
   listing_id: string;
   property_description: string;
-  property_images: { file: File; url: string }[];
+  property_images: { file: File | null; url: string }[];
   general_details: GeneralDetails;
   room_interior: RoomInterior;
   exterior: Exterior;
@@ -142,6 +142,7 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [success, setSuccess] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("category");
+  const scrollableContainerRef = React.useRef<HTMLDivElement | null>(null);
   const router = useRouter();
 
   const validateForm = () => {
@@ -364,8 +365,8 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
       "image/jpg",
       "image/webp",
     ];
-    let newFiles: { file: File; url: string }[] = [];
 
+    let newFiles: { file: File | null; url: string }[] = [];
     if (files) {
       newFiles = Array.from(files)
         .map((file) => {
@@ -405,20 +406,47 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
     });
   };
 
-  const handleDeleteImage = (index: number) => {
-    setFormData((prevFormData) => {
-      const updatedImages = prevFormData.property_images.filter(
-        (_, i) => i !== index
-      );
-      return {
-        ...prevFormData,
-        property_images: updatedImages,
-      };
-    });
-  };
+  const handleDeleteImage = async (index: number) => {
+    const imageToDelete = formData.property_images[index];
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setError("Unauthorized. Please log in.");
+      return;
+    }
 
-  const handleFileUpload = (files: File[]): File[] => {
-    return files;
+    try {
+      // Check if the image has a URL and is from the backend
+      if (
+        imageToDelete.url.startsWith(`${process.env.NEXT_PUBLIC_BACKEND_URL}`)
+      ) {
+        const response = await axios.delete(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/preconstructed/${propertyId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            data: { filename: imageToDelete.url.split("/").pop() },
+          }
+        );
+
+        if (response.status !== 200) {
+          throw new Error("Failed to delete image from backend.");
+        }
+      }
+
+      setFormData((prevFormData) => {
+        const updatedImages = prevFormData.property_images.filter(
+          (_, i) => i !== index
+        );
+        return {
+          ...prevFormData,
+          property_images: updatedImages,
+        };
+      });
+    } catch (error) {
+      console.error("Error deleting image:", error);
+      setError("Failed to delete image.");
+    }
   };
 
   const appendNestedObject = (
@@ -448,9 +476,9 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
     }
     try {
       const token = localStorage.getItem("token");
-      const files = handleFileUpload(
-        formData.property_images.map((image) => image.file)
-      );
+      const files = formData.property_images
+        .map((image) => image.file)
+        .filter((file): file is File => file !== null); // Ensure file is not null
 
       // Prepare FormData
       const data = new FormData();
@@ -463,6 +491,7 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
 
       let response;
       if (propertyId) {
+        console.log("before updating property", data);
         response = await axios.put(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/pre-constructed-property/${propertyId}`,
           data,
@@ -473,6 +502,7 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
             },
           }
         );
+        console.log("response message", response);
       } else {
         response = await axios.post(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/pre-constructed-property`,
@@ -528,7 +558,7 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
             longitude,
             property_images: propertyData.property_images.map((img: any) => ({
               file: null,
-              url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${img.filename}`,
+              url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/${img.filename}`,
             })),
           };
 
@@ -542,7 +572,11 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
       fetchPropertyData();
     }
   }, []);
-
+  useEffect(() => {
+    if (scrollableContainerRef.current) {
+      scrollableContainerRef.current.scrollTop = 0;
+    }
+  }, [activeTab]);
   const tabContent = () => {
     switch (activeTab) {
       case "category":
@@ -652,11 +686,11 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
                   <p>Uploaded Images:</p>
                   <div className="flex flex-col sm:flex-row gap-4">
                     {formData.property_images.map((image, index) => (
-                      <div key={index} className="relative">
+                      <div key={index} className="relative ">
                         <img
                           src={image.url}
                           alt={`Property Image ${index + 1}`}
-                          className="w-full h-auto rounded"
+                          className="w-full sm:w-[200px] object-cover h-[100px] rounded"
                         />
                         <button
                           type="button"
@@ -1363,7 +1397,10 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="max-h-[500px] overflow-y-auto scrollable-container px-3">
+        <div
+          ref={scrollableContainerRef}
+          className="max-h-[500px] overflow-y-auto scrollable-container px-3"
+        >
           {tabContent()}
           <div className="flex gap-4">
             <button
