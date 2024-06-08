@@ -115,7 +115,7 @@ const PreConstructedProject: React.FC<PreConstructedProjectProps> = ({
                 <Image
                   src={
                     card.property_images.length > 0
-                      ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${card.property_images[0]?.filename}`
+                      ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/${card.property_images[0]?.filename}`
                       : "https://st4.depositphotos.com/14953852/24787/v/450/depositphotos_247872612-stock-illustration-no-image-available-icon-vector.jpg"
                   }
                   alt="Property Image"
