@@ -140,7 +140,6 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
   const scrollableContainerRef = React.useRef<HTMLDivElement | null>(null);
 
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};

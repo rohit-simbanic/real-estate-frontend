@@ -1,5 +1,5 @@
 import { PropertyDetails } from "@/types/property-card-types";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import Link from "next/link";
 import React from "react";
 
@@ -53,12 +53,17 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
   return (
     <div className="block rounded-lg p-4 dark:shadow-none shadow-sm shadow-indigo-100 bg-[#fff8f8] dark:bg-gray-900">
       <Link href={details.listing_id}>
-        <img
+        <Image
           alt="Property image"
-          src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${details.property_images[0].filename}`}
+          src={
+            details.property_images.length > 0
+              ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/${details.property_images[0]?.filename}`
+              : "https://st4.depositphotos.com/14953852/24787/v/450/depositphotos_247872612-stock-illustration-no-image-available-icon-vector.jpg"
+          }
           className=" w-full rounded-md object-cover !h-[300px]"
           width={1770}
           height={700}
+          priority
         />
 
         <div className="mt-2">

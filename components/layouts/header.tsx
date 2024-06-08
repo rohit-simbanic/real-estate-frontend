@@ -3,7 +3,7 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import ButtonAuth from "../button/button-auth";
 import { useTheme } from "@/contexts/theme-context";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import { fieldLabel } from "@/assets/field-label";
 import ToggleButton from "@/theme/components/toggle-button/button-toggle";
 import axios from "axios";

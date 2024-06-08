@@ -6,7 +6,7 @@ import { fetchPreconstructedProperties } from "@/helpers/product-fetch";
 import { Pagination } from "@/theme/components/pagination/pagination";
 import SectionTitle from "@/theme/components/section-title/section-title";
 import { PreconstructedPropertyDetails } from "@/types/property-preconstructed-types";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 interface PreConstructedProjectProps {
@@ -115,7 +115,7 @@ const PreConstructedProject: React.FC<PreConstructedProjectProps> = ({
                 <Image
                   src={
                     card.property_images.length > 0
-                      ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/${card.property_images[0]?.filename}`
+                      ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${card.property_images[0]?.filename}`
                       : "https://st4.depositphotos.com/14953852/24787/v/450/depositphotos_247872612-stock-illustration-no-image-available-icon-vector.jpg"
                   }
                   alt="Property Image"
@@ -123,6 +123,7 @@ const PreConstructedProject: React.FC<PreConstructedProjectProps> = ({
                   height={300}
                   layout="responsive"
                   className="!h-[300px]"
+                  priority
                 />
                 <div className="px-4 py-4">
                   <div className="mb-2">
