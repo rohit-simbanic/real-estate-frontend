@@ -8,7 +8,6 @@ interface ImageSliderProps {
 
 const ImageSlider: React.FC<ImageSliderProps> = ({ images }) => {
   const [slideIndex, setSlideIndex] = useState(1);
-
   const plusSlides = (n: number) => {
     let newIndex = slideIndex + n;
     if (newIndex > images.length) newIndex = 1;
