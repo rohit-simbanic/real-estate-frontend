@@ -4,6 +4,7 @@ import ButtonRegister from "@/components/button/button-register";
 import { useAuth } from "@/contexts/auth-provider";
 import { getCloudinaryUrl } from "@/helpers/cloudinary-image-fetch";
 import { fetchPreconstructedProperties } from "@/helpers/product-fetch";
+import { truncateText } from "@/helpers/utils";
 import { Pagination } from "@/theme/components/pagination/pagination";
 import SectionTitle from "@/theme/components/section-title/section-title";
 import { PreconstructedPropertyDetails } from "@/types/property-preconstructed-types";
@@ -129,7 +130,7 @@ const PreConstructedProject: React.FC<PreConstructedProjectProps> = ({
                 <div className="px-4 py-4">
                   <div className="mb-2">
                     <h2 className="text-xl font-bold text-gray-900 dark:text-teal-600 pb-3">
-                      {card.name}
+                      {truncateText(card.name, 21)}
                     </h2>
                     <p className="dark:text-teal-600 my-2 text-sm h-[53px]">
                       {card.general_details.Address}

@@ -103,6 +103,16 @@ const AgentProfile = ({ params }: Props) => {
       alert(response.data.message);
       setNewPassword("");
     } catch (err) {
+      if (axios.isAxiosError(err)) {
+        // Check if the error is an AxiosError and if it has a response with data and message
+        if (err.response?.data?.message) {
+          alert(err.response.data.message);
+        } else {
+          alert("An error occurred while resetting the password.");
+        }
+      } else {
+        alert("An unexpected error occurred.");
+      }
       console.error("Error resetting password:", err);
     }
   };
