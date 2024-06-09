@@ -32,6 +32,11 @@ const config: Config = {
         full: "9999px",
         large: "12px",
       },
+
+      fontFamily: {
+        sans: ["var(--font-opensans)"],
+        mono: ["var(--font-roboto-mono)"],
+      },
     },
   },
   safelist: [

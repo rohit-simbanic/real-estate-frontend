@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { getCloudinaryUrl } from "@/helpers/cloudinary-image-fetch";
 
 interface GeneralDetails {
   Price: string;
@@ -415,23 +416,18 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
     }
 
     try {
-      // Check if the image has a URL and is from the backend
-      if (
-        imageToDelete.url.startsWith(`${process.env.NEXT_PUBLIC_BACKEND_URL}`)
-      ) {
-        const response = await axios.delete(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/preconstructed/${propertyId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            data: { filename: imageToDelete.url.split("/").pop() },
-          }
-        );
-
-        if (response.status !== 200) {
-          throw new Error("Failed to delete image from backend.");
+      const response = await axios.delete(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/preconstructed/${propertyId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          data: { filename: imageToDelete.url.split("/upload/")[1] },
         }
+      );
+
+      if (response.status !== 200) {
+        throw new Error("Failed to delete image from backend.");
       }
 
       setFormData((prevFormData) => {
@@ -558,7 +554,7 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
             longitude,
             property_images: propertyData.property_images.map((img: any) => ({
               file: null,
-              url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/${img.filename}`,
+              url: getCloudinaryUrl(img.filename),
             })),
           };
 
@@ -571,7 +567,7 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
 
       fetchPropertyData();
     }
-  }, []);
+  }, [propertyId]);
   useEffect(() => {
     if (scrollableContainerRef.current) {
       scrollableContainerRef.current.scrollTop = 0;

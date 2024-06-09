@@ -1,5 +1,5 @@
 import { FooterSection } from "@/types/footer-menu-types";
-import Image from "next/legacy/image";
+import Image from "next/image";
 import React from "react";
 
 interface FooterMenuProps {

@@ -3,14 +3,16 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import ButtonAuth from "../button/button-auth";
 import { useTheme } from "@/contexts/theme-context";
-import Image from "next/legacy/image";
+import Image from "next/image";
 import { fieldLabel } from "@/assets/field-label";
 import ToggleButton from "@/theme/components/toggle-button/button-toggle";
 import axios from "axios";
 import { useAuth } from "@/contexts/auth-provider";
+import { getCloudinaryUrl } from "@/helpers/cloudinary-image-fetch";
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  console.log("isMenuOpen", isMenuOpen);
   const { theme, setTheme } = useTheme();
   const [isChecked, setIsChecked] = useState(false);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
@@ -96,16 +98,20 @@ const Header: React.FC = () => {
             </g>
           </svg>
         </Link>
-        <button id="hamburger" onClick={toggleMenu}>
+        <button
+          id="hamburger"
+          onClick={toggleMenu}
+          className="flex items-center"
+        >
           <Image
-            className={`toggle ${isMenuOpen ? "hidden" : "block"}`}
+            className={`${isMenuOpen ? "!hidden" : "!block"}`}
             src="https://img.icons8.com/fluent-systems-regular/2x/menu-squared-2.png"
             width="40"
             height="40"
             alt="Open Menu"
           />
           <Image
-            className={`toggle ${isMenuOpen ? "block" : "hidden"}`}
+            className={`${isMenuOpen ? "!block" : "!hidden"}`}
             src="https://img.icons8.com/fluent-systems-regular/2x/close-window.png"
             width="40"
             height="40"
@@ -153,22 +159,41 @@ const Header: React.FC = () => {
             {item.title}
           </Link>
         ))}
-        <div className="sm:flex sm:gap-4 block md:hidden w-full justify-between items-center my-4">
+        <div className="flex sm:gap-4 md:hidden w-full justify-between items-center my-4">
           <ToggleButton isChecked={isChecked} handleChange={handleChange} />
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             {isAuthenticated ? (
-              <ButtonAuth
-                text="Logout"
-                textColor="white"
-                href="/"
-                borderColor="blue-500"
-                borderWidth={0}
-                borderRadius="md"
-                bgColor="teal-600"
-                hoverBgColor="blue-700"
-                shadow={true}
-                onClick={logout}
-              />
+              <>
+                <ButtonAuth
+                  text="Logout"
+                  textColor="white"
+                  href="/"
+                  borderColor="blue-500"
+                  borderWidth={0}
+                  borderRadius="md"
+                  bgColor="teal-600"
+                  hoverBgColor="blue-700"
+                  shadow={true}
+                  onClick={logout}
+                />
+                {agent?.profilePicture ? (
+                  <Link href={"/admin/agent-profile"} className="block">
+                    <Image
+                      src={getCloudinaryUrl(agent.profilePicture)}
+                      alt="Profile"
+                      height={52}
+                      width={52}
+                      className="rounded-[50%] flex items-center justify-center h-[52px] w-[53px]"
+                    />
+                  </Link>
+                ) : (
+                  <Link href={"/admin/agent-profile"}>
+                    <div className="flex items-center justify-center w-[52px] h-[52px] bg-purple-700 text-white rounded-full text-2xl font-bold">
+                      {getInitial(agent?.fullName)}
+                    </div>
+                  </Link>
+                )}
+              </>
             ) : (
               <>
                 <ButtonAuth
@@ -229,9 +254,9 @@ const Header: React.FC = () => {
                   onClick={logout}
                 />
                 {agent?.profilePicture ? (
-                  <Link href={"/admin/agent-profile"}>
+                  <Link href={"/admin/agent-profile"} className="block">
                     <Image
-                      src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${agent.profilePicture}`}
+                      src={getCloudinaryUrl(agent.profilePicture)}
                       alt="Profile"
                       height={52}
                       width={52}

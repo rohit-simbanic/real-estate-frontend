@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
+import { getCloudinaryUrl } from "@/helpers/cloudinary-image-fetch";
 
 interface GeneralDetails {
   Price: string;
@@ -133,6 +134,7 @@ interface PropertyFormProps {
 }
 const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
   const [formData, setFormData] = useState<FormData>(initialFormData);
+  console.log("single form data", formData);
   const [error, setError] = useState<string | null>(null);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [success, setSuccess] = useState<boolean>(false);
@@ -406,23 +408,19 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
     }
 
     try {
-      // Check if the image has a URL and is from the backend
-      if (
-        imageToDelete.url.startsWith(`${process.env.NEXT_PUBLIC_BACKEND_URL}`)
-      ) {
-        const response = await axios.delete(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/properties-image/${propertyId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            data: { filename: imageToDelete.url.split("/").pop() },
-          }
-        );
-
-        if (response.status !== 200) {
-          throw new Error("Failed to delete image from backend.");
+      const filename = imageToDelete.url.split("/upload/")[1];
+      const response = await axios.delete(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/properties-image/${propertyId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          data: { filename: filename },
         }
+      );
+
+      if (response.status !== 200) {
+        throw new Error("Failed to delete image from backend.");
       }
 
       setFormData((prevFormData) => {
@@ -478,7 +476,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
       const files = formData.property_images
         .map((image) => image.file)
         .filter((file): file is File => file !== null);
-
+      console.log("newly added files: ", files);
       // Prepare FormData
       const data = new FormData();
       files.forEach((file) => {
@@ -487,6 +485,15 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
 
       // Append other fields
       appendNestedObject(formData, data);
+
+      //@ts-ignore
+      for (let [key, value] of data.entries()) {
+        if (value instanceof File) {
+          console.log(`${key}: ${value.name} (File)`);
+        } else {
+          console.log(`${key}: ${value}`);
+        }
+      }
 
       let response;
       if (propertyId) {
@@ -556,7 +563,8 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
             longitude,
             property_images: propertyData.property_images.map((img: any) => ({
               file: null,
-              url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/${img.filename}`,
+              url: getCloudinaryUrl(img.filename),
+              filename: img.filename,
             })),
           };
 

@@ -1,7 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Image from "next/legacy/image";
+import Image from "next/image";
+import { getCloudinaryUrl } from "@/helpers/cloudinary-image-fetch";
 
 type Props = {
   params: { id: string };
@@ -152,7 +153,7 @@ const AgentProfile = ({ params }: Props) => {
           <div className="flex flex-col items-center space-y-4 mt-6 max-h-[600px] overflow-y-auto scrollable-container px-2">
             {agent?.profilePicture ? (
               <Image
-                src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${agent.profilePicture}`}
+                src={getCloudinaryUrl(agent.profilePicture)}
                 alt="Profile"
                 className="w-32 h-32 rounded-full"
                 width={128}
@@ -166,77 +167,167 @@ const AgentProfile = ({ params }: Props) => {
             <p className="text-lg font-semibold ">
               <span className="underline">Name:</span> {agent?.fullName}
             </p>
-            <p className="text-lg">
-              <span className="font-bold">Email: </span>
-              {agent?.email}
-            </p>
-            <p className="text-lg">
-              <span className="font-bold">Phone: </span>
-              {agent?.phoneNumber}
-            </p>
-            <p className="text-lg">
-              <span className="font-bold">License no: </span>
-              {agent?.licenseNumber}
-            </p>
-            <p className="text-lg">
-              <span className="font-bold">Agency Name: </span>
-              {agent?.agencyName}
-            </p>
-            <p className="text-lg">
-              <span className="font-bold">Agency Address: </span>
-              {agent?.agencyAddress}
-            </p>
+            <div className="overflow-x-auto  w-full">
+              <table className="border-collapse border bg-white border-gray-200">
+                <tbody>
+                  <tr className="bg-gray-50 border-b border-gray-200">
+                    <th className="px-4 py-2 text-left text-gray-600 font-bold">
+                      Email
+                    </th>
+                    <td className="px-4 py-2 text-gray-800">{agent?.email}</td>
+                  </tr>
+                  <tr className="bg-white border-b border-gray-200">
+                    <th className="px-4 py-2 text-left text-gray-600 font-bold">
+                      Phone
+                    </th>
+                    <td className="px-4 py-2 text-gray-800">
+                      {agent?.phoneNumber}
+                    </td>
+                  </tr>
+                  <tr className="bg-gray-50 border-b border-gray-200">
+                    <th className="px-4 py-2 text-left text-gray-600 font-bold">
+                      License no
+                    </th>
+                    <td className="px-4 py-2 text-gray-800">
+                      {agent?.licenseNumber}
+                    </td>
+                  </tr>
+                  <tr className="bg-white border-b border-gray-200">
+                    <th className="px-4 py-2 text-left text-gray-600 font-bold">
+                      Agency Name
+                    </th>
+                    <td className="px-4 py-2 text-gray-800">
+                      {agent?.agencyName}
+                    </td>
+                  </tr>
+                  <tr className="bg-gray-50">
+                    <th className="px-4 py-2 text-left text-gray-600 font-bold">
+                      Agency Address
+                    </th>
+                    <td className="px-4 py-2 text-gray-800">
+                      {agent?.agencyAddress}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
         {activeTab === "details" && (
           <div className="flex flex-col items-center space-y-4 mt-6 max-h-[600px] overflow-y-auto scrollable-container px-2">
-            <p className="text-lg">
-              <span className="font-bold">Year of Experience: </span>{" "}
-              {agent?.yearsOfExperience}
-            </p>
-            <p className="text-lg">
-              <span className="font-bold">Specializations: </span>
-              {agent?.specializations}
-            </p>
-            <p className="text-lg">
-              <span className="font-bold">Govt ID: </span>
-              {agent?.governmentID}
-            </p>
-            <p className="text-lg">
-              <span className="font-bold">Linkedin Profile: </span>
-              {agent?.linkedInProfile}
-            </p>
-            <p className="text-lg">
-              <span className="font-bold">Website: </span> {agent?.website}
-            </p>
-            <p className="text-lg">
-              <span className="font-bold">Marketing preferences?: </span>
-              {agent?.marketingPreferences}
-            </p>
-            <p className="text-lg">
-              <span className="font-bold">Communication Channel: </span>
-              {agent?.preferredCommunicationChannels}
-            </p>
-            <p className="text-lg">
-              <span className="font-bold">Language spoken: </span>
-              {agent?.languagesSpoken}
-            </p>
-            <p className="text-lg">
-              <span className="font-bold">Service Areas: </span>
-              {agent?.serviceAreas}
-            </p>
-            <p className="text-lg">
-              <span className="font-bold">Bio: </span>
-              {agent?.professionalBio}
-            </p>
-            <p className="text-lg">
-              <span className="font-bold">Certifications: </span>
-              {agent?.certificationsAwards}
-            </p>
-            <p className="text-lg">
-              <span className="font-bold">References: </span>
-              {agent?.references}
-            </p>
+            <div className="overflow-x-auto  w-full">
+              <table className="border-collapse border bg-white border-gray-200">
+                <tbody>
+                  <tr className="bg-gray-50 border-b border-gray-200">
+                    <th className="px-4 py-2 text-left text-gray-600 font-bold">
+                      Year of Experience
+                    </th>
+                    <td className="px-4 py-2 text-gray-800">
+                      {agent?.yearsOfExperience}
+                    </td>
+                  </tr>
+                  <tr className="bg-white border-b border-gray-200">
+                    <th className="px-4 py-2 text-left text-gray-600 font-bold">
+                      Specializations
+                    </th>
+                    <td className="px-4 py-2 text-gray-800">
+                      {agent?.specializations}
+                    </td>
+                  </tr>
+                  <tr className="bg-gray-50 border-b border-gray-200">
+                    <th className="px-4 py-2 text-left text-gray-600 font-bold">
+                      Govt ID
+                    </th>
+                    <td className="px-4 py-2 text-gray-800">
+                      {agent?.governmentID}
+                    </td>
+                  </tr>
+                  <tr className="bg-white border-b border-gray-200">
+                    <th className="px-4 py-2 text-left text-gray-600 font-bold">
+                      LinkedIn Profile
+                    </th>
+                    <td className="px-4 py-2 text-gray-800">
+                      <a
+                        href={agent?.linkedInProfile}
+                        className="text-blue-600 hover:underline"
+                      >
+                        {agent?.linkedInProfile}
+                      </a>
+                    </td>
+                  </tr>
+                  <tr className="bg-gray-50 border-b border-gray-200">
+                    <th className="px-4 py-2 text-left text-gray-600 font-bold">
+                      Website
+                    </th>
+                    <td className="px-4 py-2 text-gray-800">
+                      <a
+                        href={agent?.website}
+                        className="text-blue-600 hover:underline"
+                      >
+                        {agent?.website}
+                      </a>
+                    </td>
+                  </tr>
+                  <tr className="bg-white border-b border-gray-200">
+                    <th className="px-4 py-2 text-left text-gray-600 font-bold">
+                      Marketing Preferences
+                    </th>
+                    <td className="px-4 py-2 text-gray-800">
+                      {agent?.marketingPreferences}
+                    </td>
+                  </tr>
+                  <tr className="bg-gray-50 border-b border-gray-200">
+                    <th className="px-4 py-2 text-left text-gray-600 font-bold">
+                      Communication Channel
+                    </th>
+                    <td className="px-4 py-2 text-gray-800">
+                      {agent?.preferredCommunicationChannels}
+                    </td>
+                  </tr>
+                  <tr className="bg-white border-b border-gray-200">
+                    <th className="px-4 py-2 text-left text-gray-600 font-bold">
+                      Language Spoken
+                    </th>
+                    <td className="px-4 py-2 text-gray-800">
+                      {agent?.languagesSpoken}
+                    </td>
+                  </tr>
+                  <tr className="bg-gray-50 border-b border-gray-200">
+                    <th className="px-4 py-2 text-left text-gray-600 font-bold">
+                      Service Areas
+                    </th>
+                    <td className="px-4 py-2 text-gray-800">
+                      {agent?.serviceAreas}
+                    </td>
+                  </tr>
+                  <tr className="bg-white border-b border-gray-200">
+                    <th className="px-4 py-2 text-left text-gray-600 font-bold">
+                      Bio
+                    </th>
+                    <td className="px-4 py-2 text-gray-800">
+                      {agent?.professionalBio}
+                    </td>
+                  </tr>
+                  <tr className="bg-gray-50 border-b border-gray-200">
+                    <th className="px-4 py-2 text-left text-gray-600 font-bold">
+                      Certifications
+                    </th>
+                    <td className="px-4 py-2 text-gray-800">
+                      {agent?.certificationsAwards}
+                    </td>
+                  </tr>
+                  <tr className="bg-white">
+                    <th className="px-4 py-2 text-left text-gray-600 font-bold">
+                      References
+                    </th>
+                    <td className="px-4 py-2 text-gray-800">
+                      {agent?.references}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
             <div className="mt-6">
               <h3 className="text-xl font-bold mb-4 text-center underline">
                 Reset Password

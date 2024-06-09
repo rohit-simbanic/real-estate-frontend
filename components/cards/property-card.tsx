@@ -1,3 +1,4 @@
+import { getCloudinaryUrl } from "@/helpers/cloudinary-image-fetch";
 import { PropertyDetails } from "@/types/property-card-types";
 import Image from "next/image";
 import Link from "next/link";
@@ -57,10 +58,10 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
           alt="Property image"
           src={
             details.property_images.length > 0
-              ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${details.property_images[0]?.filename}`
+              ? getCloudinaryUrl(details.property_images[0]?.filename)
               : "https://st4.depositphotos.com/14953852/24787/v/450/depositphotos_247872612-stock-illustration-no-image-available-icon-vector.jpg"
           }
-          className=" w-full rounded-md object-cover !h-[400px]"
+          className=" w-full rounded-md object-cover !h-[310px]"
           width={1770}
           height={700}
           priority

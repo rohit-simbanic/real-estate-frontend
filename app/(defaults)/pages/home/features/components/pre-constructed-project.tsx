@@ -2,6 +2,7 @@
 
 import ButtonRegister from "@/components/button/button-register";
 import { useAuth } from "@/contexts/auth-provider";
+import { getCloudinaryUrl } from "@/helpers/cloudinary-image-fetch";
 import { fetchPreconstructedProperties } from "@/helpers/product-fetch";
 import { Pagination } from "@/theme/components/pagination/pagination";
 import SectionTitle from "@/theme/components/section-title/section-title";
@@ -115,14 +116,14 @@ const PreConstructedProject: React.FC<PreConstructedProjectProps> = ({
                 <Image
                   src={
                     card.property_images.length > 0
-                      ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${card.property_images[0]?.filename}`
+                      ? getCloudinaryUrl(card.property_images[0]?.filename)
                       : "https://st4.depositphotos.com/14953852/24787/v/450/depositphotos_247872612-stock-illustration-no-image-available-icon-vector.jpg"
                   }
                   alt="Property Image"
                   width={600}
                   height={300}
                   layout="responsive"
-                  className="!h-[400px]"
+                  className="!h-[310px]"
                   priority
                 />
                 <div className="px-4 py-4">

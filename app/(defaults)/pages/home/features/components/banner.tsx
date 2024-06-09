@@ -36,7 +36,7 @@ const Banner = () => {
     >
       <div className="mx-auto max-w-screen-xl px-4 py-32 lg:flex lg:items-center">
         <div className="mx-auto max-w-3xl text-center bg-black rounded-md dark:bg-[#282c38] opacity-[0.8] dark:opacity-[0.9] p-5">
-          <h1 className="bg-gradient-to-r from-green-300 via-blue-500 to-purple-600 bg-clip-text text-3xl font-extrabold text-transparent sm:text-5xl sm:leading-[4.5rem]">
+          <h1 className="bg-gradient-to-r from-green-300 via-blue-500 to-purple-600 bg-clip-text text-3xl font-extrabold text-transparent sm:text-5xl sm:leading-[4.5rem] font-mono">
             {bannerText.banner_header}
           </h1>
 

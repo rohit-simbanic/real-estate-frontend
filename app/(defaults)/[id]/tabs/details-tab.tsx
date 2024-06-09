@@ -93,82 +93,116 @@ const Tabs: React.FC<PropertyCardProps> = ({ property }) => {
       <div id="tab-contents">
         <div className={`p-4 ${activeTab === "general" ? "" : "hidden"}`}>
           <p className="dark:text-gray-400">
-            Price: {property.general_details.Price}
+            <span className="font-bold underline">Price:</span>
+            {property.general_details.Price}
           </p>
           <p className="dark:text-gray-400">
-            Taxes: {property.general_details.Taxes}
+            <span className="font-bold underline">Taxes:</span>
+            {property.general_details.Taxes}
           </p>
           <p className="dark:text-gray-400">
-            Address: {property.general_details.Address}
+            <span className="font-bold underline">Address:</span>
+            {property.general_details.Address}
           </p>
           <p className="dark:text-gray-400">
-            Lot Size: {property.general_details.Lot_Size}
+            <span className="font-bold underline">Lot Size:</span>
+            {property.general_details.Lot_Size}
           </p>
           <p className="dark:text-gray-400">
-            Directions: {property.general_details.Directions}
+            <span className="font-bold underline">Directions:</span>
+            {property.general_details.Directions}
+          </p>
+          <p className="dark:text-gray-400">
+            <span className="font-bold underline">Details:</span>
+            {property.property_description}
           </p>
         </div>
         <div className={`p-4 ${activeTab === "interior" ? "" : "hidden"}`}>
           <p className="dark:text-gray-400">
-            Rooms: {property.room_interior.Rooms}
+            <span className="font-bold underline">Rooms: </span>
+            {property.room_interior.Rooms}
           </p>
           <p className="dark:text-gray-400">
-            Rooms Plus: {property.room_interior.Rooms_plus}
+            <span className="font-bold underline">Rooms Plus:</span>{" "}
+            {property.room_interior.Rooms_plus}
           </p>
           <p className="dark:text-gray-400">
-            Bedrooms: {property.room_interior.Bedrooms}
+            <span className="font-bold underline">Bedrooms: </span>
+            {property.room_interior.Bedrooms}
           </p>
           <p className="dark:text-gray-400">
-            Bedrooms Plus: {property.room_interior.Bedrooms_plus}
+            <span className="font-bold underline">Bedrooms Plus:</span>{" "}
+            {property.room_interior.Bedrooms_plus}
           </p>
           <p className="dark:text-gray-400">
-            Kitchens: {property.room_interior.Kitchens}
+            <span className="font-bold underline">Kitchens:</span>{" "}
+            {property.room_interior.Kitchens}
           </p>
           <p className="dark:text-gray-400">
-            Family Room: {property.room_interior.Family_Room}
+            <span className="font-bold underline">Family Room: </span>
+            {property.room_interior.Family_Room}
           </p>
           <p className="dark:text-gray-400">
-            Basement: {property.room_interior.Basement}
+            <span className="font-bold underline">Basement: </span>
+            {property.room_interior.Basement}
           </p>
         </div>
         <div className={`p-4 ${activeTab === "exterior" ? "" : "hidden"}`}>
           <p className="dark:text-gray-400">
-            Property Type: {property.exterior.Property_Type}
-          </p>
-          <p className="dark:text-gray-400">Style: {property.exterior.Style}</p>
-          <p className="dark:text-gray-400">
-            Exterior: {property.exterior.Exterior}
+            <span className="font-bold underline">Property Type: </span>
+            {property.exterior.Property_Type}
           </p>
           <p className="dark:text-gray-400">
-            Garage Type: {property.exterior.Garage_Type}
+            <span className="font-bold underline">Style:</span>{" "}
+            {property.exterior.Style}
           </p>
           <p className="dark:text-gray-400">
-            Drive Parking Spaces: {property.exterior.Drive_Parking_Spaces}
+            <span className="font-bold underline">Exterior: </span>
+            {property.exterior.Exterior}
           </p>
-          <p className="dark:text-gray-400">Pool: {property.exterior.Pool}</p>
+          <p className="dark:text-gray-400">
+            <span className="font-bold underline">Garage Type:</span>{" "}
+            {property.exterior.Garage_Type}
+          </p>
+          <p className="dark:text-gray-400">
+            <span className="font-bold underline">Drive Parking Spaces:</span>{" "}
+            {property.exterior.Drive_Parking_Spaces}
+          </p>
+          <p className="dark:text-gray-400">
+            <span className="font-bold underline">Pool: </span>
+            {property.exterior.Pool}
+          </p>
         </div>
         <div className={`p-4 ${activeTab === "utilities" ? "" : "hidden"}`}>
           <p className="dark:text-gray-400">
-            Fireplace/Stove: {property.utilities.Fireplace_Stove}
+            <span className="font-bold underline">Fireplace/Stove:</span>{" "}
+            {property.utilities.Fireplace_Stove}
           </p>
           <p className="dark:text-gray-400">
-            Heat Source: {property.utilities.Heat_Source}
+            <span className="font-bold underline">Heat Source:</span>{" "}
+            {property.utilities.Heat_Source}
           </p>
           <p className="dark:text-gray-400">
-            Heat Type: {property.utilities.Heat_Type}
+            <span className="font-bold underline">Heat Type:</span>{" "}
+            {property.utilities.Heat_Type}
           </p>
           <p className="dark:text-gray-400">
-            Central Air Conditioning:{" "}
+            <span className="font-bold underline">
+              Central Air Conditioning:
+            </span>
             {property.utilities.Central_Air_Conditioning}
           </p>
           <p className="dark:text-gray-400">
-            Laundry Level: {property.utilities.Laundry_Level}
+            <span className="font-bold underline">Laundry Level:</span>{" "}
+            {property.utilities.Laundry_Level}
           </p>
           <p className="dark:text-gray-400">
-            Sewers: {property.utilities.Sewers}
+            <span className="font-bold underline">Sewers:</span>{" "}
+            {property.utilities.Sewers}
           </p>
           <p className="dark:text-gray-400">
-            Water: {property.utilities.Water}
+            <span className="font-bold underline">Water:</span>{" "}
+            {property.utilities.Water}
           </p>
         </div>
       </div>

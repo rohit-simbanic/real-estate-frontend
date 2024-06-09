@@ -1,5 +1,6 @@
 "use client";
 
+import { getCloudinaryUrl } from "@/helpers/cloudinary-image-fetch";
 import Image from "next/image";
 import React, { useState } from "react";
 
@@ -31,11 +32,11 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images }) => {
             }`}
           >
             <Image
-              src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/${image.filename}`}
+              src={getCloudinaryUrl(image.filename)}
               alt={`Slide ${index + 1}`}
               width={1700}
               height={650}
-              className="h-[600px]"
+              className="h-[600px] max-sm:h-[300px]"
             />
           </div>
         ))}
@@ -71,7 +72,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images }) => {
         {images?.map((image, index) => (
           <div key={index} className="flex-1">
             <Image
-              src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${image.filename}`}
+              src={getCloudinaryUrl(image.filename)}
               alt={`Thumbnail ${index + 1}`}
               height={340}
               width={340}

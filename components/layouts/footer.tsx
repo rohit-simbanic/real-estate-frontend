@@ -1,7 +1,7 @@
 import { FooterSection } from "@/types/footer-menu-types";
 import ContactButton from "../button/button-contact";
 import FooterMenu from "../menu/footer-menu";
-import Image from "next/legacy/image";
+import Image from "next/image";
 import { fieldLabel } from "@/assets/field-label";
 const footerSections: FooterSection[] = [
   {
