@@ -216,7 +216,7 @@ const AgentProfile = ({ params }: Props) => {
         {activeTab === "details" && (
           <div className="flex flex-col items-center space-y-4 mt-6 max-h-[600px] overflow-y-auto scrollable-container px-2">
             <div className="overflow-x-auto  w-full">
-              <table className="border-collapse border bg-white border-gray-200">
+              <table className="border-collapse border bg-white border-gray-200 w-full">
                 <tbody>
                   <tr className="bg-gray-50 border-b border-gray-200">
                     <th className="px-4 py-2 text-left text-gray-600 font-bold">
