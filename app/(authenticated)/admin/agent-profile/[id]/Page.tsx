@@ -178,7 +178,7 @@ const AgentProfile = ({ params }: Props) => {
               <span className="underline">Name:</span> {agent?.fullName}
             </p>
             <div className="overflow-x-auto  w-full">
-              <table className="border-collapse border bg-white border-gray-200">
+              <table className="border-collapse border bg-white border-gray-200 w-full">
                 <tbody>
                   <tr className="bg-gray-50 border-b border-gray-200">
                     <th className="px-4 py-2 text-left text-gray-600 font-bold">
