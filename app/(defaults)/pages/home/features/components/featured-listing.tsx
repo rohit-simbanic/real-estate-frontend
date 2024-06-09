@@ -100,7 +100,7 @@ const FeaturedListing: React.FC<FeaturedListingProps> = ({ onEdit }) => {
           <div className="w-full text-center">
             <p>Loading...</p>
           </div>
-        ) : (
+        ) : currentItems.length !== 0 ? (
           currentItems.map((item, index) => (
             <div
               key={index}
@@ -119,6 +119,12 @@ const FeaturedListing: React.FC<FeaturedListingProps> = ({ onEdit }) => {
               />
             </div>
           ))
+        ) : (
+          <div className=" max-h-14 container mx-auto">
+            <h4 className="text-gray-600 dark:text-gray-100 text-center font-bold">
+              No property listed by you yet!
+            </h4>
+          </div>
         )}
       </div>
 
