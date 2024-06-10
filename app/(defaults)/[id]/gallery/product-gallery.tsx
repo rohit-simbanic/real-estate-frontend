@@ -74,9 +74,9 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images }) => {
             <Image
               src={getCloudinaryUrl(image.filename)}
               alt={`Thumbnail ${index + 1}`}
-              height={340}
+              height={100}
               width={340}
-              className={`slide-thumbnail cursor-pointer w-full ${
+              className={`slide-thumbnail !h-[80px] !w-full cursor-pointer ${
                 slideIndex === index + 1 ? "opacity-100" : "opacity-60"
               }`}
               onClick={() => currentSlide(index + 1)}

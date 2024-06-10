@@ -1,4 +1,5 @@
 "use client";
+import { truncateText } from "@/helpers/utils";
 import { PropertyDetails } from "@/types/property-card-types";
 import React, { useState } from "react";
 interface PropertyCardProps {
@@ -114,7 +115,7 @@ const Tabs: React.FC<PropertyCardProps> = ({ property }) => {
           </p>
           <p className="dark:text-gray-400">
             <span className="font-bold underline">Details:</span>
-            {property.property_description}
+            {truncateText(property.property_description, 590)}
           </p>
         </div>
         <div className={`p-4 ${activeTab === "interior" ? "" : "hidden"}`}>
