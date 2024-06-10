@@ -408,19 +408,21 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
     }
 
     try {
-      const filename = imageToDelete.url.split("/upload/")[1];
-      const response = await axios.delete(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/properties-image/${propertyId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          data: { filename: filename },
-        }
-      );
+      if (propertyId) {
+        const filename = imageToDelete.url.split("/upload/")[1];
+        const response = await axios.delete(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/properties-image/${propertyId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            data: { filename: filename },
+          }
+        );
 
-      if (response.status !== 200) {
-        throw new Error("Failed to delete image from backend.");
+        if (response.status !== 200) {
+          throw new Error("Failed to delete image from backend.");
+        }
       }
 
       setFormData((prevFormData) => {
