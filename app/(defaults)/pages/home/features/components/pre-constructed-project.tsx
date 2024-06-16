@@ -106,6 +106,7 @@ const PreConstructedProject: React.FC<PreConstructedProjectProps> = ({
                       ? "lg:w-full xl:w-1/3 "
                       : "xl:w-1/4 lg:w-1/3 md:w-1/2"
                   } px-4 mb-8`}
+                  key={index}
                 >
                   <div key={index} className="border border-gray-200 p-4">
                     <div className="animate-pulse space-y-2">
