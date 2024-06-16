@@ -57,6 +57,9 @@ body {
   border-radius: 10px; /* Rounded corners */
   border: 2px solid #edf2f7; /* Padding around the thumb */
 }
+.skeleton {
+  @apply animate-pulse bg-gray-300 dark:bg-gray-700;
+}
 html,
 body {
   max-width: 100% !important;

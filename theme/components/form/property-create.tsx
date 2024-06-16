@@ -1312,7 +1312,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
               activeTab === "category"
                 ? "border-b-2 border-indigo-600 text-indigo-600"
                 : hasTabErrors("category")
-                ? "text-red-500 font-bold"
+                ? "text-red-500"
                 : ""
             } pb-2`}
             onClick={() => setActiveTab("category")}
@@ -1324,7 +1324,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
               activeTab === "general_details"
                 ? "border-b-2 border-indigo-600 text-indigo-600"
                 : hasTabErrors("general_details")
-                ? "text-red-500 font-bold"
+                ? "text-red-500"
                 : ""
             } pb-2`}
             onClick={() => setActiveTab("general_details")}
@@ -1336,7 +1336,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
               activeTab === "room_interior"
                 ? "border-b-2 border-indigo-600 text-indigo-600"
                 : hasTabErrors("room_interior")
-                ? "text-red-500 font-bold"
+                ? "text-red-500"
                 : ""
             } pb-2`}
             onClick={() => setActiveTab("room_interior")}
@@ -1348,7 +1348,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
               activeTab === "exterior"
                 ? "border-b-2 border-indigo-600 text-indigo-600"
                 : hasTabErrors("exterior")
-                ? "text-red-500 font-bold"
+                ? "text-red-500"
                 : ""
             } pb-2`}
             onClick={() => setActiveTab("exterior")}
@@ -1360,7 +1360,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
               activeTab === "utilities"
                 ? "border-b-2 border-indigo-600 text-indigo-600"
                 : hasTabErrors("utilities")
-                ? "text-red-500 font-bold"
+                ? "text-red-500 "
                 : ""
             } pb-2`}
             onClick={() => setActiveTab("utilities")}
@@ -1372,7 +1372,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
               activeTab === "at_a_glance"
                 ? "border-b-2 border-indigo-600 text-indigo-600"
                 : hasTabErrors("at_a_glance")
-                ? "text-red-500 font-bold"
+                ? "text-red-500 "
                 : ""
             } pb-2`}
             onClick={() => setActiveTab("at_a_glance")}
@@ -1384,7 +1384,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
               activeTab === "map"
                 ? "border-b-2 border-indigo-600 text-indigo-600"
                 : hasTabErrors("map")
-                ? "text-red-500 font-bold"
+                ? "text-red-500"
                 : ""
             } pb-2`}
             onClick={() => setActiveTab("map")}

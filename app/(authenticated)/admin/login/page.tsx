@@ -8,7 +8,7 @@ const Page = () => {
   return (
     <div>
       <LoginAgent />
-      <p className="text-center">
+      <p className="text-center dark:text-gray-400 my-10">
         Forgot Password?{" "}
         <Link href={"/admin/signup/reset-password"} className="text-indigo-600">
           Request a new password reset link

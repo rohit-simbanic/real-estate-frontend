@@ -112,8 +112,8 @@ const LeadForm: React.FC = () => {
   };
 
   return (
-    <div className="w-[100%] lg:w-[30%] mx-auto bg-white shadow rounded-lg p-6 mt-1 dark:bg-gray-900">
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+    <div className="w-[100%] lg:w-[30%] mx-auto bg-white shadow rounded-lg p-6 my-2 dark:bg-gray-900">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-3">
         <Image
           className="shadow-lg mb-4"
           src="https://filecenter.bestforagents.com/Customers/358381/fileManager/Ash_Patel.JPG?src=Custom"

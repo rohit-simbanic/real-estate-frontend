@@ -15,8 +15,13 @@ const withAuth = (WrappedComponent: React.ComponentType) => {
 
     if (loading || !isAuthenticated) {
       return (
-        <div className="flex items-center justify-center min-h-[400px]">
-          Loading...
+        <div className="container mx-auto min-h-svh">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="skeleton h-10 w-3/4 mx-auto mb-4"></div>
+            <div className="skeleton h-10 w-3/4 mx-auto mb-4"></div>
+            <div className="skeleton h-10 w-3/4 mx-auto mb-4"></div>
+            <div className="skeleton h-10 w-3/4 mx-auto mb-4"></div>
+          </div>
         </div>
       );
     }

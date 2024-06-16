@@ -71,6 +71,8 @@ const config: Config = {
     "hover:bg-gray-600",
     "w-[200px]",
     "h-[100px]",
+    "hover:bg-blue-600",
+    "max-sm:flex-row",
   ],
   plugins: [],
 };

@@ -71,7 +71,9 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
           <dl>
             <div>
               <dt className="sr-only">Price</dt>
-              <dd className="text-sm text-gray-500">{details.price}</dd>
+              <dd className="text-sm text-gray-500 font-bold">
+                ${details.price}
+              </dd>
 
               <div className="rounded-full bg-yellow-500 py-1 px-2 text-xs font-medium text-white w-16 my-3 flex items-center justify-center">
                 {details.category}

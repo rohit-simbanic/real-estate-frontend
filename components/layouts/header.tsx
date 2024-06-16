@@ -105,14 +105,14 @@ const Header: React.FC = () => {
         >
           <Image
             className={`${isMenuOpen ? "!hidden" : "!block"}`}
-            src="https://img.icons8.com/fluent-systems-regular/2x/menu-squared-2.png"
+            src="https://img.icons8.com/ios-filled/50/4dc0b5/xbox-menu.png"
             width="40"
             height="40"
             alt="Open Menu"
           />
           <Image
             className={`${isMenuOpen ? "!block" : "!hidden"}`}
-            src="https://img.icons8.com/fluent-systems-regular/2x/close-window.png"
+            src="https://img.icons8.com/ios-filled/50/4dc0b5/cancel.png"
             width="40"
             height="40"
             alt="Close Menu"
@@ -209,7 +209,7 @@ const Header: React.FC = () => {
                 />
                 <ButtonAuth
                   text="Register"
-                  textColor="teal-600"
+                  textColor="gray-800"
                   href="/admin/signup"
                   borderColor="blue-500"
                   borderWidth={0}
@@ -286,7 +286,7 @@ const Header: React.FC = () => {
                 />
                 <ButtonAuth
                   text="Register"
-                  textColor="teal-600"
+                  textColor="gray-800"
                   href="/admin/signup"
                   borderColor="blue-500"
                   borderWidth={0}

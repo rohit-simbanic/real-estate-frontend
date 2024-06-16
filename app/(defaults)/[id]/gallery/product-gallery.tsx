@@ -22,7 +22,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images }) => {
   };
 
   return (
-    <div className="container mx-auto p-1 w-[70%]">
+    <div className="container mx-auto p-1 w-[70%] max-md:w-full">
       <div className="relative">
         {images?.map((image, index) => (
           <div

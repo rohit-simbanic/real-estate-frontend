@@ -27,7 +27,7 @@ const FooterMenu: React.FC<FooterMenuProps> = ({ sections }) => {
                 <li key={linkIndex}>
                   <a href={link.href}>
                     <p
-                      className="text-gray-700 transition hover:text-gray-700/75"
+                      className="text-gray-700 transition hover:text-gray-700/75 dark:text-gray-400"
                       dangerouslySetInnerHTML={{ __html: link.label }}
                     ></p>
                   </a>
@@ -56,7 +56,7 @@ const FooterMenu: React.FC<FooterMenuProps> = ({ sections }) => {
                       />
                     </svg>
 
-                    <span className="flex-1 text-gray-700">
+                    <span className="flex-1 text-gray-700 dark:text-gray-500">
                       Cell: 416.669.7892
                     </span>
                   </a>
@@ -82,7 +82,7 @@ const FooterMenu: React.FC<FooterMenuProps> = ({ sections }) => {
                       />
                     </svg>
 
-                    <span className="flex-1 text-gray-700">
+                    <span className="flex-1 text-gray-700 dark:text-gray-500">
                       Office: 905-497-6701
                     </span>
                   </a>
@@ -136,7 +136,7 @@ const FooterMenu: React.FC<FooterMenuProps> = ({ sections }) => {
                     />
                   </svg>
 
-                  <address className="-mt-0.5 flex-1 not-italic text-gray-700">
+                  <address className="-mt-0.5 flex-1 not-italic text-gray-700 dark:text-gray-500">
                     Fax: 905-497-6700
                   </address>
                 </li>

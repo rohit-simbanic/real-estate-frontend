@@ -27,7 +27,16 @@ const Banner = () => {
   }, []);
 
   if (loading) {
-    return <div className="flex items-center justify-center">Loading...</div>;
+    return (
+      <div className="flex flex-col items-center justify-center">
+        <div className="skeleton h-10 w-3/4 mx-auto mb-6"></div>
+        <div className="skeleton h-6 w-1/2 mx-auto mb-4"></div>
+        <div className="flex justify-center mt-8 space-x-4">
+          <div className="skeleton h-12 w-32 rounded-md"></div>
+          <div className="skeleton h-12 w-32 rounded-md"></div>
+        </div>
+      </div>
+    );
   }
   return (
     <section
@@ -52,7 +61,7 @@ const Banner = () => {
               borderColor="blue-600"
               borderWidth={2}
               borderRadius="md"
-              bgColor="blue-600"
+              bgColor="transparent"
               hoverBgColor="blue-600"
               shadow={false}
             />
