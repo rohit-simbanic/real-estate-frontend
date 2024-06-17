@@ -1297,12 +1297,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
       {error && <p className="text-red-500 mb-4">{error}</p>}
 
       {success && (
-        <p className="text-green-500 mb-4">
-          {" "}
-          {propertyId
-            ? "Property edited successfully "
-            : "Property created successfully!"}
-        </p>
+        <p className="text-green-500 mb-4">Property Saved successfully!</p>
       )}
 
       <div className="mb-6">

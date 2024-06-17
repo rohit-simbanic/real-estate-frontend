@@ -6,7 +6,6 @@ import { useTheme } from "@/contexts/theme-context";
 import Image from "next/image";
 import { fieldLabel } from "@/assets/field-label";
 import ToggleButton from "@/theme/components/toggle-button/button-toggle";
-import axios from "axios";
 import { useAuth } from "@/contexts/auth-provider";
 import { getCloudinaryUrl } from "@/helpers/cloudinary-image-fetch";
 
@@ -17,7 +16,6 @@ const Header: React.FC = () => {
   const [isChecked, setIsChecked] = useState(false);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const [isFixed, setIsFixed] = useState(false);
-  const [agentId, setAgentId] = useState<string | null>(null);
   const { isAuthenticated, agent, logout } = useAuth();
 
   const handleChange = () => {
@@ -55,7 +53,7 @@ const Header: React.FC = () => {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [isAuthenticated, isFixed, isHeaderVisible]);
+  }, [isAuthenticated, isFixed, isHeaderVisible, agent]);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);

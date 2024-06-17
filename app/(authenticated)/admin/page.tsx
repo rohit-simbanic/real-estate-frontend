@@ -9,26 +9,31 @@ import React, { useState } from "react";
 
 const Page = () => {
   const [activeTab, setActiveTab] = useState(0);
+  const [activeSubTab, setActiveSubTab] = useState(0);
+  const [activePreconstructedSubTab, setActivePreconstructedSubTab] =
+    useState(0);
   const [propertyId, setPropertyId] = useState<string | null>(null);
 
   const handleEdit = (id: string, tab: number) => {
     setPropertyId(id);
     setActiveTab(tab);
+    setActiveSubTab(tab);
+    setActivePreconstructedSubTab(0);
   };
   const handleCloseProperty = () => {
     setPropertyId(null);
-    setActiveTab(2);
+    setActiveSubTab(1);
   };
   const handleClosePreconstructed = () => {
     setPropertyId(null);
-    setActiveTab(4);
+    setActivePreconstructedSubTab(1);
   };
   const tabs = [
     {
       name: "Featured/Sold Property",
       icon: (
         <svg
-          className="w-4 h-4 me-2 text-white"
+          className="w-4 h-4 me-2 text-gray-500 dark:text-gray-200"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="currentColor"
@@ -38,14 +43,83 @@ const Page = () => {
         </svg>
       ),
       content: (
-        <PropertyForm propertyId={propertyId} onClose={handleCloseProperty} />
+        <>
+          {/* Sub-tabs for Featured/Sold Property */}
+          <ul className="flex max-sm:flex-col max-sm:justify-center max-sm:items-center space-x-4 mb-4 text-sm font-medium text-gray-500 dark:text-gray-400">
+            <li>
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActiveSubTab(0);
+                  setPropertyId(null);
+                }}
+                className={`inline-flex items-center px-4 py-3 rounded-lg ${
+                  activeSubTab === 0
+                    ? "text-white bg-blue-700 dark:bg-blue-600"
+                    : "hover:text-gray-900 bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-white border"
+                }`}
+                aria-current={activeSubTab === 0 ? "page" : undefined}
+              >
+                Create Featured/Sold Properties
+              </a>
+            </li>
+            <li>
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActiveSubTab(1);
+                  setPropertyId(null);
+                }}
+                className={`inline-flex items-center px-4 py-3 rounded-lg ${
+                  activeSubTab === 1
+                    ? "text-white bg-blue-700 dark:bg-blue-600"
+                    : "hover:text-gray-900 bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-white border"
+                }`}
+                aria-current={activeSubTab === 1 ? "page" : undefined}
+              >
+                Featured Property Lists
+              </a>
+            </li>
+            <li>
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActiveSubTab(2);
+                  setPropertyId(null);
+                }}
+                className={`inline-flex items-center px-4 py-3 rounded-lg ${
+                  activeSubTab === 2
+                    ? "text-white bg-blue-700 dark:bg-blue-600"
+                    : "hover:text-gray-900 bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-white border"
+                }`}
+                aria-current={activeSubTab === 2 ? "page" : undefined}
+              >
+                Sold Property Lists
+              </a>
+            </li>
+          </ul>
+          {/* Content based on active sub-tab */}
+          {activeSubTab === 0 && (
+            <PropertyForm
+              propertyId={propertyId}
+              onClose={handleCloseProperty}
+            />
+          )}
+          {activeSubTab === 1 && (
+            <FeaturedListing onEdit={(id: string) => handleEdit(id, 0)} />
+          )}
+          {activeSubTab === 2 && <SoldProperties />}
+        </>
       ),
     },
     {
       name: "Pre-Constructed Property",
       icon: (
         <svg
-          className="w-4 h-4 me-2 text-gray-500 dark:text-gray-400"
+          className="w-4 h-4 me-2 text-gray-500 dark:text-gray-200"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="currentColor"
@@ -55,65 +129,68 @@ const Page = () => {
         </svg>
       ),
       content: (
-        <PreConstructedPropertyForm
-          propertyId={propertyId}
-          onClose={handleClosePreconstructed}
-        />
-      ),
-    },
-    {
-      name: "Featured Listing",
-      icon: (
-        <svg
-          className="w-4 h-4 me-2 text-gray-500 dark:text-gray-400"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
-          viewBox="0 0 20 20"
-        >
-          <path d="M18 7.5h-.423l-.452-1.09.3-.3a1.5 1.5 0 0 0 0-2.121L16.01 2.575a1.5 1.5 0 0 0-2.121 0l-.3.3-1.089-.452V2A1.5 1.5 0 0 0 11 .5H9A1.5 1.5 0 0 0 7.5 2v.423l-1.09.452-.3-.3a1.5 1.5 0 0 0-2.121 0L2.576 3.99a1.5 1.5 0 0 0 0 2.121l.3.3L2.423 7.5H2A1.5 1.5 0 0 0 .5 9v2A1.5 1.5 0 0 0 2 12.5h.423l.452 1.09-.3.3a1.5 1.5 0 0 0 0 2.121l1.415 1.413a1.5 1.5 0 0 0 2.121 0l.3-.3 1.09.452V18A1.5 1.5 0 0 0 9 19.5h2a1.5 1.5 0 0 0 1.5-1.5v-.423l1.09-.452.3.3a1.5 1.5 0 0 0 2.121 0l1.415-1.414a1.5 1.5 0 0 0 0-2.121l-.3-.3.452-1.09H18a1.5 1.5 0 0 0 1.5-1.5V9A1.5 1.5 0 0 0 18 7.5Zm-8 6a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Z" />
-        </svg>
-      ),
-      content: <FeaturedListing onEdit={(id: string) => handleEdit(id, 0)} />,
-    },
-    {
-      name: "Sold Properties",
-      icon: (
-        <svg
-          className="w-4 h-4 me-2 text-gray-500 dark:text-gray-400"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
-          viewBox="0 0 20 20"
-        >
-          <path d="M7.824 5.937a1 1 0 0 0 .726-.312 2.042 2.042 0 0 1 2.835-.065 1 1 0 0 0 1.388-1.441 3.994 3.994 0 0 0-5.674.13 1 1 0 0 0 .725 1.688Z" />
-          <path d="M17 7A7 7 0 1 0 3 7a3 3 0 0 0-3 3v2a3 3 0 0 0 3 3h1a1 1 0 0 0 1-1V7a5 5 0 1 1 10 0v7.083A2.92 2.92 0 0 1 12.083 17H12a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v1a2 2 0 0 0 2 2h1a1.993 1.993 0 0 0 1.722-1h.361a4.92 4.92 0 0 0 4.824-4H17a3 3 0 0 0 3-3v-2a3 3 0 0 0-3-3Z" />
-        </svg>
-      ),
-      content: <SoldProperties />,
-    },
-    {
-      name: "Pre-constructed Properties",
-      icon: (
-        <svg
-          className="w-4 h-4 me-2 text-gray-400 dark:text-gray-500"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
-          viewBox="0 0 20 20"
-        >
-          <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 11.793a1 1 0 1 1-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 0 1-1.414-1.414L8.586 10 6.293 7.707a1 1 0 0 1 1.414-1.414L10 8.586l2.293-2.293a1 1 0 0 1 1.414 1.414L11.414 10l2.293 2.293Z" />
-        </svg>
-      ),
-      content: (
-        <PreConstructedProject onEdit={(id: string) => handleEdit(id, 1)} />
+        <>
+          {/* Sub-tabs for Pre-Constructed Property */}
+          <ul className="flex space-x-4 mb-4 text-sm font-medium text-gray-500 dark:text-gray-400">
+            <li>
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActivePreconstructedSubTab(0);
+                  setPropertyId(null);
+                }}
+                className={`inline-flex items-center px-4 py-3 rounded-lg ${
+                  activePreconstructedSubTab === 0
+                    ? "text-white bg-blue-700 dark:bg-blue-600"
+                    : "hover:text-gray-900 bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-white border"
+                }`}
+                aria-current={
+                  activePreconstructedSubTab === 0 ? "page" : undefined
+                }
+              >
+                Create Pre-constructed Properties
+              </a>
+            </li>
+            <li>
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActivePreconstructedSubTab(1);
+                  setPropertyId(null);
+                }}
+                className={`inline-flex items-center px-4 py-3 rounded-lg ${
+                  activePreconstructedSubTab === 1
+                    ? "text-white bg-blue-700 dark:bg-blue-600"
+                    : "hover:text-gray-900 bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-white border"
+                }`}
+                aria-current={
+                  activePreconstructedSubTab === 1 ? "page" : undefined
+                }
+              >
+                Pre-constructed Property Lists
+              </a>
+            </li>
+          </ul>
+          {/* Content based on active sub-tab */}
+          {activePreconstructedSubTab === 0 && (
+            <PreConstructedPropertyForm
+              propertyId={propertyId}
+              onClose={handleClosePreconstructed}
+            />
+          )}
+          {activePreconstructedSubTab === 1 && (
+            <PreConstructedProject onEdit={(id: string) => handleEdit(id, 1)} />
+          )}
+        </>
       ),
     },
   ];
 
   return (
     <div className="container mx-auto p-4">
-      <div className="md:flex">
+      <div className="lg:flex">
         <ul className="flex flex-col space-y-4 text-sm font-medium text-gray-500 dark:text-gray-400 md:me-4 mb-4 md:mb-0">
           {tabs.map((tab, index) => (
             <li key={index}>
@@ -123,6 +200,7 @@ const Page = () => {
                   e.preventDefault();
                   setActiveTab(index);
                   setPropertyId(null);
+                  setActiveSubTab(0);
                 }}
                 className={`inline-flex items-center px-4 py-3 rounded-lg w-full ${
                   activeTab === index
