@@ -14,7 +14,7 @@ const Tabs: React.FC<PropertyCardProps> = ({ property }) => {
   };
 
   return (
-    <div className="rounded border w-full mx-auto mt-4 h-[363px]">
+    <div className="rounded border w-full mx-auto mt-4 max-h-[476px]">
       {/* Tabs */}
       <ul
         id="tabs"
@@ -92,7 +92,11 @@ const Tabs: React.FC<PropertyCardProps> = ({ property }) => {
 
       {/* Tab Contents */}
       <div id="tab-contents">
-        <div className={`p-4 ${activeTab === "general" ? "" : "hidden"}`}>
+        <div
+          className={`p-4 max-h-[300px] overflow-y-auto ${
+            activeTab === "general" ? "" : "hidden"
+          }`}
+        >
           <p className="dark:text-gray-400">
             <span className="font-bold underline">Price:</span>
             {property.general_details.Price}
