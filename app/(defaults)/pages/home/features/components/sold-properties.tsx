@@ -21,9 +21,7 @@ const SoldProperties = () => {
     const fetchData = async () => {
       setLoadingData(true);
       try {
-        const endpoint = isAuthenticated
-          ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/my-properties`
-          : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/properties`;
+        const endpoint = isAuthenticated ? "my-properties" : "properties";
         const data = await fetchProperties(endpoint);
         const soldProperties = data.filter(
           (item: PropertyDetails) => item.category === "sold"

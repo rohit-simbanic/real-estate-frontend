@@ -234,10 +234,8 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
     if (!at_a_glance.Fireplace)
       newErrors.at_a_glance_Fireplace = "Fireplace info is required";
     if (!at_a_glance.Pool) newErrors.at_a_glance_Pool = "Pool info is required";
-
     if (!formData.latitude) newErrors.latitude = "Street View is required";
     if (!formData.longitude) newErrors.longitude = "Map Location is required";
-
     return newErrors;
   };
 
@@ -1358,7 +1356,7 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
               activeTab === "utilities"
                 ? "border-b-2 border-indigo-600 text-indigo-600"
                 : hasTabErrors("utilities")
-                ? "text-red-500"
+                ? "text-red-500 "
                 : ""
             } pb-2`}
             onClick={() => setActiveTab("utilities")}
@@ -1370,7 +1368,7 @@ const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
               activeTab === "at_a_glance"
                 ? "border-b-2 border-indigo-600 text-indigo-600"
                 : hasTabErrors("at_a_glance")
-                ? "text-red-500"
+                ? "text-red-500 "
                 : ""
             } pb-2`}
             onClick={() => setActiveTab("at_a_glance")}

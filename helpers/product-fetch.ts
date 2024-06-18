@@ -2,14 +2,21 @@ export const fetchProperties = async (endpoint: string) => {
   try {
     if (typeof window !== "undefined") {
       const token = localStorage.getItem("token");
+      console.log(
+        "endpoint 1",
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/${endpoint}`
+      );
 
-      const response = await fetch(endpoint, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/${endpoint}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -55,6 +62,8 @@ export const fetchBannerData = async () => {
 };
 
 export const fetchPreconstructedProperties = async (endpoint: string) => {
+  console.log("endpoint 2", endpoint);
+
   try {
     if (typeof window !== "undefined") {
       const token = localStorage.getItem("token");

@@ -29,9 +29,7 @@ const FeaturedListing: React.FC<FeaturedListingProps> = ({ onEdit }) => {
       setLoadingData(true);
       try {
         console.log("Inside useEffect hook boundary");
-        const endpoint = isAuthenticated
-          ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/my-properties`
-          : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/properties`;
+        const endpoint = isAuthenticated ? "my-properties" : "properties";
         console.log("endpoint:", endpoint);
         const data = await fetchProperties(endpoint);
         const featuredProperties = data.filter(
