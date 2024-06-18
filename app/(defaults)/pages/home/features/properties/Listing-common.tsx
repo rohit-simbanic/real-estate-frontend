@@ -4,10 +4,11 @@ import { Pagination } from "@/theme/components/pagination/pagination";
 import SectionTitle from "@/theme/components/section-title/section-title";
 import React, { ReactNode, useEffect, useState } from "react";
 import { PropertyDetails } from "@/types/property-card-types";
-import { fetchProperties } from "@/helpers/product-fetch";
+// import { fetchProperties } from "@/helpers/product-fetch";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-provider";
 import { PreconstructedPropertyDetails } from "@/types/property-preconstructed-types";
+import { fetchProperties } from "./actions";
 
 export default function CommonListing({
   ItemComponent,
@@ -59,8 +60,6 @@ export default function CommonListing({
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this property?"
     );
-
-    console.log("id", propertyId);
 
     if (confirmDelete) {
       try {
