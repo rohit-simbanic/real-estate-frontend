@@ -1,17 +1,10 @@
 "use client";
 import React, { useState } from "react";
-import emailjs from "@emailjs/browser";
-
-interface FormData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  message: string;
-}
+import { MailPayloadType, validate } from "../utils";
+import { sendMail } from "../action";
 
 const ContactForm = () => {
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<MailPayloadType>({
     firstName: "",
     lastName: "",
     email: "",
@@ -19,34 +12,7 @@ const ContactForm = () => {
     message: "",
   });
 
-  const [errors, setErrors] = useState<Partial<FormData>>({});
-
-  const validate = () => {
-    const newErrors: Partial<FormData> = {};
-
-    if (!formData.firstName) {
-      newErrors.firstName = "First Name is required";
-    }
-    if (!formData.lastName) {
-      newErrors.lastName = "Last Name is required";
-    }
-    if (!formData.email) {
-      newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Email is invalid";
-    }
-    if (!formData.phone) {
-      newErrors.phone = "Phone number is required";
-    } else if (!/^\d{10}$/.test(formData.phone)) {
-      newErrors.phone = "Phone number is invalid";
-    }
-    if (!formData.message) {
-      newErrors.message = "Message is required";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  const [errors, setErrors] = useState<Partial<MailPayloadType>>({});
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -59,35 +25,22 @@ const ContactForm = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (validate()) {
-      const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID_CONTACT!;
-      const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID_CONTACT!;
-      const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY_CONTACT!;
 
-      const templateParams = {
-        from_email: formData.email,
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        phone: formData.phone,
-        email: formData.email,
-        message: formData.message,
-      };
+    const { isValid, errors } = validate(formData);
 
-      emailjs
-        .send(serviceId, templateId, templateParams, publicKey)
-        .then((response) => {
-          setFormData({
-            firstName: "",
-            lastName: "",
-            phone: "",
-            email: "",
-            message: "",
-          });
-        })
-        .catch((error) => {
-          console.error("Error sending email:", error);
-        });
-    }
+    setErrors(errors);
+    if (!isValid) return;
+
+    const templateParams = {
+      from_email: formData.email,
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      phone: formData.phone,
+      email: formData.email,
+      message: formData.message,
+    };
+
+    sendMail(templateParams);
   };
 
   return (

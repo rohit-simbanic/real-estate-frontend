@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import ContactForm from "./features/components/form";
+import ContactForm from "./content";
 import { fieldLabel } from "@/assets/field-label";
 
 const ContactPage: React.FC = () => {
