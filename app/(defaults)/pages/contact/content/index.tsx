@@ -3,14 +3,16 @@ import React, { useState } from "react";
 import { MailPayloadType, validate } from "../utils";
 import { sendMail } from "../action";
 
+const initialState = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  phone: "",
+  message: "",
+};
+
 const ContactForm = () => {
-  const [formData, setFormData] = useState<MailPayloadType>({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    message: "",
-  });
+  const [formData, setFormData] = useState<MailPayloadType>(initialState);
 
   const [errors, setErrors] = useState<Partial<MailPayloadType>>({});
 
@@ -23,7 +25,7 @@ const ContactForm = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const { isValid, errors } = validate(formData);
@@ -40,7 +42,8 @@ const ContactForm = () => {
       message: formData.message,
     };
 
-    sendMail(templateParams);
+    await sendMail(templateParams);
+    setFormData(initialState);
   };
 
   return (
