@@ -1,81 +1,40 @@
 "use client";
+import sendMail from "@/app/(defaults)/contact/actions";
 import { fieldLabel } from "@/assets/field-label";
-import React, { useState, FormEvent } from "react";
-import emailjs from "@emailjs/browser";
+import React from "react";
+import { useForm } from "react-hook-form";
 
 const MapComponent: React.FC = () => {
-  const [formData, setFormData] = useState({
-    email: "",
-    message: "",
-  });
-  const [errors, setErrors] = useState({
-    email: "",
-    message: "",
-  });
-
-  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, email: event.target.value });
-    setErrors({ ...errors, email: "" });
-  };
-
-  const handleMessageChange = (
-    event: React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
-    setFormData({ ...formData, message: event.target.value });
-    setErrors({ ...errors, message: "" });
-  };
-
-  const validate = () => {
-    let valid = true;
-    const newErrors = {
+  const {
+    register,
+    trigger,
+    getValues,
+    reset,
+    formState: { errors, isValid },
+  } = useForm({
+    mode: "onBlur",
+    defaultValues: {
       email: "",
       message: "",
-    };
+    },
+  });
 
-    if (!formData.email) {
-      newErrors.email = "Email is required";
-      valid = false;
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Email address is invalid";
-      valid = false;
-    }
-
-    if (!formData.message) {
-      newErrors.message = "Message is required";
-      valid = false;
-    }
-
-    setErrors(newErrors);
-    return valid;
-  };
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!validate()) {
-      return;
-    }
+    trigger();
 
-    const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!;
-    const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID_HOME!;
-    const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!;
+    if (!isValid) return;
+
+    const formData = getValues();
 
     const templateParams = {
       from_email: formData.email,
       message: formData.message,
     };
 
-    emailjs
-      .send(serviceId, templateId, templateParams, publicKey)
-      .then((response) => {
-        setFormData({
-          email: "",
-          message: "",
-        });
-      })
-      .catch((error) => {
-        console.error("Error sending email:", error);
-      });
+    await sendMail(templateParams);
+    reset();
   };
 
   return (
@@ -105,15 +64,21 @@ const MapComponent: React.FC = () => {
                 {fieldLabel["map-form-field-email"]}
               </label>
               <input
-                type="email"
-                id="email"
-                name="email"
+                type="text"
                 className="w-full bg-white dark:bg-gray-800 rounded border dark:border-gray-800 border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
-                value={formData.email}
-                onChange={handleEmailChange}
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                    message: "Invalid email address",
+                  },
+                })}
+                name="email"
               />
-              {errors.email && (
-                <span className="text-red-500 text-sm">{errors.email}</span>
+              {errors?.email && (
+                <span className="text-red-500 text-sm">
+                  {errors.email?.message}
+                </span>
               )}
             </div>
             <div className="relative mb-4">
@@ -124,14 +89,16 @@ const MapComponent: React.FC = () => {
                 {fieldLabel["map-form-field-message"]}
               </label>
               <textarea
-                id="message"
-                name="message"
                 className="w-full bg-white dark:bg-gray-800 rounded border dark:border-gray-800 border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 h-32 text-base outline-none text-gray-700 py-1 px-3 resize-none leading-6 transition-colors duration-200 ease-in-out"
-                value={formData.message}
-                onChange={handleMessageChange}
+                {...register("message", {
+                  required: "Message is required",
+                })}
+                name="message"
               ></textarea>
-              {errors.message && (
-                <span className="text-red-500 text-sm">{errors.message}</span>
+              {errors?.message && (
+                <span className="text-red-500 text-sm">
+                  {errors.message?.message}
+                </span>
               )}
             </div>
             <button

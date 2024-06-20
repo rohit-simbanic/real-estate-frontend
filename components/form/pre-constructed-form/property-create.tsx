@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import axios from "axios";
 import { getCloudinaryUrl } from "@/helpers/cloudinary-image-fetch";
 
@@ -56,6 +56,7 @@ interface AtAGlance {
 }
 
 interface FormData {
+  name: string;
   category: string;
   price: string;
   available_for: string;
@@ -72,6 +73,7 @@ interface FormData {
 }
 
 const initialFormData: FormData = {
+  name: "",
   category: "",
   price: "",
   available_for: "",
@@ -127,25 +129,27 @@ const initialFormData: FormData = {
   latitude: "",
   longitude: "",
 };
-
 interface PropertyFormProps {
   propertyId: string | null;
   onClose?: () => void;
 }
-const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
+
+const PreConstructedPropertyForm: React.FC<PropertyFormProps> = ({
+  propertyId,
+  onClose,
+}) => {
   const [formData, setFormData] = useState<FormData>(initialFormData);
-  console.log("single form data", formData);
   const [error, setError] = useState<string | null>(null);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [success, setSuccess] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("category");
   const scrollableContainerRef = React.useRef<HTMLDivElement | null>(null);
-
   const router = useRouter();
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
 
+    if (!formData.name) newErrors.name = "Name is required";
     if (!formData.category) newErrors.category = "Category is required";
     if (!formData.price) newErrors.price = "Price is required";
     if (!formData.available_for)
@@ -153,14 +157,9 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
     if (!formData.listing_id) newErrors.listing_id = "Listing ID is required";
     if (!formData.property_description)
       newErrors.property_description = "Property description is required";
-    if (
-      formData.property_images.length < 5 ||
-      formData.property_images.length > 11
-    ) {
-      newErrors.property_images =
-        "At least five property images are required but not exceeding ten images.";
+    if (formData.property_images.length < 5) {
+      newErrors.property_images = "At least five property images are required";
     }
-
     const { general_details, room_interior, exterior, utilities, at_a_glance } =
       formData;
 
@@ -235,8 +234,10 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
     if (!at_a_glance.Fireplace)
       newErrors.at_a_glance_Fireplace = "Fireplace info is required";
     if (!at_a_glance.Pool) newErrors.at_a_glance_Pool = "Pool info is required";
-    if (!formData.latitude) newErrors.latitude = "Latitude is required";
-    if (!formData.longitude) newErrors.longitude = "Longitude is required";
+
+    if (!formData.latitude) newErrors.latitude = "Street View is required";
+    if (!formData.longitude) newErrors.longitude = "Map Location is required";
+
     return newErrors;
   };
 
@@ -245,6 +246,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
       case "category":
         return !!(
           errors.category ||
+          errors.name ||
           errors.price ||
           errors.available_for ||
           errors.listing_id ||
@@ -318,6 +320,12 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
       [name]: value,
     }));
   };
+  const handleCancel = () => {
+    if (onClose) {
+      onClose();
+    }
+    setFormData(initialFormData);
+  };
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -345,7 +353,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
     const { value } = e.target;
     setFormData((prevFormData) => ({
       ...prevFormData,
-      listing_id: `NXYZ${value.replace(/^NXYZ/, "")}`,
+      listing_id: `PXYZ${value.replace(/^PXYZ/, "")}`,
     }));
   };
 
@@ -358,8 +366,8 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
       "image/jpg",
       "image/webp",
     ];
-    let newFiles: { file: File | null; url: string }[] = [];
 
+    let newFiles: { file: File | null; url: string }[] = [];
     if (files) {
       newFiles = Array.from(files)
         .map((file) => {
@@ -408,21 +416,18 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
     }
 
     try {
-      if (propertyId) {
-        const filename = imageToDelete.url.split("/upload/")[1];
-        const response = await axios.delete(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/properties-image/${propertyId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            data: { filename: filename },
-          }
-        );
-
-        if (response.status !== 200) {
-          throw new Error("Failed to delete image from backend.");
+      const response = await axios.delete(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/preconstructed/${propertyId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          data: { filename: imageToDelete.url.split("/upload/")[1] },
         }
+      );
+
+      if (response.status !== 200) {
+        throw new Error("Failed to delete image from backend.");
       }
 
       setFormData((prevFormData) => {
@@ -457,28 +462,20 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
       }
     });
   };
-  const handleCancel = () => {
-    if (onClose) {
-      onClose();
-    }
-    setFormData(initialFormData);
-  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
-
     try {
       const token = localStorage.getItem("token");
       const files = formData.property_images
         .map((image) => image.file)
-        .filter((file): file is File => file !== null);
-      console.log("newly added files: ", files);
+        .filter((file): file is File => file !== null); // Ensure file is not null
+
       // Prepare FormData
       const data = new FormData();
       files.forEach((file) => {
@@ -488,19 +485,10 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
       // Append other fields
       appendNestedObject(formData, data);
 
-      //@ts-ignore
-      for (let [key, value] of data.entries()) {
-        if (value instanceof File) {
-          console.log(`${key}: ${value.name} (File)`);
-        } else {
-          console.log(`${key}: ${value}`);
-        }
-      }
-
       let response;
       if (propertyId) {
         response = await axios.put(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/properties/${propertyId}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/pre-constructed-property/${propertyId}`,
           data,
           {
             headers: {
@@ -511,7 +499,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
         );
       } else {
         response = await axios.post(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/add-property`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/pre-constructed-property`,
           data,
           {
             headers: {
@@ -547,18 +535,17 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
     }
     return { latitude: "", longitude: "" };
   };
+
   useEffect(() => {
     if (propertyId) {
       const fetchPropertyData = async () => {
         try {
           const response = await axios.get(
-            `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/properties/${propertyId}`
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/pre-constructed-property/${propertyId}`
           );
           const propertyData = response.data;
-
           const { street_view } = propertyData;
           const { latitude, longitude } = extractCoordinates(street_view);
-
           const formattedPropertyData = {
             ...propertyData,
             latitude,
@@ -566,7 +553,6 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
             property_images: propertyData.property_images.map((img: any) => ({
               file: null,
               url: getCloudinaryUrl(img.filename),
-              filename: img.filename,
             })),
           };
 
@@ -579,18 +565,28 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
 
       fetchPropertyData();
     }
-  }, []);
+  }, [propertyId]);
   useEffect(() => {
     if (scrollableContainerRef.current) {
       scrollableContainerRef.current.scrollTop = 0;
     }
   }, [activeTab]);
-
   const tabContent = () => {
     switch (activeTab) {
       case "category":
         return (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
+          <div className="grid grid-cols-1  gap-4 w-full">
+            <div>
+              <label className="block font-semibold">Name:</label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className="p-3 border border-gray-300 rounded w-full"
+              />
+              {errors.name && <p className="text-red-500">{errors.name}</p>}
+            </div>
             <div>
               <label className="block font-semibold">Category:</label>
               <select
@@ -600,8 +596,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
                 className="p-3 border border-gray-300 rounded w-full"
               >
                 <option value="">Select Category</option>
-                <option value="featured">Featured</option>
-                <option value="sold">Sold</option>
+                <option value="pre-constructed">Pre Constructed</option>
               </select>
               {errors.category && (
                 <p className="text-red-500">{errors.category}</p>
@@ -667,7 +662,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
 
             <div>
               <label className="block font-semibold">
-                Property Images ( At least 5 images):
+                Property Images:(At least 5 images)
               </label>
               <input
                 type="file"
@@ -685,7 +680,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
                   <p>Uploaded Images:</p>
                   <div className="flex flex-col sm:flex-row gap-4">
                     {formData.property_images.map((image, index) => (
-                      <div key={index} className="relative">
+                      <div key={index} className="relative ">
                         <img
                           src={image.url}
                           alt={`Property Image ${index + 1}`}
@@ -708,7 +703,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
         );
       case "general_details":
         return (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
+          <div className="grid grid-cols-1  gap-4 w-full">
             <h3 className="text-xl font-bold mb-4">General Details</h3>
             <div>
               <label className="block font-semibold">Price:</label>
@@ -789,7 +784,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
         );
       case "room_interior":
         return (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
+          <div className="grid grid-cols-1  gap-4 w-full">
             <h3 className="text-xl font-bold">Room Interior</h3>
             <div>
               <label className="block font-semibold">Rooms:</label>
@@ -900,7 +895,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
         );
       case "exterior":
         return (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
+          <div className="grid grid-cols-1  gap-4 w-full">
             <h3 className="text-xl font-bold">Exterior</h3>
             <div>
               <label className="block font-semibold">Property Type:</label>
@@ -988,7 +983,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
         );
       case "utilities":
         return (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
+          <div className="grid grid-cols-1  gap-4 w-full">
             <h3 className="text-xl font-bold">Utilities</h3>
             <div>
               <label className="block font-semibold">Fireplace/Stove:</label>
@@ -1094,7 +1089,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
         );
       case "at_a_glance":
         return (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
+          <div className="grid grid-cols-1  gap-4 w-full">
             <h3 className="text-xl font-bold">At a Glance</h3>
             <div>
               <label className="block font-semibold">Type:</label>
@@ -1260,7 +1255,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
                 value={formData.latitude}
                 onChange={handleChange}
                 className="p-3 border border-gray-300 rounded w-full"
-                placeholder="43.8518637 [get latitude from google map]"
+                placeholder="43.8518647 - Available from google map"
               />
               {errors.latitude && (
                 <p className="text-red-500">{errors.latitude}</p>
@@ -1275,7 +1270,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
                 value={formData.longitude}
                 onChange={handleChange}
                 className="p-3 border border-gray-300 rounded w-full"
-                placeholder="-79.3505216 [get longitude from google map]"
+                placeholder="-79.35056 - Available from google map"
               />
               {errors.longitude && (
                 <p className="text-red-500">{errors.longitude}</p>
@@ -1289,15 +1284,21 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
   };
 
   return (
-    <div className="max-w-2xl p-8 w-full mx-auto lg:w-[40%] bg-white rounded-lg shadow-lg">
+    <div className="max-w-7xl p-8 w-full mx-auto max-lg:w-[100%] bg-white rounded-lg shadow-lg">
       <h2 className="text-2xl font-bold mb-6">
-        {propertyId ? "Edit Property" : "Create Property"}
+        {propertyId
+          ? "Edit Pre-Constructed Property"
+          : "Create Pre-Constructed Property"}
       </h2>
 
       {error && <p className="text-red-500 mb-4">{error}</p>}
-
+      {errors && <p className="text-red-500 mb-4">{errors.length}</p>}
       {success && (
-        <p className="text-green-500 mb-4">Property Saved successfully!</p>
+        <p className="text-green-500 mb-4">
+          {propertyId
+            ? "Pre-Constructed Property updated successfully!"
+            : "Pre-Constructed Property created successfully!"}
+        </p>
       )}
 
       <div className="mb-6">
@@ -1355,7 +1356,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
               activeTab === "utilities"
                 ? "border-b-2 border-indigo-600 text-indigo-600"
                 : hasTabErrors("utilities")
-                ? "text-red-500 "
+                ? "text-red-500"
                 : ""
             } pb-2`}
             onClick={() => setActiveTab("utilities")}
@@ -1367,7 +1368,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
               activeTab === "at_a_glance"
                 ? "border-b-2 border-indigo-600 text-indigo-600"
                 : hasTabErrors("at_a_glance")
-                ? "text-red-500 "
+                ? "text-red-500"
                 : ""
             } pb-2`}
             onClick={() => setActiveTab("at_a_glance")}
@@ -1400,7 +1401,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
               type="submit"
               className="mt-4 bg-indigo-600 text-white px-5 py-3 rounded hover:bg-blue-600"
             >
-              {propertyId ? "Edit Property" : "Create Property"}
+              {propertyId ? "Update Property" : "Create Property"}
             </button>
             {onClose && propertyId && (
               <button
@@ -1418,4 +1419,4 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ propertyId, onClose }) => {
   );
 };
 
-export default PropertyForm;
+export default PreConstructedPropertyForm;

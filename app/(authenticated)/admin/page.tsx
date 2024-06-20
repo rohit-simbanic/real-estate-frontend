@@ -1,10 +1,10 @@
 "use client";
-import FeaturedListing from "@/app/(defaults)/pages/home/features/components/featured-listing";
-import PreConstructedProject from "@/app/(defaults)/pages/home/features/components/pre-constructed-project";
-import SoldProperties from "@/app/(defaults)/pages/home/features/components/sold-properties";
+import FeaturedListing from "@/app/(defaults)/pages/home/content/properties/featured-listing";
+import PreConstructedProject from "@/app/(defaults)/pages/home/content/properties/pre-constructed-project";
+import SoldProperties from "@/app/(defaults)/pages/home/content/properties/sold-properties";
+import PropertyForm from "@/components/form/featured-sold-property-form/property-create";
+import PreConstructedPropertyForm from "@/components/form/pre-constructed-form/property-create";
 import withAuth from "@/helpers/with-auth-hoc";
-import PreConstructedPropertyForm from "@/theme/components/form/pre-constructed-property-create";
-import PropertyForm from "@/theme/components/form/property-create";
 import React, { useState } from "react";
 
 const Page = () => {

@@ -10,7 +10,6 @@ type Props = {
 
 const AgentProfile = ({ params }: Props) => {
   const [agent, setAgent] = useState<any>(null);
-  console.log("agents", agent);
   const [formData, setFormData] = useState<any>({});
   const [newPassword, setNewPassword] = useState<string>("");
   const [activeTab, setActiveTab] = useState<string>("profile");

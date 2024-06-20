@@ -2,7 +2,7 @@ import Footer from "@/components/layouts/footer";
 import Header from "@/components/layouts/header";
 import MainContainer from "@/components/layouts/main-container";
 
-export default function DefaultLayout({
+export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;

@@ -11,7 +11,6 @@ import { getCloudinaryUrl } from "@/helpers/cloudinary-image-fetch";
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  console.log("isMenuOpen", isMenuOpen);
   const { theme, setTheme } = useTheme();
   const [isChecked, setIsChecked] = useState(false);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);

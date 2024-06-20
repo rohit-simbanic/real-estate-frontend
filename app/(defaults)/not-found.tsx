@@ -12,9 +12,9 @@ const ErrorPage = () => {
           Sorry, the page youre looking for doesnt exist or has been moved.
         </p>
         <Link href="/">
-          <a className="px-6 py-3 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 transition duration-200">
+          <p className="px-6 py-3 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 transition duration-200">
             Go Back Home
-          </a>
+          </p>
         </Link>
       </div>
     </div>

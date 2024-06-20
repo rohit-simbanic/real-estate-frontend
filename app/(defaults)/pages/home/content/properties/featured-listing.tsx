@@ -13,7 +13,6 @@ interface FeaturedListingProps {
 }
 const FeaturedListing: React.FC<FeaturedListingProps> = ({ onEdit }) => {
   const [property, setProperty] = useState<PropertyDetails[]>([]);
-  console.log("featured property:", property);
   const [loadingData, setLoadingData] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
@@ -21,18 +20,15 @@ const FeaturedListing: React.FC<FeaturedListingProps> = ({ onEdit }) => {
   const pathname = usePathname();
   const router = useRouter();
   const { isAuthenticated, loading, logout } = useAuth();
-  console.log("isAuthenticated", isAuthenticated);
 
   useEffect(() => {
-    console.log("Starting useEffect hook boundary");
     const fetchData = async () => {
       setLoadingData(true);
       try {
-        console.log("Inside useEffect hook boundary");
         const endpoint = isAuthenticated
           ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/my-properties`
           : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/property/properties`;
-        console.log("endpoint:", endpoint);
+
         const data = await fetchProperties(endpoint);
         const featuredProperties = data.filter(
           (item: PropertyDetails) => item.category === "featured"
@@ -47,7 +43,6 @@ const FeaturedListing: React.FC<FeaturedListingProps> = ({ onEdit }) => {
     if (!loading) {
       fetchData();
     }
-    console.log("End of useEffect hook boundary");
   }, [loading, logout]);
 
   const handleEdit = (propertyId: string) => {

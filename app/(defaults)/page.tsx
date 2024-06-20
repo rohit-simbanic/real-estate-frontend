@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import React from "react";
-import HomePage from "./pages/home/home";
+import HomePage from "./pages/home";
 
 export const metadata: Metadata = {
   title: "Home Page",

@@ -28,7 +28,7 @@ const ResetPassword: React.FC = () => {
         { password }
       );
       setMessage(response.data.message);
-      router.push("/admin/login");
+      router.push("/login");
     } catch (error) {
       setMessage("Error resetting password");
     }

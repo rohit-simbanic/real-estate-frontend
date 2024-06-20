@@ -18,7 +18,7 @@ const footerSections: FooterSection[] = [
 
   {
     title: "Helpful Links",
-    links: [{ label: "Admin Login", href: "/admin/login" }],
+    links: [{ label: "Admin Login", href: "/login" }],
   },
 ];
 

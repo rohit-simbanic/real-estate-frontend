@@ -8,7 +8,7 @@ interface ButtonLoginProps {
 
 const ButtonLogin: React.FC<ButtonLoginProps> = ({
   text = "Login",
-  href = "/admin/login",
+  href = "/login",
 }) => {
   return (
     <Link href={href}>

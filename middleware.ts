@@ -22,7 +22,7 @@ export function middleware(request: NextRequest) {
   const dynamicPathsPatterns = [
     /^\/NXYZ[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/, // Matches paths starting with /NXYZ
     /^\/PXYZ[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/, // Matches paths starting with /PXYZ
-    /^\/admin\/signup\/reset-password-client\/[a-zA-Z0-9_-]+$/, // Matches /admin/signup/reset-password-client/abc-123
+    /^\/admin\/signup\/reset-password-client\/[a-zA-Z0-9_-]+$/, // Matches /signup/reset-password-client/abc-123
   ];
 
   const isAllowed =

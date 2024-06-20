@@ -20,14 +20,13 @@ const PreConstructedProject: React.FC<PreConstructedProjectProps> = ({
   const [propertyItem, setPropertyItem] = useState<
     PreconstructedPropertyDetails[]
   >([]);
-  console.log("pre-constructed properties", propertyItem);
+
   const [loadingData, setLoadingData] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
   const totalPages = Math.ceil(propertyItem.length / itemsPerPage);
   const pathname = usePathname();
   const { isAuthenticated, loading, logout } = useAuth();
-  console.log("isAuthenticated", isAuthenticated);
   const handleEdit = (propertyId: string) => {
     onEdit(propertyId);
   };

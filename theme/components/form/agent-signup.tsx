@@ -155,7 +155,7 @@ const AgentSignup: React.FC = () => {
       if (response.status === 201) {
         setSuccess(true);
         setError(null);
-        router.push("/admin/login");
+        router.push("/login");
       }
     } catch (err) {
       setError("Registration failed. Please try again.");

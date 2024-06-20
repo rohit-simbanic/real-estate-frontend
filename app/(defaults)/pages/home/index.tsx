@@ -1,13 +1,13 @@
 "use client";
 import React, { useState } from "react";
-import Banner from "./features/components/banner";
-import FeaturedListing from "./features/components/featured-listing";
-import PreConstructedProject from "./features/components/pre-constructed-project";
-import MapComponent from "./features/components/map";
-import CalculatorGrid from "./features/components/services/calculator-grid";
+import Banner from "./content/banner/banner";
+import FeaturedListing from "./content/properties/featured-listing";
+import PreConstructedProject from "./content/properties/pre-constructed-project";
+import MapComponent from "./content/map";
+import CalculatorGrid from "./content/calculator-grid/calculator-grid";
 import calculatorData from "../../../../data/calculator-items.json";
 import { CalculatorDataProps } from "@/types/calculator-data-types";
-import SoldProperties from "./features/components/sold-properties";
+import SoldProperties from "./content/properties/sold-properties";
 
 const HomePage = () => {
   const [propertyId, setPropertyId] = useState<string | null>(null);

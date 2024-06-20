@@ -2,7 +2,7 @@ import React from "react";
 import SectionTitle from "@/theme/components/section-title/section-title";
 import { CalculatorDataProps } from "@/types/calculator-data-types";
 import dynamic from "next/dynamic";
-const DynamicComponent = dynamic(() => import("../calculator"), {
+const DynamicComponent = dynamic(() => import("./index"), {
   ssr: false,
 });
 
